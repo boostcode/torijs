@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var rbac = require('mongoose-rbac');
-var permission = rbac.permission;
+var permission = rbac.Permission;
 var _ = require('underscore');
 
 // list

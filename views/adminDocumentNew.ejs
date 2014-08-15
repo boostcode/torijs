@@ -193,15 +193,10 @@ $( document ).ready(function() {
 					$('#okdiv').show();
 					$('#okdiv').html(data.message);
 					
-					//console.log(data)
-					//console.log(status)
-					
-					var html = ''
-					var idMsg = 1
-					
-					alert(JSON.stringify(data));
-					
-					if (data.actions.length > 0) {
+					var html = '';
+					var idMsg = 1;
+
+					if (data.actions) {
 						
 						data.actions.forEach(function(action) {
 						
@@ -228,13 +223,11 @@ $( document ).ready(function() {
 
 						});
 						
-					}
+					  html += '<button type="submit" class="btn btn-primary" id="btnSendMail">Send</b></button>';
 
-					html += '<button type="submit" class="btn btn-primary" id="btnSendMail">Send</b></button>';
-
-					$('#AlertMsgDiv').append(html);
-					$('#AlertMsgDiv').show();
-
+					  $('#AlertMsgDiv').append(html);
+					  $('#AlertMsgDiv').show();
+          }
 				},
 				error: function (req, status, error) {
 				

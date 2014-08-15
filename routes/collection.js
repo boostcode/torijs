@@ -255,9 +255,11 @@ router.post('/:collection_name/insert', function(req, res){
             }
           ]
         }, function(err, actions){
+          
           var actionToSend = [];
 
           actions.forEach(function(act){
+            
             if(act.message.length == 1){
               var msg = act.message[0];
 
@@ -281,7 +283,9 @@ router.post('/:collection_name/insert', function(req, res){
             }
           });
 
-          responseJ.actions = actionToSend;
+          if(actionToSend.length > 0){
+            responseJ.actions = actionToSend;
+          }
           res.send(responseJ);
         }); 
       });
