@@ -67,6 +67,25 @@ router.post('/register', function(req, res){
   });
 });
 
+// logout
+router.post('/logout', function(req, res){
+  account.findById(req.user.id, function(err, doc){
+    if(err){
+      res.send(err);
+      return;
+    }
+
+    doc.token = '';
+    doc.save();
+  });
+
+  req.logout();
+
+  res.send({
+    action: 'logout'
+  });
+});
+
 
 // update
 router.post('/update', function(req, res){
