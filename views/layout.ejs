@@ -46,6 +46,25 @@
 				if(!$.cookie('toriijs')){
 					location.href = '/auth/login';
 				}
+
+        // handle div dinamically
+        if(location.href.indexOf('/user') != -1){
+          $('#userMenu').addClass('active');
+        }
+
+        if(location.href.indexOf('/role') != -1){
+          $('#roleMenu').addClass('active');
+        }
+
+        if(location.href.indexOf('/action') != -1){
+          $('#actionMenu').addClass('active');
+        }
+
+        if(location.href.indexOf('/collections') != -1){
+          $('#collectionMenu').addClass('active');
+        }
+          
+          
 				
 				splits = $.cookie('toriijs').toString().split('|');
 				
@@ -123,7 +142,7 @@
 											collectionMenuBox +=	'</ul>\
 											</li>';
 	
-											$(collectionMenuBox).insertAfter('#menucollections');
+											$(collectionMenuBox).insertAfter('#collectionMenu');
 											
 										});
 										
@@ -273,7 +292,7 @@
 						  </li>
 						  <%}%>
 						
-						  <li class="treeview" id="menucollections">
+						  <li class="treeview" id="collectionMenu">
 						    <% if( logged.isDev ) {%>
 								  <a href="/admin/collections">
 								    <i class="fa fa-archive"></i>
