@@ -4,8 +4,14 @@ var passportLocal = require('passport-local-mongoose');
 var rbac = require('mongoose-rbac');
 
 var account = new schema({
-  name: String,
-  surname: String,
+  name: {
+    type: String,
+    default: ''
+  },
+  surname: {
+    type: String,
+    default: ''
+  },
   username: String,
   password: String,
   token: String,
