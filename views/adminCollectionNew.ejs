@@ -1,0 +1,192 @@
+<% layout('layout') -%>
+
+<div class="col-md-12">
+	
+	<div class="alert alert-danger alert-dismissable" id="errordivu" style="display:none;">
+		<i class="fa fa-ban"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">◊</button>
+		<label id="erroru" class="control-label" for="inputError"></label>
+	</div>
+	
+	<div class="alert alert-success alert-dismissable" id="okdiv" style="display:none;">
+		<i class="fa fa-check"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">◊</button>
+		<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Collection created!</label>
+	</div>
+	
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">Add new Collection</h3>
+		</div>
+
+	<form name="editaF" id="editaF" method="post" action ="">
+		<div class="box-body">
+			
+			<div class="form-group">
+				<label>Collection Name<b>*</b></label>
+				<div class="input-group">
+					<input class="form-control" id="nome_coll" type="text" name="nome_coll" placeholder="Collection name"/>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label>Import CSV<b>*</b></label>
+				<select class="form-control" id="csvimport"> 
+					<option value="no">no</option> 
+					<option value="yes">yes</option> 
+				</select>
+			</div>
+		
+			<div class="form-group" id="el_1">
+				<div class="row">
+					<div class="col-md-4">
+						<label>Field #1</label>
+						<input class="form-control" id="el_1name" type="text" name="nome" placeholder="Field name"/>
+					</div>
+					<div class="col-md-2">
+						<label>Type</label>
+						<select class="form-control" id="el_1value"> 
+							<option value="string">string</option> 
+							<option value="date">date</option> 
+							<option value="numeric">numeric</option>
+							<option value="array">array</option>
+							<option value="select">select</option>
+							<option value="selectcollection">select from collection field</option>
+							<option value="file">file</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label>Option</label>
+						<textarea class="form-control" id="el_1option"></textarea>
+					</div>
+					<div class="col-md-2">
+						<label>Unique</label><br/>
+						<input class="form-control" id="el_1unique" type="checkbox" name="unique" />
+					</div>
+				</div>
+			</div>
+		
+		<button id="btn_add" class="btn btn-default" type="button">Add field</button><br/>
+		
+		<div class="box-footer" style="text-align:center;">
+			<button id="btn_sub" class="btn btn-primary" type="button">Create collection</button>
+		</div>	
+	  
+	  </div>
+	  </form>
+	  
+	</div>
+</div>
+
+<!-- TODO: at least a field need to be unique to allow CSV Import -->
+	  
+ <script type="text/javascript">
+ 
+ 	$(document).ready(function() {
+ 	
+ 	var nEl = 1;
+ 	
+ 		$('#btn_add').on('click', function () {
+ 	
+	 		var el = "el_"+ nEl;
+	 		var elSuc = "el_"+ (nEl + 1);
+	 	
+	 		var inputTag = '\
+	 		<div class="form-group" id="'+ elSuc +'">\
+	 			<div class="row">\
+	 				<div class="col-md-4">\
+	 					<label>Field #'+ (nEl + 1) +'</label>\
+	 					<input class="form-control" id="'+ elSuc +'name" type="text" name="nome" placeholder="Field name"/>\
+	 				</div>\
+	 				<div class="col-md-2">\
+	 					<label>Type</label>\
+	 					<select class="form-control" id="'+ elSuc +'value">\
+	 						<option value="string">string</option>\
+	 						<option value="date">date</option>\
+	 						<option value="numeric">numeric</option>\
+	 						<option value="array">array</option>\
+	 						<option value="select">select</option>\
+	 						<option value="selectcollection">select from collection field</option>\
+	 						<option value="file">file</option>\
+	 					</select>\
+	 				</div>\
+					<div class="col-md-4">\
+						<label>Option</label>\
+						<textarea class="form-control" id="'+ elSuc+'option"></textarea>\
+					</div>\
+	 				<div class="col-md-2">\
+	 					<label>Unique</label><br/>\
+	 					<input type="checkbox" id="'+ elSuc+'unique">\
+	 				</div>\
+	 			</div>\
+	 		</div>';
+ 	
+ 			$('#'+el).after(inputTag);
+ 			
+ 			nEl += 1;
+ 	
+ 		});
+
+ 		$('#btn_sub').on('click', function () {
+ 		
+ 			var collezioneObj = {};
+ 			var campi = [];
+ 			
+ 			for (var i = 1; i <= nEl; i++) {
+	 			
+	 			var campoObj = {};
+	 			
+	 			var el = "#el_"+ i;
+	 			
+	 			var nome = $(el+'name').val();
+	 			var tipo = $(el+'value').val();
+	 			var option = $(el+'option').val();
+	 			var unico = $(el+'unique').is(':checked');
+	 			
+	 			campoObj['label'] = nome;
+	 			campoObj['ordine'] = i;
+	 			campoObj['tipo'] = tipo;
+	 			campoObj['unico'] = unico;
+	 			campoObj['option'] = option;
+	 			campoObj['field_name'] = nome.replace(/ /g,'');
+	 			
+	 			campi.push(campoObj);
+	 			
+ 			}
+ 			
+ 			var nome_collezione = $('#nome_coll').val();
+ 			var importCsv = $( "#csvimport option:selected" ).text();
+ 			
+ 			if (nome_collezione) {
+	 			
+	 			collezioneObj['nome_collezione'] = nome_collezione;
+	 			collezioneObj['struttura'] = campi;
+	 			collezioneObj['import'] = importCsv;
+	 			
+	 			userAndToken["dati"] = collezioneObj;
+  		
+	 			$.post('/collection/'+ nome_collezione +'/create', userAndToken)
+	 				.done( function( data, status) {
+
+						$('#okdiv').show();
+						$('#okdiv').html(data.message);
+						
+						window.location.href = '/admin/collections';
+
+					})
+					.fail( function( req, status, error) {
+						
+						$('#errordivu').show();
+						$('#erroru').html(error);
+					
+					});
+	 			
+ 			}
+	 		
+ 		});
+
+	});
+ 
+ 
+ 
+</script>

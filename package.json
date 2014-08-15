@@ -1,0 +1,34 @@
+{
+  "name": "torii.js",
+  "description": "Backend as a service baked in node.js and mongodb",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "express": "~4.2.0",
+    "static-favicon": "~1.0.0",
+    "morgan": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "body-parser": "~1.0.0",
+    "debug": "~0.7.4",
+    "ejs": "~0.8.5",
+    "ejs-locals": "~1.0.2",
+    "mongodb": "~1.4.8",
+    "mongoose": "~3.8.0",
+    "mongoose-rbac": "matteocrippa/mongoose-rbac",
+    "passport": "~0.2.0",
+    "passport-local": "~1.0.0",
+    "passport-local-mongoose": "~0.2.5",
+    "passport-token": "~0.1.1",
+    "bcrypt-nodejs": "0.0.3",
+    "token": "0.0.0",
+    "gcm": "~1.0.1",
+    "apns": "~0.1.0",
+    "fast-csv": "~0.4.2",
+    "underscore": "~1.6.0",
+    "nodemailer": "~1.1.1",
+    "express-session": "~1.7.5"
+  }
+}

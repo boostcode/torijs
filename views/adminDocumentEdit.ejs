@@ -1,0 +1,118 @@
+<% layout('layout') -%>
+
+<div class="col-md-12">
+	
+	<div class="alert alert-danger alert-dismissable" id="errordivu" style="display:none;">
+		<i class="fa fa-ban"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<label id="erroru" class="control-label" for="inputError"></label>
+	</div>
+	
+	<div class="alert alert-success alert-dismissable" id="okdiv" style="display:none;">
+		<i class="fa fa-check"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Updated completed!</label>
+	</div>
+		
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">Edit <b><%= req.params.collection_name %></b> #<%= req.params.document_id %></h3>
+		</div><!-- /.box-header -->
+		
+		<!-- form start -->
+		<form role="form" id="newuserform">
+			<div id="form_campi" class="box-body">
+				<!-- Campi aggiunti tramite ajax -->
+			</div><!-- /.box-body -->
+
+			<div class="box-footer" style="text-align:center;">
+				<button type="submit" class="btn btn-primary" id="btnSalva"><b>Save</b></button>
+			</div>
+		</form>
+		
+	</div>
+</div>
+
+<!-- Validation -->
+<script type="text/javascript" src="/js/jquery.validate.js" ></script>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+
+	var campi;
+	var nome_collezione = '<%= req.params.collection_name %>';
+	var id_documento = '<%= req.params.document_id %>';
+	
+	$.post("/collection/"+ nome_collezione +"/"+ id_documento, userAndToken, function(data) {
+	
+		if(!data["data"][0])
+			location.href = '/admin';
+	
+		var oggetto = data["data"][0];
+		
+		userAndToken["query"] = {"nome_collezione" : nome_collezione};
+		
+		$.post("/collection/torii_structure/documents.json", userAndToken, function(data) {
+		
+			campi = data["aaData"][0]["struttura"];
+		
+			var html = '';
+		
+			campi.forEach(function(campo) { 
+		
+				html += '<div class="form-group">\
+							<label>'+ campo["label"] +'</label>\
+							<div class="input-group">\
+								<span class="input-group-addon">#</span>\
+								<input type="text" class="form-control" name="field_'+ campo["field_name"] +'" id="field_'+ campo["field_name"] +'" placeholder="Set '+ campo["label"] +'" value="'+ oggetto[campo["field_name"]] +'">\
+							</div>\
+						</div>'
+				
+			})
+		
+			$('#form_campi').html(html);
+		
+		});
+	
+	});
+
+	$("#newuserform").validate({
+		rules: {
+		  password: "required",
+		  retypepassword: {
+			equalTo: "#password"
+		  }
+		},
+		submitHandler: function(form) {
+
+			var valori = {};
+		
+			campi.forEach(function(campo) { 
+
+				valori[campo["field_name"]] = $('#field_'+campo["field_name"]).val();
+
+			})
+			
+			userAndToken["valori"] = valori;
+
+			$.ajax({
+				type: "POST",
+				url: "/collection/"+ nome_collezione +"/"+ id_documento +"/update",
+				data: userAndToken,
+				success: function( data, status) {
+
+					$('#okdiv').show();
+					$('#okdiv').html();
+
+				},
+				error: function ( req, status, error){
+					$('#errordivu').show();
+					$('#erroru').html(error);
+				}
+			});
+
+		}
+	});
+
+});
+</script>

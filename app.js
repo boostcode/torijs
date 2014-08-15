@@ -1,0 +1,192 @@
+// Express
+var express = require('express');
+var path = require('path');
+var favicon = require('static-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var engine = require('ejs-locals');
+
+// Routes
+var action = require('./routes/action');
+var admin = require('./routes/admin');
+var auth = require('./routes/auth');
+var collection = require('./routes/collection');
+var role = require('./routes/role');
+var perm = require('./routes/permission');
+var user = require('./routes/user');
+
+// Authentication
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
+var tokenStrategy = require('passport-token').Strategy;
+var token = require('token');
+var account = require('./models/account');
+
+// Permission
+var rbac = require('mongoose-rbac');
+var role = rbac.Role;
+
+// Database
+var mongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
+var database = null;
+
+// Email
+var nodemailer = require('nodemailer');
+var mail = null;
+
+// Configuration
+var torii = require('./conf/torii.conf.js').torii;
+
+
+var app = express();
+
+// view engine setup
+app.engine('ejs', engine);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(favicon());
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(session({ 
+  secret: 'js.iirot' 
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// database setup
+app.use(function(req, res, next){
+  if(database){
+    req.db = database;
+    next();
+  }else{
+    mongoClient.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.data, function(err, db) {
+      if(db){
+        req.db = database = db;
+        next();
+      }else{
+        throw Error('Database connection problem');
+      }
+    });
+  }
+});
+
+mongoose.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.user);
+
+// email setup
+app.use(function(req, res, next){
+  if(mail){
+    req.mail = mail;
+    next();
+  }else{
+    req.mail = mail = nodemailer.createTransport('SMTP', {
+      host: torii.conf.mail.host,
+      port: torii.conf.mail.port,
+      secureConnection: torii.conf.mail.secureConnection,
+      auth: {
+        user: torii.conf.mail.user,
+        pass: torii.conf.mail.pass
+      }
+    });
+    next();
+  }
+});
+
+
+// auth strategies
+passport.use(new localStrategy(account.authenticate()));
+passport.serializeUser(account.serializeUser());
+passport.deserializeUser(account.deserializeUser());
+
+passport.use(new tokenStrategy( function(username, tokenLogin, done) {
+    account.findOne({ username: username }, function (err, user) {
+      if(err){
+        return done(err);
+      }
+
+      if(!user){
+        return done(null, false);
+      }
+
+      if(tokenLogin != user.token){
+        return done(null, false);
+      }
+
+      return done(null, user);
+    });
+  })
+);
+
+function isLogged(req, res,next){
+  if(req.user){
+    return next();
+  }else{
+    res.redirect('/auth/login');
+  }
+}
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/', function(req, res){
+  res.redirect('/auth/login');
+});
+
+app.all('/collection/*', passport.authenticate('token'));
+app.all('/user/*', passport.authenticate('token'));
+app.all('/role/*', passport.authenticate('token'));
+app.all('/action/*', passport.authenticate('token'));
+
+app.post('/auth/login', passport.authenticate('local'));
+
+app.all('/admin/*', isLogged);
+
+
+// Setup Routes
+app.use('/action', action);
+app.use('/admin', admin);
+app.use('/auth', auth);
+app.use('/collection', collection);
+app.use('/role', role);
+app.use('/permission', perm);
+app.use('/user', user);
+
+
+/// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
+});
+
+
+/// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+});
+
+module.exports = app;

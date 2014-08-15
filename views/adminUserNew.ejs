@@ -1,0 +1,145 @@
+<% layout('layout') -%>
+
+<div class="col-md-12">
+	
+	<div class="alert alert-danger alert-dismissable" id="errordivu" style="display:none;">
+		<i class="fa fa-ban"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<label id="erroru" class="control-label" for="inputError"></label>
+	</div>
+	
+	<div class="alert alert-success alert-dismissable" id="okdiv" style="display:none;">
+		<i class="fa fa-check"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Registration completed!</label>
+	</div>
+		
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">Add new User</h3>
+		</div><!-- /.box-header -->
+		
+		<!-- form start -->
+		<form role="form" id="newuserform">
+			<div class="box-body">
+				
+				<div class="form-group">
+					<label>Name <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">@</span>
+						<input type="text" class="form-control" name="name" id="name" placeholder="Set user name" required="required">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>Surname <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">@</span>
+						<input type="text" class="form-control" name="surname" id="surname" placeholder="Set user surname" required="required">
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<label>Email address <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">@</span>
+						<input type="text" class="form-control" name="username" id="username" placeholder="Set user email address" required="required">
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label>Password <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">***</span>
+						<input type="password" class="form-control" name="password" id="password" placeholder="Set user password" required="required">
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label>Confirm password <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">***</span>
+						<input type="password" class="form-control" name="cpassword" id="cpassword" placeholder="Confirm user password" required="required">
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<label>is Dev? </label>
+					<input type="checkbox" name="isdev" id="isdev" />
+				</div>
+				
+				<div class="form-group">
+					<label>is Admin? </label>
+					<input type="checkbox" name="isadmin" id="isadmin" />
+				</div>
+				
+				<div class="form-group">
+					<label>Role <b>*</b></label>
+					<select class="form-control" id="role">
+						<option value=""></option>					
+						<% roles.forEach(function(role, index){%>
+						<option value="<%=role.name%>"><%=role.name%></option>
+						<% }) %>
+					</select>
+				</div>
+
+				<b>*</b> <small>Mandatory field</small>
+
+			</div><!-- /.box-body -->
+
+			<div class="box-footer" style="text-align:center;">
+				<button type="submit" class="btn btn-primary" id="btnSalva">Add new User</button>
+			</div>
+		</form>
+		
+	</div>
+</div>
+
+<!-- Validation -->
+<script type="text/javascript" src="/js/jquery.validate.js" ></script>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+
+	$("#newuserform").validate({
+		rules: {
+		  password: "required",
+		  retypepassword: {
+			equalTo: "#password"
+		  }
+		},
+		submitHandler: function(form) {
+
+			$.ajax({
+				type: "POST",
+				url: "/user/register",
+				data: {
+					name: $('#name').val(),
+					surname: $('#surname').val(),
+					username: $('#username').val(),
+					password: $('#password').val(),
+					isAdmin: $("#isadmin").is(':checked'),
+					isDev: $("#isdev").is(':checked'),
+					role: $("#role option:selected").text()
+				},
+				success: function( data, status) {
+
+					if(status == 'success' && data.user == $('#username').val()){
+						$('#okdiv').show();
+					}else{
+						$('#errordivu').show();
+						$('#erroru').html(data.message);
+					}
+				},
+				error: function ( req, status, error){
+					$('#errordivu').show();
+					$('#erroru').html(error);
+				}
+			});
+
+		}
+	});
+
+});
+</script>

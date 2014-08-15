@@ -1,0 +1,77 @@
+<% layout('layoutLogin') -%>
+
+<div class="form-box" id="login-box">
+
+	<div class="header"><%= toriiTitle ? toriiTitle : 'Torii.js'%></div>
+	<form id="registrationform">
+
+		<div class="body bg-gray">
+			
+			<div class="form-group has-error" id="errordiv" style="display:none;">
+				<label id="error" class="control-label" for="inputError"></label>
+			</div>
+			
+			<div class="form-group has-success" id="okdiv" style="display:none;">
+				<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Registration completed! Proceed to <a href="/auth/login">Login</a></label>
+			</div>
+			
+			<div class="form-group">
+				<input type="email" id="username" name="username" class="form-control" placeholder="Email Address" required/>
+			</div>
+			
+			<div class="form-group">
+				<input type="password" name="password" id="password" class="form-control" placeholder="Password" required/>
+			</div>
+			
+			<div class="form-group">
+			    <input type="password" id="password" name="retypepassword" id="retypepassword" class="form-control" placeholder="Retype Password" required/>
+			</div>           
+
+		</div>
+
+		<div class="footer">                                                               
+			<button type="submit" class="btn bg-olive btn-block" id="register">Sign me up</button>
+			<a href="/user/login">I'm already registered!</a>                       
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+				
+	$("#registrationform").validate({
+		rules: {
+		  password: "required",
+		  retypepassword: {
+			equalTo: "#password"
+		  }
+		},
+		submitHandler: function(form) {
+			
+			$.ajax({
+				type: "POST",
+				url: "/auth/register",
+				data: {
+					username: $('#username').val(),
+					password: $('#password').val()
+				},
+				success: function( data, status) {
+					console.log(status);					
+					if(status == 'success' && data.user == $('#username').val()){
+						$('#okdiv').show();
+					}else{
+						$('#errordiv').show();
+						$('#error').html('<i class="fa fa-times-circle-o"></i> '+data.message);
+					}
+				},
+				error: function ( req, status, error){
+					$('#errordiv').show();
+					$('#error').html('<i class="fa fa-times-circle-o"></i> '+error);
+				}
+			});
+			
+		}
+	});
+	
+});
+</script>

@@ -1,0 +1,172 @@
+<% layout('layout') -%>
+
+<div class="col-md-12">
+	
+	<div class="alert alert-danger alert-dismissable" id="errordivu" style="display:none;">
+		<i class="fa fa-ban"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">?</button>
+		<label id="erroru" class="control-label" for="inputError"></label>
+	</div>
+	
+	<div class="alert alert-success alert-dismissable" id="okdiv" style="display:none;">
+		<i class="fa fa-check"></i>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">?</button>
+		<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Role created!</label>
+	</div>
+		
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">Add new Role</h3>
+		</div><!-- /.box-header -->
+		
+		<!-- form start -->
+		<form role="form" id="newroleform" name="newroleform">
+			<div class="box-body">
+
+				<div class="form-group">
+					<label>Name <b>*</b></label>
+					<div class="input-group">
+						<span class="input-group-addon">@</span>
+						<input type="text" class="form-control" name="name" id="name" placeholder="Set role name" required="required">
+					</div>
+				</div>
+<div class="col-md-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3 class="box-title">Select <b>collections</b> permissions</h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body">
+                                    <table class="table">
+                                        <tbody id="collectionlist">
+											<tr>
+                                            	<th>Collection</th>
+                                            	<th>Backend Read</th>
+                                            	<th>Backend Write</th>
+                                            	<th>Api Read</th>
+                                            	<th>Api Write</th>
+                                        	</tr>
+                                        
+                                    </tbody></table>
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+
+                        </div>				
+				
+
+				<b>*</b> <small>Mandatory field</small>
+
+			</div><!-- /.box-body -->
+
+			<div class="box-footer" style="text-align:center;">
+				<button type="submit" class="btn btn-primary" id="btnSalva">Add new Role</button>
+			</div>
+		</form>
+		
+	</div>
+</div>
+
+<!-- Validation -->
+<script type="text/javascript" src="/js/jquery.validate.js" ></script>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+
+	
+	$.ajax({
+		type: "POST",
+		url: "/permission/list.json",
+		data: userAndToken,
+		success: function(data, status) {
+			
+			var html = '';
+			
+			console.log(data)
+			
+			$.each(data, function(collection){
+								
+				html += '<tr>';
+				html += '<th>'+collection+'</th>';
+				
+				$.each(data[collection], function(index){
+					
+					var permission = data[collection][index]
+										
+					html += '<th><input type="checkbox" class="form-control" name="'+ permission.subject +'~'+ permission.action +'" pid="'+ permission._id +'" ></th>';
+				});
+				
+				html += '</tr>';
+			})
+		
+			$('#collectionlist').append(html);
+		
+	}
+	});
+
+	$("#newroleform").validate({
+		rules: {
+
+		},
+		submitHandler: function(form) {
+		
+			if ($('#name').val().indexOf("+") > -1) {
+				
+				alert("Role name must not contain special characters");
+				return;
+				
+			}
+			
+			// retrieve all the permissions
+			var permissionsRaw = $('#newroleform :input');
+
+			var permissions = Array()
+			
+			// loop inside permissions
+			permissionsRaw.map(function(index, perm){
+				
+				// if the permission is checked
+				if($(perm).is(':checked')){
+														
+					// split the name into two parts
+					var psplit = $(perm).attr("name").split('~')
+					
+					// push permission in db
+					permissions.push({
+						pid: $(perm).attr("pid")
+					})
+										
+				}
+				
+			})
+			
+			// send request to create new role
+			$.ajax({
+				type: "POST",
+				url: "/role/create",
+				data: {
+					roleName: $('#name').val(),
+					permissions: permissions,
+					username: splits[0],
+					token: splits[1]
+				},
+				success: function( data, status) {
+					
+					console.log(data)
+					
+					if(status == 'success' && data.name == $('#name').val()){
+						$('#okdiv').show();
+					}else{
+						$('#errordivu').show();
+						$('#erroru').html(data.message);
+					}
+				},
+				error: function ( req, status, error){
+					$('#errordivu').show();
+					$('#erroru').html(error);
+				}
+			});
+
+		}
+	});
+
+});
+</script>
