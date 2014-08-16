@@ -26,7 +26,7 @@ router.get('/user/list', function(req, res){
 
 // user - new
 router.get('/user/new', function(req, res){
-  role.find({}, function(req, res){
+  role.find({}, function(err, roles){
     res.render('adminUserNew',{
       toriiTitle: torii.conf.core.title,
       logged: req.user,
