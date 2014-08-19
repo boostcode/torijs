@@ -84,7 +84,7 @@
 					</select>
 				</div>
 
-				<b>*</b> <small>Mandatory field</small>
+          <b>*</b> <small>Mandatory field</small>
 
 			</div><!-- /.box-body -->
 
@@ -115,17 +115,19 @@ $( document ).ready(function() {
 				type: "POST",
 				url: "/user/register",
 				data: {
+          token: splits[1],
+          username: splits[0],
 					name: $('#name').val(),
 					surname: $('#surname').val(),
-					username: $('#username').val(),
+					usernamereg: $('#username').val(),
 					password: $('#password').val(),
 					isAdmin: $("#isadmin").is(':checked'),
 					isDev: $("#isdev").is(':checked'),
 					role: $("#role option:selected").text()
 				},
 				success: function( data, status) {
-
-					if(status == 'success' && data.user == $('#username').val()){
+          $("html, body").animate({ scrollTop: 0 }, "slow");
+					if(status == 'success' && data.username == $('#username').val()){
 						$('#okdiv').show();
 					}else{
 						$('#errordivu').show();
@@ -133,6 +135,7 @@ $( document ).ready(function() {
 					}
 				},
 				error: function ( req, status, error){
+          $("html, body").animate({ scrollTop: 0 }, "slow");
 					$('#errordivu').show();
 					$('#erroru').html(error);
 				}

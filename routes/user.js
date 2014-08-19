@@ -4,12 +4,12 @@ var account = require('../models/account');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js');
+var torii = require('../conf/torii.conf.js').torii;
 
 // registration
 router.post('/register', function(req, res){
   account.register(new account({
-    username: req.body.username
+    username: req.body.usernamereg
   }), req.body.password, function(err, account){
       
     if(err){
@@ -61,7 +61,7 @@ router.post('/register', function(req, res){
     });
     
     res.send({
-      username: req.body.username
+      username: req.body.usernamereg
     });
 
   });
