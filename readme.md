@@ -1,5 +1,5 @@
 # Torii.js
-## Backend as a service
+## Node.js backend as a service
 
 Torii.js allow you to setup quickly a backend using *node.js* and *mongodb*, with the good looking taste of [AdminLTE](https://github.com/almasaeed2010/AdminLTE).
 All the fields are customizable and role defined. Also the system make use of a REST JSON api that allow you to create your favorite client for web, iOS or Android very quickly.
