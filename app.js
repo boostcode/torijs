@@ -24,10 +24,6 @@ var tokenStrategy = require('passport-token').Strategy;
 var token = require('token');
 var account = require('./models/account');
 
-// Permission
-var rbac = require('mongoose-rbac');
-var role = rbac.Role;
-
 // Database
 var mongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
@@ -148,13 +144,13 @@ app.all('/admin/*', isLogged);
 
 
 // Setup Routes
+app.use('/role', role);
 app.use('/action', action);
-app.use('/admin', admin);
 app.use('/auth', auth);
 app.use('/collection', collection);
-app.use('/role', role);
 app.use('/permission', perm);
 app.use('/user', user);
+app.use('/admin', admin);
 
 
 /// error handlers
