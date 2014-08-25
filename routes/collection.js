@@ -297,19 +297,20 @@ router.post('/:collection_name/insert', function(req, res){
 
 // show document in collection
 router.post('/:collection_name/:document_id', function(req, res){
-  req.user.can('api-read', req.params.collection_name, function(err, can){
+  req.user.can('api-read', req.params.collection_name, function(err, can) {
     
     if(err){
       res.send(err);
       returnl;
     }
     
-    if(can || req.user.isDev){
+    if(can || req.user.isDev) {
+    
       var collection = req.db.collection(req.params.collection_name);
 
-      if(req.params.document_id){
-        //var objectId = new oID.createFromHexString(req.params.document_id);
-        var objectId = req.params.document_id;
+      if(req.params.document_id) {
+        var objectId = new oID.createFromHexString(req.params.document_id);
+        //var objectId = req.params.document_id;
       }
 
       var query = {};
@@ -321,6 +322,7 @@ router.post('/:collection_name/:document_id', function(req, res){
       }
 
       collection.find(query).toArray(function(err, items){
+      
         if(err){
           res.send(err);
           return;
@@ -330,9 +332,10 @@ router.post('/:collection_name/:document_id', function(req, res){
           status: 'ok',
           data: items
         });
+        
       });
 
-    }else{
+    } else {
       res.send(401, 'user not allowed');
     }
   });
