@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
-var permission = rbac.permission;
+var permission = rbac.Permission;
 var oID = require('mongodb').ObjectID;
 var _ = require('underscore');
 
@@ -30,15 +30,15 @@ router.post('/create', function(req, res){
       return
     }
 
-    role.permissions = perms;
+    r.permissions = perms;
 
-    role.save(function(err, role){
+    r.save(function(err, rr){
       if(err){
         res.send(err);
         return;
       }
 
-      res.send(role);
+      res.send(rr);
     });
 
   });
