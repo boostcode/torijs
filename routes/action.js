@@ -144,19 +144,32 @@ router.post('/remove', function(req, res){
 });
 
 // send email 
-router.post('/send_email', function(req, res){
-  var actions = req.body.mailActions;
+router.post('/sendemail', function(req, res){
+  
+  //router.sendMail(req);
+  
+  console.log('dentro');
+  
+});
+
+// send email 
+router.sendMail = function(req) {
+	
+	var actions = req.body.mailActions;
 
   actions.forEach(function(mailOptions){
 
-    req.mail.sendMail(mailOptions, function(err, info){
+    /*req.mail.sendMail(mailOptions, function(err, info){
       if(err){
         console.log(err);
       }else{
         console.log(info);
       }
-    });
+    });*/
   });
-});
+	
+};
+
+
 
 module.exports = router;
