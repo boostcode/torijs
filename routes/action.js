@@ -144,7 +144,7 @@ router.post('/remove', function(req, res){
 });
 
 // send email 
-router.post('/sendemail', function(req, res){
+  router.post('/sendmail', function(req, res){
   
   //router.sendMail(req);
   
