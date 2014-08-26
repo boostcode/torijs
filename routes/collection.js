@@ -58,6 +58,37 @@ router.post('/list.json', function(req, res){
   });
 });
 
+// check for updates
+router.post('/:collection_name/hasupdate', function(req, res){
+  req.user.can('api-read', req.params.collection_name, function(err, can){
+    if(err){
+      res.send(err);
+      return;
+    }
+
+    if(can || req.user.isDev){
+      var collection = req.db.collection(req.params.collection_name);
+
+      var data = req.body.last_update;
+
+      var query = {
+        last_udapte : {
+          "$gt": parseFloat(data)
+        }
+      };
+
+      collection.find(query).toArray(function(err, items){
+        res.send({
+          status: 'ok',
+          data: items.length
+        });
+      });
+    }else{
+      res.send(401, 'user not allowed');
+    }
+  });
+});
+
 // document list
 router.post('/:collection_name/documents.json', function(req, res){
 
@@ -295,187 +326,6 @@ router.post('/:collection_name/insert', function(req, res){
   });
 });
 
-// show document in collection
-router.post('/:collection_name/:document_id', function(req, res){
-  req.user.can('api-read', req.params.collection_name, function(err, can) {
-    
-    if(err){
-      res.send(err);
-      returnl;
-    }
-    
-    if(can || req.user.isDev) {
-    
-      var collection = req.db.collection(req.params.collection_name);
-
-      if(req.params.document_id) {
-        var objectId = new oID.createFromHexString(req.params.document_id);
-        //var objectId = req.params.document_id;
-      }
-
-      var query = {};
-
-      if(objectId){
-        query = {
-          _id: objectId
-        };
-      }
-
-      collection.find(query).toArray(function(err, items){
-      
-        if(err){
-          res.send(err);
-          return;
-        }
-
-        res.send({
-          status: 'ok',
-          data: items
-        });
-        
-      });
-
-    } else {
-      res.send(401, 'user not allowed');
-    }
-  });
-});
-
-// check for updates
-router.post('/:collection_name/hasupdate', function(req, res){
-  req.user.can('api-read', req.params.collection_name, function(err, can){
-    if(err){
-      res.send(err);
-      return;
-    }
-
-    if(can || req.user.isDev){
-      var collection = req.db.collection(req.params.collection_name);
-
-      var data = req.body.last_update;
-
-      var query = {
-        last_udapte : {
-          "$gt": parseFloat(data)
-        }
-      };
-
-      collection.find(query).toArray(function(err, items){
-        res.send({
-          status: 'ok',
-          data: items.length
-        });
-      });
-    }else{
-      res.send(401, 'user not allowed');
-    }
-  });
-});
-
-// update document
-router.post('/:collection_name/:document_id/update', function(req, res){
-  req.user.can('api-write', req.params.collection_name, function(err, can){
-    if(err){
-      res.send(err);
-      return;
-    }
-
-    var collection = req.db.collection(req.params.collection_name);
-
-    var values = req.body.valori;
-
-    values.last_update = new Date().getTime();
-
-    var objectId = new oID.createFromHexString(req.params.document_id);
-
-    collection.update({
-      _id: objectId
-    }, {
-      $set: values
-    }, {
-      w: 1
-    }, function(err){
-      if(err){
-        res.send(err);
-        return;
-      }
-
-      res.send({
-        status: 'ok',
-        data: result
-      });
-    });
-  });
-});
-
-// remove document
-router.post('/:collection_name/:document_id/delete', function(req, res){
-  req.user.can('api-write', req.params.collection_name, function(err, can){
-    if(err){
-      res.send(err);
-      return;
-    }
-
-    if(can || req.user.isDev){
-      var collection = req.db.collection(req.params.collection_name);
-
-      var objectId = new oID.createFromHexString(req.params.document_id);
-      
-      var query = {};
-
-      if(objectId){
-        query = {
-          _id: objectId
-        };
-      }
-
-      var objToDel = {};
-      objToDel['collection'] = req.params.collection_name;
-      objToDel['remove_date'] = new Date().getTime();
-
-      collection.find(query).toArray(function(err, items){
-        if(err){
-          res.send(err);
-          return;
-        }
-        objToDel['object_removed'] = JSON.stringify(items[0]);
-      });
-
-      collection.remove({
-        _id: objectId
-      },{
-        w: 1
-      }, 
-      function(err, result){
-      
-        if(err){
-          res.send(err);
-          return;
-        }
-
-        if(objToDel.collection != 'torii_removed'){
-          collection = req.db.collection('torii_removed');
-
-          collection.insert(objToDel, {w:1}, function(err, result){
-            if(err){
-              res.send(err);
-              return;
-            }
-          });
-        }
-
-        res.send({
-          status: 'ok',
-          data: result
-        });
-      });
-
-    }else{
-      res.send(401, 'user not allowed');
-    }
-  });
-});
-
 // remove all documents from collection
 router.post('/:collection_name/delete_all', function(req, res){
   req.user.can('api-write', req.params.collection_name, function(err, can){
@@ -630,5 +480,157 @@ router.post('/:collection_name/import',function(req, res){
 		}
 	})	
 });
+
+// show document in collection
+router.post('/:collection_name/:document_id', function(req, res){
+  req.user.can('api-read', req.params.collection_name, function(err, can) {
+    
+    if(err){
+      res.send(err);
+      returnl;
+    }
+    
+    if(can || req.user.isDev) {
+    
+      var collection = req.db.collection(req.params.collection_name);
+
+      if(req.params.document_id) {
+        var objectId = new oID.createFromHexString(req.params.document_id);
+        //var objectId = req.params.document_id;
+      }
+
+      var query = {};
+
+      if(objectId){
+        query = {
+          _id: objectId
+        };
+      }
+
+      collection.find(query).toArray(function(err, items){
+      
+        if(err){
+          res.send(err);
+          return;
+        }
+
+        res.send({
+          status: 'ok',
+          data: items
+        });
+        
+      });
+
+    } else {
+      res.send(401, 'user not allowed');
+    }
+  });
+});
+
+// update document
+router.post('/:collection_name/:document_id/update', function(req, res){
+  req.user.can('api-write', req.params.collection_name, function(err, can){
+    if(err){
+      res.send(err);
+      return;
+    }
+
+    var collection = req.db.collection(req.params.collection_name);
+
+    var values = req.body.valori;
+
+    values.last_update = new Date().getTime();
+
+    var objectId = new oID.createFromHexString(req.params.document_id);
+
+    collection.update({
+      _id: objectId
+    }, {
+      $set: values
+    }, {
+      w: 1
+    }, function(err){
+      if(err){
+        res.send(err);
+        return;
+      }
+
+      res.send({
+        status: 'ok',
+        data: result
+      });
+    });
+  });
+});
+
+// remove document
+router.post('/:collection_name/:document_id/delete', function(req, res){
+  req.user.can('api-write', req.params.collection_name, function(err, can){
+    if(err){
+      res.send(err);
+      return;
+    }
+
+    if(can || req.user.isDev){
+      var collection = req.db.collection(req.params.collection_name);
+
+      var objectId = new oID.createFromHexString(req.params.document_id);
+      
+      var query = {};
+
+      if(objectId){
+        query = {
+          _id: objectId
+        };
+      }
+
+      var objToDel = {};
+      objToDel['collection'] = req.params.collection_name;
+      objToDel['remove_date'] = new Date().getTime();
+
+      collection.find(query).toArray(function(err, items){
+        if(err){
+          res.send(err);
+          return;
+        }
+        objToDel['object_removed'] = JSON.stringify(items[0]);
+      });
+
+      collection.remove({
+        _id: objectId
+      },{
+        w: 1
+      }, 
+      function(err, result){
+      
+        if(err){
+          res.send(err);
+          return;
+        }
+
+        if(objToDel.collection != 'torii_removed'){
+          collection = req.db.collection('torii_removed');
+
+          collection.insert(objToDel, {w:1}, function(err, result){
+            if(err){
+              res.send(err);
+              return;
+            }
+          });
+        }
+
+        res.send({
+          status: 'ok',
+          data: result
+        });
+      });
+
+    }else{
+      res.send(401, 'user not allowed');
+    }
+  });
+});
+
+
 
 module.exports = router;
