@@ -1,5 +1,6 @@
+![Torii.js Logo](https://avatars3.githubusercontent.com/u/8542858?v=2&s=200)
 # Torii.js
-## Node.js backend as a service
+**Node.js backend as a service**
 
 Torii.js allow you to setup quickly a backend using *node.js* and *mongodb*, with the good looking taste of [AdminLTE](https://github.com/almasaeed2010/AdminLTE).
 
