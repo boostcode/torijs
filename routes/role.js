@@ -61,6 +61,8 @@ router.post('/remove', function(req, res){
 // list
 router.post('/list.json', function(req, res){
   var query = {};
+  
+  console.log('lista');
 
   if(req.query.sSearch){
     query = {
@@ -68,12 +70,16 @@ router.post('/list.json', function(req, res){
     };
   }
 
+  console.log('query'+ query);
+
   role.find(query, function(err, roles){
     
     if(err){
       res.send(err);
       return;
     }
+    
+    console.log(err +' | '+ roles);
     
     var totElements = roles.length;
 

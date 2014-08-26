@@ -5,7 +5,7 @@ var torii = require('../conf/torii.conf.js').torii;
 mongoose.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.user);
 
 var query = {
-  username: 'emai@address.ext'
+  username: 'a@a.it'
 };
 
 account.findOne(query, function(err, user){
