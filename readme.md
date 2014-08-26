@@ -6,15 +6,16 @@ Torii.js allow you to setup quickly a backend using *node.js* and *mongodb*, wit
 
 All the fields are customizable and role defined. Also the system make use of a REST JSON api that allow you to create your favorite client for web, iOS or Android very quickly.
 
+### Requirements
+- node.js
+- mongodb
 
 ### Installation
-Here the quick steps to start working with torii.js:
+Here the quick steps to start working with **torii.js**:
 
-- install node.js and mongodb (according your os);
 - git clone torii.js 
 - cd torii.js
 - npm install
-- start mongodb
 - DEBUG=torii.js ./bin/www
 - Open your browser at http://localhost:3000/ proceed with user registration.
 - CTRL-C to kill torii.js from your terminal
