@@ -9,6 +9,8 @@ var _ = require('underscore');
 var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
 var torii = require('../conf/torii.conf.js').torii;
+var actionFunction = require('../routes/action');
+var template = require('template');
 
 // list
 router.post('/list.json', function(req, res){
@@ -290,28 +292,52 @@ router.post('/:collection_name/insert', function(req, res){
           var actionToSend = [];
 
           actions.forEach(function(act){
-            
-            if(act.message.length == 1){
-              var msg = act.message[0];
 
               if(act.action == 'email'){
-                var mailOptions = {
+                
+                
+                console.log('lenght: '+ act.message.length);
+
+								// replace key with parameters
+								
+								var msgVal = [];
+								
+								act.message.forEach(function(msg) {
+									
+									msgVal.push(template(msg, {creator: req.user, item: value}));
+									
+									//console.log('MSG: '+ w);
+									
+									/*var arrStr = msg.split(/[{}]/);
+									
+									arrStr.forEach(function(str) {
+									
+										
+										
+									});
+									
+									console.log('ARR '+ arrStr);
+									*/
+								});
+								
+								var mailOptions = {
                   from: torii.conf.mail.from,
                   to: req.user.username,
                   subject: act.name + ' Notification - '+ result[0]._id,
-                  message: act.message
+                  message: msgVal
                 };
 
                 if(act.message.length > 1){
                   actionToSend.push(mailOptions);
                 }else{
                   req.body.mailActions = [mailOptions];
-                  action.sendMail(req);
+                  actionFunction.sendMail(req);
                 }
+                
               }else if(act.action == 'push'){
                 // TODO add push
               }
-            }
+        
           });
 
           if(actionToSend.length > 0){
