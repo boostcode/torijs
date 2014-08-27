@@ -46,7 +46,7 @@ router.post('/register', function(req, res){
 
     var mailOptions = {
       from: torii.conf.mail.from,
-      to: req.body.username,
+      to: req.body.usernamereg,
       subject: torii.conf.core.title+' - Password Confirmation',
       text: 'Dear '+(req.body.name ? req.body.name : req.body.username)+'\n here your password: '+req.body.password+'\n\nPlease note that down!'
     };
