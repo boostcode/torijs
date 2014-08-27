@@ -295,11 +295,6 @@ var template = require('template');
 
                 if(act.action == 'email'){
                   
-                  
-                  console.log('lenght: '+ act.message.length);
-
-                  // replace key with parameters
-                  
                   var msgVal = [];
                   
                   act.message.forEach(function(msg) {
@@ -313,7 +308,7 @@ var template = require('template');
                   var mailOptions = {
                     from: torii.conf.mail.from,
                     to: req.user.username,
-                    subject: act.name + ' Notification - '+ result[0]._id,
+                    subject: act.name + ' Notification - '+ result._id,
                     message: msgVal
                   };
 
@@ -321,7 +316,7 @@ var template = require('template');
                     actionToSend.push(mailOptions);
                   }else{
                     req.body.mailActions = [mailOptions];
-                    actionFunction.sendMail(req);
+                    router.sendMail(req);
                   }
                   
                 }else if(act.action == 'push'){
@@ -702,7 +697,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                   var mailOptions = {
                     from: torii.conf.mail.from,
                     to: '',
-                    subject: act.name + ' Notification - '+ result._id,
+                    subject: act.name + ' Notification - '+ req.params.document_id,
                     message: msgVal
                   };
                   
