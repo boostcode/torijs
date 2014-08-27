@@ -336,16 +336,16 @@ $(document).ready(function() {
       };
 
       if($('#filter').val() == 'to'){
-        userAndToken.values.to = $('to').val();
+        userAndToken.values.to = $('#to').val();
       }
 
       if($('#filter').val() == 'from'){
-        userAndToken.values.from = $('from').val();
+        userAndToken.values.from = $('#from').val();
       }
 
       if($('#filter').val() == 'fromto'){
-        userAndToken.values.from = $('from').val();
-        userAndToken.values.to = $('to').val();
+        userAndToken.values.from = $('#from').val();
+        userAndToken.values.to = $('#to').val();
       }
 
       $.ajax({

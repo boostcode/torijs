@@ -14,6 +14,11 @@
 		<label class="control-label" for="inputSuccess"><i class="fa fa-check"></i> Updated completed!</label>
 	</div>
 		
+	<div class="alert alert-warning alert-dismissable" id="AlertMsgDiv" style="display:none;">
+		<i class="fa fa-check"></i>
+		
+	</div>
+		
 	<div class="box box-primary">
 		<div class="box-header">
 			<h3 class="box-title">Edit <b><%= req.params.collection_name %></b> #<%= req.params.document_id %></h3>
@@ -38,6 +43,8 @@
 
 <script type="text/javascript">
 $( document ).ready(function() {
+
+	var mailActions = [];
 
 	var campi;
 	var nome_collezione = '<%= req.params.collection_name %>';
@@ -102,7 +109,43 @@ $( document ).ready(function() {
 				success: function( data, status) {
 
 					$('#okdiv').show();
-					$('#okdiv').html();
+					$('#okdiv').html(data.message);
+					
+					var html = '';
+					var idMsg = 1;
+
+					if (data.actions) {
+						
+						data.actions.forEach(function(action) {
+						
+							mailActions.push(action);
+						
+							html += '\
+							<div class="form-group">\
+								<label>'+ action.subject +'</label>\
+								<div class="input-group">\
+									<select class="form-control" name="alw" id="selMsg_'+ idMsg +'">';
+										
+							action.message.forEach(function(el) {
+							
+								html += '<option>'+el+'</option>';
+								
+							})	
+
+							html += '\
+									</select>\
+								</div>\
+							</div>';
+							
+							idMsg += 1;
+
+						});
+						
+					  html += '<button type="submit" class="btn btn-primary" id="btnSendMail">Send</b></button>';
+
+					  $('#AlertMsgDiv').append(html);
+					  $('#AlertMsgDiv').show();
+          }
 
 				},
 				error: function ( req, status, error){
@@ -112,6 +155,35 @@ $( document ).ready(function() {
 			});
 
 		}
+	});
+	
+	$(document).on('click', "#btnSendMail", function() { 
+
+		var idM = 1;
+		
+		mailActions.forEach(function(action) {
+		
+			action["message"] = $("#selMsg_"+ idM +" option:selected").text();
+		
+			idM += 1;
+			
+		});
+		
+		userAndToken["mailActions"] = mailActions;
+		
+		$.ajax({
+
+			type: "POST",
+			url: "/action/sendmail",
+			data: userAndToken,
+			success: function(data, status) {
+				
+				alert(JSON.stringify(data));
+				
+			}
+				
+		});
+		
 	});
 
 });

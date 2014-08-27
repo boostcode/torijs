@@ -559,23 +559,212 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 
     var objectId = new oID.createFromHexString(req.params.document_id);
 
-    collection.update({
-      _id: objectId
-    }, {
-      $set: values
-    }, {
-      w: 1
-    }, function(err){
-      if(err){
-        res.send(err);
-        return;
-      }
+    
+      
+    collection.find({ _id: objectId }).toArray(function(err, items){
+      
+        if(err){
+          res.send(err);
+          return;
+        }
+        
+        var keysOfValuesChanged = [];
+        
+        if (items.length > 0) {
+	        
+	        var item = items[0];
+	        
+	        console.log('ITEM: '+ JSON.stringify(item));
+				
+					for (var key in item) {
+					
+						if (item.hasOwnProperty(key)) {
+						
+							console.log('KEY: '+ key +' | '+ JSON.stringify(values[key]) + ' == ' + JSON.stringify(item[key]));
 
-      res.send({
-        status: 'ok',
-        data: result
-      });
-    });
+							if (!_.isEqual(values[key], item[key])) {
+								
+								keysOfValuesChanged.push(key);
+								
+							}
+						
+						}
+						
+					}
+					
+					keysOfValuesChanged = _.difference(keysOfValuesChanged, ['_id', 'text', 'last_update', 'owner']);
+					
+					console.log('VALUS CHANG : '+ JSON.stringify(keysOfValuesChanged));
+	        
+        }
+        
+        // aggiorno solo dopo aver controllato quali valori sono da modificare
+        collection.update({ _id: objectId }, { $set: values }, { w: 1 }, function(err, result){
+		      
+		      if(err){
+		        res.send(err);
+		        return;
+		      }
+		      /*
+		      res.send({
+		        status: 'ok',
+		        data: result
+		      });*/
+		      
+					var responseJ = {};
+					
+					responseJ.status = 'ok';
+          responseJ.data = result;
+		    
+		    action.find({
+            $and:[
+              { 
+                trigger: 'edit'
+              },
+              {
+                collectionName: req.params.collection_name
+              },
+              { field: { $in: keysOfValuesChanged } }
+            ]
+          }, function(err, actions){
+            
+            var actionToSend = [];
+            
+            console.log('ACTIONs : '+ JSON.stringify(actions));
+            
+            var actionsOk = [];
+            
+            actions.forEach(function(act) {
+            
+            	if (act.filter == 'value') {
+	            	
+	            	actionsOk.push(act);
+	            	
+            	} else if (act.filter == 'to') {
+	            	
+	            	console.log('KEY: '+ act.filter +' | '+ JSON.stringify(values) + ' == ' + JSON.stringify(act));
+	            	
+	            	if (_.isEqual(values[act.field], act.to)) {
+		            	
+		            	actionsOk.push(act);
+		            	
+	            	}
+	            	
+            	} else if (act.filter == 'from') {
+            	
+            		console.log('KEY: '+ act.filter +' | '+ JSON.stringify(item[act.field]) + ' == ' + JSON.stringify(act.from));
+	            	
+	            	if (_.isEqual(item[act.field], act.from)) {
+		            	
+		            	actionsOk.push(act);
+		            	
+	            	}
+	            	
+            	} else if (act.filter == 'fromto') {
+	            	
+	            	// TO DO
+		            
+		            actionsOk.push(act);
+		            	
+            	}
+            
+            });
+            
+            console.log('ACTIONs ok : '+ JSON.stringify(actionsOk));
+						
+						// I find the email of CREATOR
+	          account.findById(item.owner, '_id username role isAdmin isDev name surname', function(err, user) {
+	                  
+							if(err){
+								res.send(err);
+								return;
+							}
+
+							actionsOk.forEach(function(act) {
+
+                if(act.action == 'email'){
+                  
+                  console.log('lenght: '+ act.message.length);
+
+                  // Replace key with parameters
+                  
+                  var msgVal = [];
+                  
+                  act.message.forEach(function(msg) {
+                    
+                    msgVal.push(template(msg, {
+                      creator: req.user, item: values
+                    }));
+                    
+                  });
+                  
+                  // Email options
+                  var mailOptions = {
+                    from: torii.conf.mail.from,
+                    to: '',
+                    subject: act.name + ' Notification - '+ result._id,
+                    message: msgVal
+                  };
+                  
+                  // If the receiver is only the EDITOR 
+                  if ((act.receiver == 'editor')) {
+	                  
+	                  mailOptions["to"] = req.user.username;
+	                  
+	                  console.log('ED : '+ mailOptions);
+	                  
+                  }
+                  
+                  // If the CREATOR is one of the receivers
+                  if ((act.receiver == 'creator') || (act.receiver == 'creatoreditor')) {
+	                  
+	                  var destArr = [];
+	                  
+	                  // If there is also the EDITOR I add him
+	                  if ((act.receiver == 'creatoreditor')) {
+	                  
+	                  	destArr.push(req.user.username);
+	                  
+	                  }
+	                  
+	                  // I add the CREATOR
+									  destArr.push(user.username);
+									   
+									  mailOptions["to"] = destArr;
+									  
+									  console.log('CR : '+ mailOptions);
+									}
+									
+									// If only 1 message mail immediately otherwise I send message to the page
+									if(act.message.length > 1) {
+                  	actionToSend.push(mailOptions);
+									} else {
+										req.body.mailActions = [mailOptions];
+										actionFunction.sendMail(req);
+									}
+									
+                } else if(act.action == 'push') {
+                  // TODO add push
+                }
+          
+							});
+							
+							console.log("ACT TO:"+ actionToSend);
+											
+							if(actionToSend.length > 0){
+								responseJ.actions = actionToSend;
+							}
+							res.send(responseJ);
+            
+            });
+            
+          });
+          
+         });
+               
+	  });
+
+    
   });
 });
 
