@@ -127,9 +127,11 @@ var template = require('template');
         
         var ordering = {};
 
+
         var collectionStructure = req.db.collection('torii_structure');
+
         collectionStructure.find({
-          nome_collezione: req.params.collection_name
+          'nome_collezione': req.params.collection_name
         }).toArray(function(err, coll){
 
           if(err){
@@ -137,20 +139,23 @@ var template = require('template');
             return;
           }
 
-          var orderKey = null;
+          if(req.params.collection_name != 'torii_structure'){
 
-          coll[0].struttura.forEach(function(element){
-            if(element.order){
-              orderKey = element.field_name;
+            var orderKey = null;
+
+            coll[0].struttura.forEach(function(element){
+              if(element.order){
+                orderKey = element.field_name;
+              }
+            });
+
+            if(orderKey){
+              ordering = {
+                sort: [
+                  [ orderKey, 'desc']
+                ]
+              };
             }
-          });
-
-          if(orderKey){
-            ordering = {
-              sort: [
-                [ orderKey, 'desc']
-              ]
-            };
           }
 
           
