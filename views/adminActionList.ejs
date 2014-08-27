@@ -136,11 +136,12 @@ $( document ).ready(function() {
 						type: "POST",
 						url: '/action/remove',
 						data: {
-							roleid: id,
+							actionid: id,
 							username: splits[0],
 							token: splits[1]
 						},
 						success: function (data, status){
+              console.log(data);
 							table.ajax.reload();
 						},
 						error: function (req, status, error){

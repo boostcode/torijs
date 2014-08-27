@@ -66,7 +66,7 @@
           <div class="input-group">
             <select name="trigger" id="trigger">
               <option></option>
-	      <option valeu="create">Create</option>
+	            <option value="create">Create</option>
               <option value="edit">Edit</option>
             </select>
           </div>
@@ -112,10 +112,6 @@
           </div>
         </div>
         
-        <!--
-		Dear {Creator.name}, {Editor.name} has just update the status of {Combo._id} - {Combo.name}
-	-->
-
         <div class="form-group" style="display:none;" id="messageDiv">
         
         	<div id="message_1">
@@ -124,9 +120,9 @@
             <br/>
             <small>Available tags:</small>
             <ul>
-              <li><%= creator.param %></li>
-              <li><%= item.param %></li>
-              <li><%= editor.param %></li>
+              <li>${ creator.param }</li>
+              <li>${ item.param }</li>
+              <li id="editortag" style="display:none;">${ editor.param }</li>
             </ul>
 	          <div class="input-group">
 	            <textarea id="message_1Msg" name="message"></textarea>
@@ -248,8 +244,6 @@ $(document).ready(function() {
 
   $('#action').change(function() {
     
-    
-    
     if($(this).val().length > 0){
       $('#triggerDiv').show();
     }else{
@@ -274,7 +268,7 @@ $(document).ready(function() {
     
       $('#filterDiv').show();
       $('#receiverDiv').show();
-      
+      $('#editortag').show();  
     } else {
     
       $('#filterDiv').hide();
@@ -282,7 +276,7 @@ $(document).ready(function() {
       $('#filterToDiv').hide();
       $('#filterFromDiv').hide();
       $('#receiverDiv').hide();
-
+      $('#editortag').hide();
     }
 
   });

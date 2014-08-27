@@ -144,7 +144,7 @@ router.post('/remove', function(req, res){
 });
 
 // send email 
-router.post('/sendemail', function(req, res){
+  router.post('/sendmail', function(req, res){
   
   //router.sendMail(req);
   
@@ -170,4 +170,10 @@ router.sendMail = function(req) {
 	
 };
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+
+
+module.exports = router;
+>>>>>>> ca0678555591e13302aecee01169610c21bee5b4
