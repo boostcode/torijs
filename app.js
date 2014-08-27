@@ -91,6 +91,7 @@ app.use(function(req, res, next){
       auth: {
         user: torii.conf.mail.user,
         pass: torii.conf.mail.pass
+        }
       };
 
     }
