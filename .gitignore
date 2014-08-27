@@ -1,4 +1,4 @@
-conf/
+!conf/
 coverage/
 .DS_Store
 *.seed

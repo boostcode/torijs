@@ -170,10 +170,4 @@ router.sendMail = function(req) {
 	
 };
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-
-
-module.exports = router;
->>>>>>> ca0678555591e13302aecee01169610c21bee5b4
