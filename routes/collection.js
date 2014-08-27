@@ -322,7 +322,7 @@ var template = require('template');
                     actionToSend.push(mailOptions);
                   }else{
                     req.body.mailActions = [mailOptions];
-                    router.sendMail(req);
+                    actionFunction.sendMail(req);
                   }
                   
                 }else if(act.action == 'push'){
