@@ -63,6 +63,10 @@
 						<label>Unique</label><br/>
 						<input class="form-control" id="el_1unique" type="checkbox" name="unique" />
 					</div>
+          <div class="col-md-2">
+						<label>Default Sort</label><br/>
+						<input class="form-control" id="el_1sort" type="checkbox" name="sort" />
+					</div>
 				</div>
 			</div>
 		
@@ -118,6 +122,10 @@
 	 					<label>Unique</label><br/>\
 	 					<input type="checkbox" id="'+ elSuc+'unique">\
 	 				</div>\
+	 				<div class="col-md-2">\
+	 					<label>Default Sort</label><br/>\
+	 					<input type="checkbox" id="'+ elSuc+'sort">\
+	 				</div>\
 	 			</div>\
 	 		</div>';
  	
@@ -142,11 +150,13 @@
 	 			var tipo = $(el+'value').val();
 	 			var option = $(el+'option').val();
 	 			var unico = $(el+'unique').is(':checked');
+        var sort = $(el+'sort').is(':checked');
 	 			
 	 			campoObj['label'] = nome;
 	 			campoObj['ordine'] = i;
 	 			campoObj['tipo'] = tipo;
 	 			campoObj['unico'] = unico;
+        campoObj['sort'] = sort;
 	 			campoObj['option'] = option;
 	 			campoObj['field_name'] = nome.replace(/ /g,'');
 	 			

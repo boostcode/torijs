@@ -124,13 +124,45 @@ var template = require('template');
         }
 
         var collezione = req.db.collection(req.params.collection_name);
+        
+        var ordering = {};
 
-        account.find({}, function(err, users){
-          collezione.find(query).toArray(function(err, items){
+        var collectionStructure = req.db.collection();
+        collectionStructure.find({
+          nome_collezione: req.params.collection_name
+        }).toArray(function(err, coll){
+
+          if(err){
+            res.send(err);
+            return;
+          }
+
+          var orderKey = null;
+
+          coll.struttura.forEach(element){
+            if(element.order){
+              orderKey = element.field_name;
+            }
+          });
+
+          if(orderKey){
+            ordering = {
+              sort: [
+                [ orderKey, 'desc']
+              ]
+            };
+          }
+
+          
+          account.find({}, function(err, users){
+          collezione.find(query, ordering).toArray(function(err, items){
 
             var totElems = items.length;
             
-            // sub filter elements
+            // TODO: sub filter elements
+            
+            // order according selection
+            // let's use underscore to sort but need to retrieve the element of the collection structu
 
             var totElementsFiltered = items.length;
 
@@ -159,6 +191,9 @@ var template = require('template');
               serverTime: new Date().getTime()
             });
           });
+        });
+
+
         });
       }
     });
