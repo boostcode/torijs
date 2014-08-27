@@ -146,9 +146,13 @@ router.post('/remove', function(req, res){
 // send email 
   router.post('/sendmail', function(req, res){
   
-  //router.sendMail(req);
+  router.sendMail(req);
   
-  console.log('dentro');
+  res.send({
+      confirm: 'ok'
+    });
+  
+  //console.log('dentro');
   
 });
 
@@ -159,13 +163,13 @@ router.sendMail = function(req) {
 
   actions.forEach(function(mailOptions){
 
-    /*req.mail.sendMail(mailOptions, function(err, info){
+    req.mail.sendMail(mailOptions, function(err, info){
       if(err){
         console.log(err);
       }else{
         console.log(info);
       }
-    });*/
+    });
   });
 	
 };
