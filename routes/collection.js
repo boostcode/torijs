@@ -127,7 +127,12 @@ var template = require('template');
 
         account.find({}, function(err, users){
           collezione.find(query).toArray(function(err, items){
+
             var totElems = items.length;
+            
+            // sub filter elements
+
+            var totElementsFiltered = items.length;
 
             if(req.body.iDisplayLength && req.body.iDisplayStart){
               items = items.splice(req.body.iDisplayStart, req.body.iDisplayLength);
@@ -148,7 +153,7 @@ var template = require('template');
             res.send({
               sEcho: parseInt(req.body.sEcho),
               iTotalRecords: totElems,
-              iTotalDisplayRecords: items.length,
+              iTotalDisplayRecords: totElementsFiltered,
               aaData: items,
               objRemoved: objRemoved,
               serverTime: new Date().getTime()
