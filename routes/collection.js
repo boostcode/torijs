@@ -278,10 +278,12 @@ var template = require('template');
           responseJ.status = 'ok';
           responseJ.data = result;
 
+          console.log(req.params.collection_name);
+
           action.find({
             $and:[
               { 
-                trigger: 'Create'
+                trigger: 'create'
               },
               {
                 collectionName: req.params.collection_name
