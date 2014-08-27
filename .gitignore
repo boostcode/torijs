@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+conf/
 coverage/
 .DS_Store
 *.seed
@@ -41,4 +41,3 @@ build/Release
 # Deployed apps should consider commenting this line out:
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
->>>>>>> 11768c1669d9c7feb2a186ab2acd11f70a7ee0b1

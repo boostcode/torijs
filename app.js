@@ -80,7 +80,7 @@ app.use(function(req, res, next){
     req.mail = mail;
     next();
   }else{
-    req.mail = mail = nodemailer.createTransport('SMTP', {
+    req.mail = mail = nodemailer.createTransport(torii.conf.mail.service, {
       host: torii.conf.mail.host,
       port: torii.conf.mail.port,
       secureConnection: torii.conf.mail.secureConnection,
