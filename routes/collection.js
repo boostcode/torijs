@@ -291,6 +291,8 @@ var template = require('template');
             
             var actionToSend = [];
 
+            console.log(actions);
+
             actions.forEach(function(act){
 
                 if(act.action == 'email'){
@@ -311,6 +313,8 @@ var template = require('template');
                     subject: act.name + ' Notification - '+ result._id,
                     message: msgVal
                   };
+
+                  console.log(mailOptions);
 
                   if(act.message.length > 1){
                     actionToSend.push(mailOptions);
