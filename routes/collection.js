@@ -74,7 +74,7 @@ var template = require('template');
         var data = req.body.last_update;
 
         var query = {
-          last_udapte : {
+          last_update : {
             "$gt": parseFloat(data)
           }
         };
