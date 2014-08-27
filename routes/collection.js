@@ -139,7 +139,7 @@ var template = require('template');
 
           var orderKey = null;
 
-          coll.struttura.forEach(function(element){
+          coll[0].struttura.forEach(function(element){
             if(element.order){
               orderKey = element.field_name;
             }
