@@ -353,7 +353,7 @@ var template = require('template');
                     from: torii.conf.mail.from,
                     to: req.user.username,
                     subject: act.name + ' Notification - '+ result._id,
-                    message: msgVal
+                    text: msgVal
                   };
 
                   console.log(mailOptions);
