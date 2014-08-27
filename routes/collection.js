@@ -127,7 +127,7 @@ var template = require('template');
         
         var ordering = {};
 
-        var collectionStructure = req.db.collection();
+        var collectionStructure = req.db.collection('torii_structure');
         collectionStructure.find({
           nome_collezione: req.params.collection_name
         }).toArray(function(err, coll){
