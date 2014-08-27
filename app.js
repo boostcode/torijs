@@ -80,15 +80,23 @@ app.use(function(req, res, next){
     req.mail = mail;
     next();
   }else{
-    req.mail = mail = nodemailer.createTransport('SMTP', {
+    
+    var emailSetup = {};
+
+    if(torii.conf.mail.host){
+      emailSetup =  {
       host: torii.conf.mail.host,
       port: torii.conf.mail.port,
       secureConnection: torii.conf.mail.secureConnection,
       auth: {
         user: torii.conf.mail.user,
         pass: torii.conf.mail.pass
-      }
-    });
+        }
+      };
+
+    }
+
+    req.mail = mail = nodemailer.createTransport(torii.conf.mail.service, emailSetup);
     next();
   }
 });

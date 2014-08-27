@@ -24,6 +24,7 @@ var torii = {
 			keyPass: 'abc'
 		},
 		mail: {
+      service: '',
 			host: '',
 			port: 25,
 			secureConnection: true,
