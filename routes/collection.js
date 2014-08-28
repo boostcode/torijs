@@ -375,6 +375,8 @@ var S = require('string');
                     text: msgVal
                   };
                   
+                  var destArr = [];
+                  
                   // If the CREATOR is one of the receivers
                   if (act.creatorMail == true) {
 	                  
