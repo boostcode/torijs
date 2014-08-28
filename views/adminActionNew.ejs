@@ -76,12 +76,15 @@
         <div class="form-group" style="display:none;" id="receiverDiv">
           <label>Receiver</label>
           <div class="input-group">
-            <select name="receiver" id="receiver">
+            <!--<select name="receiver" id="receiver">
               <option></option>
               <option value="creator">Entry creator</option>
               <option value="editor">Entry editor</option>
               <option value="creatoreditor">Entry creator + Entry editor</option>
-            </select>
+            </select>-->
+            <div id="creatorCheckDiv"><input type="checkbox" name="creator" value="creator" id="creatorCheck">Creator</div>
+            <div id="editorCheckDiv"><input type="checkbox" name="editor" value="editor" id="editorCheck">Editor</div>
+            <div id="otherCheckDiv"><input type="checkbox" name="other" value="other" id="otherCheck">Other <input type="text" id="otherMail" placeholder="Insert email adresses separeted by ," /></div>
           </div>
         </div>
 
@@ -263,23 +266,50 @@ $(document).ready(function() {
   });
 
   $('#trigger').change(function() {
+  
+  	$('#receiverDiv').show();
     
     if ($(this).val() == 'edit') {
     
       $('#filterDiv').show();
-      $('#receiverDiv').show();
-      $('#editortag').show();  
+      $('#editortag').show();
+			$('#editorCheck').show();
+      
     } else {
     
       $('#filterDiv').hide();
       $('#messageDiv').show();
       $('#filterToDiv').hide();
       $('#filterFromDiv').hide();
-      $('#receiverDiv').hide();
+      //$('#receiverDiv').hide();
       $('#editortag').hide();
+      $('#editorCheck').hide();
+      
     }
 
   });
+  
+  
+  // Fix cause bootstrap, originally i must check 'otherCheck' and not 'iCheck-helper'
+  $('.iCheck-helper').click(function() {
+  
+  	$('#otherMail').prop('disabled', !$('#otherCheck').is(':checked'));
+  	
+  	/*
+  
+  	if ($('#otherCheck').is(':checked')) {
+	  	
+	  	$('#otherMail').prop('disabled', !$('#otherCheck').is(':checked'));
+	  	
+  	} else {
+	  	
+	  	$('#otherMail').prop('disabled', true);
+	  	
+  	}
+  
+  	*/
+  	
+	});
 
   $('#filter').change(function() {
   
@@ -310,34 +340,45 @@ $(document).ready(function() {
   });
 
   $('#btn_sub').on('click',function(){
-      console.log('bottone');
       
-      var messaggi = [];
+    var messaggi = [];
  			
 	  for (var i = 1; i <= nEl; i++) {
 	 			
-	 	var campoObj = {};
-	 	var el = "#message_"+ i;	
-	 	var msg = $(el+'Msg').val();
+	 		var campoObj = {};
+	 		var el = "#message_"+ i;	
+	 		var msg = $(el+'Msg').val();
       
-	 	messaggi.push(msg);
+	 		messaggi.push(msg);
       
-      }
-      
-      userAndToken.values = {
+	 	}
+
+	 	var otherRec = '';
+	 	
+	 	if ($('#otherCheck').is(':checked')) {
+		 	
+		 	otherRec = $('#otherMail').val();
+		 	
+	 	}
+	 	
+    userAndToken.values = {
+    
         name: $('#name').val(),
         collection: $('#collection').val(),
         field: $('#field').val(),
-        receiver: $('#receiver').val(),
+        creatormail:$('#creatorCheck').is(':checked'),
+        editormail:$('#editorCheck').is(':checked'),
+        receiver: otherRec,
         action: $('#action').val(),
         trigger: $('#trigger').val(),
         filter: $('#filter').val(),
-        message: messaggi
-      };
+				message: messaggi
+        
+    };
 
-      if($('#filter').val() == 'to'){
-        userAndToken.values.to = $('#to').val();
-      }
+    if($('#filter').val() == 'to'){
+    	userAndToken.values.to = $('#to').val();
+    }
 
       if($('#filter').val() == 'from'){
         userAndToken.values.from = $('#from').val();

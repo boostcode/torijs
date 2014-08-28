@@ -6,6 +6,8 @@ var action = new schema({
   collectionName: String,
   field: String,
   action: String,
+  creatorMail: Boolean,
+  editorMail: Boolean,
   receiver: String,
   trigger: String,
   filter: String,

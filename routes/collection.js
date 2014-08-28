@@ -11,6 +11,7 @@ var permission = rbac.Permission;
 var torii = require('../conf/torii.conf.js').torii;
 var actionFunction = require('../routes/action');
 var template = require('template');
+var S = require('string');
 
   // list
   router.post('/list.json', function(req, res){
@@ -357,12 +358,28 @@ var template = require('template');
                   
                   var mailOptions = {
                     from: torii.conf.mail.from,
-                    to: req.user.username,
+                    to: '',
                     subject: act.name + ' Notification - '+ result._id,
                     text: msgVal
                   };
-
-                  console.log(mailOptions);
+                  
+                  // If the CREATOR is one of the receivers
+                  if (act.creatorMail == true) {
+	                  
+	                  // I add the CREATOR
+									  destArr.push(req.user.username);
+									   
+									}
+									
+									var other = act.receiver.split(',');
+									
+									other.forEach(function(msgO) {
+										
+										destArr.push(S(msgO).trim().s);
+										
+									});
+									
+									mailOptions["to"] = destArr;
 
                   if(act.message.length > 1){
                     actionToSend.push(mailOptions);
@@ -753,34 +770,32 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                     message: msgVal
                   };
                   
-                  // If the receiver is only the EDITOR 
-                  if ((act.receiver == 'editor')) {
+                  var destArr = [];
+                                    
+                  // If there is also the EDITOR I add him
+	                if ((act.editorMail == true)) {
 	                  
-	                  mailOptions["to"] = req.user.username;
+	                  destArr.push(req.user.username);
 	                  
-	                  console.log('ED : '+ mailOptions);
-	                  
-                  }
+	                }
                   
                   // If the CREATOR is one of the receivers
-                  if ((act.receiver == 'creator') || (act.receiver == 'creatoreditor')) {
-	                  
-	                  var destArr = [];
-	                  
-	                  // If there is also the EDITOR I add him
-	                  if ((act.receiver == 'creatoreditor')) {
-	                  
-	                  	destArr.push(req.user.username);
-	                  
-	                  }
+                  if (act.creatorMail == true) {
 	                  
 	                  // I add the CREATOR
 									  destArr.push(user.username);
 									   
-									  mailOptions["to"] = destArr;
-									  
-									  console.log('CR : '+ mailOptions);
 									}
+									
+									var other = act.receiver.split(',');
+									
+									other.forEach(function(msgO) {
+										
+										destArr.push(S(msgO).trim().s);
+										
+									});
+									
+									mailOptions["to"] = destArr;
 									
 									// If only 1 message mail immediately otherwise I send message to the page
 									if(act.message.length > 1) {

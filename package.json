@@ -30,6 +30,7 @@
     "static-favicon": "~1.0.0",
     "template": "^0.2.1",
     "token": "0.0.0",
-    "underscore": "~1.6.0"
+    "underscore": "~1.6.0",
+    "string": "^1.9.1"
   }
 }

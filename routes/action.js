@@ -47,6 +47,8 @@ router.post('/create', function(req, res){
     collectionName: a.collection,
     field: a.field,
     filter: a.filter,
+    creatorMail: a.creatormail,
+    editorMail: a.editormail,
     receiver: a.receiver,
     action: a.action,
     trigger: a.trigger,
