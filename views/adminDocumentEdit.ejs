@@ -126,7 +126,7 @@ $( document ).ready(function() {
 								<div class="input-group">\
 									<select class="form-control" name="alw" id="selMsg_'+ idMsg +'">';
 										
-							action.message.forEach(function(el) {
+							action.text.forEach(function(el) {
 							
 								html += '<option>'+el+'</option>';
 								
@@ -163,7 +163,7 @@ $( document ).ready(function() {
 		
 		mailActions.forEach(function(action) {
 		
-			action["message"] = $("#selMsg_"+ idM +" option:selected").text();
+			action["text"] = $("#selMsg_"+ idM +" option:selected").text();
 		
 			idM += 1;
 			
