@@ -100,19 +100,7 @@ var template = require('template');
         return;
       }
       if(can || req.params.collection_name == 'torii_structure' || req.user.isDev){
-        var query;
         
-        // TODO: need to passa the parameter
-        if(req.body.sSearch){
-          query = {
-            name: req.body.sSearch
-          };
-        }
-
-        if(req.body.query){
-          query = req.body.query;
-        }
-
         var collezione;
         var objRemoved;
 
@@ -159,8 +147,32 @@ var template = require('template');
             }
           }
 
-          
+          var query;
+        
+          if(req.body.sSearch){
+
+            query = [];
+
+            coll[0].struttura.forEach(function(field){
+
+              var filter = {};
+
+              filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
+            
+              query.push( filter );
+
+            });
+            
+            query = { $or : query };
+
+          }
+
+          if(req.body.query){
+            query = req.body.query;
+          }
+
           account.find({}, function(err, users){
+
           collezione.find(query, ordering).toArray(function(err, items){
 
             var totElems = items.length;
