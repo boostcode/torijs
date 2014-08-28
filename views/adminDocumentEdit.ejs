@@ -107,7 +107,7 @@ $( document ).ready(function() {
 				url: "/collection/"+ nome_collezione +"/"+ id_documento +"/update",
 				data: userAndToken,
 				success: function( data, status) {
-
+          $("html, body").animate({ scrollTop: 0 }, "slow");
 					$('#okdiv').show();
 					$('#okdiv').html(data.message);
 					
@@ -149,7 +149,8 @@ $( document ).ready(function() {
 
 				},
 				error: function ( req, status, error){
-					$('#errordivu').show();
+				  $("html, body").animate({ scrollTop: 0 }, "slow");
+          $('#errordivu').show();
 					$('#erroru').html(error);
 				}
 			});

@@ -141,10 +141,10 @@ $( document ).ready(function() {
 							token: splits[1]
 						},
 						success: function (data, status){
-              console.log(data);
-							table.ajax.reload();
+							location.reload();
 						},
 						error: function (req, status, error){
+              $("html, body").animate({ scrollTop: 0 }, "slow");
 							$('#errordiv').show();
 							$('#error').html('<i class="fa fa-times-circle-o"></i> '+error);
 						}
