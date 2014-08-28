@@ -177,15 +177,13 @@
   		
 	 			$.post('/collection/'+ nome_collezione +'/create', userAndToken)
 	 				.done( function( data, status) {
-
+            $("html, body").animate({ scrollTop: 0 }, "slow");
 						$('#okdiv').show();
 						$('#okdiv').html(data.message);
 						
-						window.location.href = '/admin/collections';
-
 					})
 					.fail( function( req, status, error) {
-						
+						$("html, body").animate({ scrollTop: 0 }, "slow");
 						$('#errordivu').show();
 						$('#erroru').html(error);
 					

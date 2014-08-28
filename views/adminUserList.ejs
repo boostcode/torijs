@@ -142,7 +142,7 @@ $( document ).ready(function() {
 							token: splits[1]
 						},
 						success: function (data, status){
-							table.ajax.reload();
+              location.reload();
 						},
 						error: function (req, status, error){
 							$('#errordiv').show();

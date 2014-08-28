@@ -150,7 +150,7 @@ $( document ).ready(function() {
 				},
 				success: function( data, status) {
 					
-					console.log(data)
+					$("html, body").animate({ scrollTop: 0 }, "slow");
 					
 					if(status == 'success' && data.name == $('#name').val()){
 						$('#okdiv').show();
@@ -160,7 +160,8 @@ $( document ).ready(function() {
 					}
 				},
 				error: function ( req, status, error){
-					$('#errordivu').show();
+					$("html, body").animate({ scrollTop: 0 }, "slow");
+          $('#errordivu').show();
 					$('#erroru').html(error);
 				}
 			});

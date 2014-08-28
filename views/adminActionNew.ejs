@@ -353,10 +353,12 @@ $(document).ready(function() {
 	url: "/action/create",
 	data: userAndToken,
 	success: function( data, status) {
-          $('#okdiv').show();
+    $("html, body").animate({ scrollTop: 0 }, "slow");
+    $('#okdiv').show();
 	  $('#okdiv').html(data.message);
 	},
 	error: function ( req, status, error){
+    $("html, body").animate({ scrollTop: 0 }, "slow");
  	  $('#errordivu').show();
 	  $('#erroru').html(error);
 	}
