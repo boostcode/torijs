@@ -189,7 +189,7 @@ router.get('/:collection_name/import', function(req, res){
     }
 
     if(can || req.user.isDev){
-      res.send('adminDocumentImportCSv', {
+      res.render('adminDocumentImportCSv', {
         toriiTitle: torii.conf.core.title,
         req: req,
         logged: req.user

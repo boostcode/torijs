@@ -141,6 +141,7 @@ var template = require('template');
 
           if(req.params.collection_name != 'torii_structure'){
 
+
             var orderKey = null;
 
             coll[0].struttura.forEach(function(element){
