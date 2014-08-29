@@ -1,3 +1,6 @@
+// Configuration
+var torii = require('./conf/torii.conf.js').torii;
+
 // Express
 var express = require('express');
 var path = require('path');
@@ -31,10 +34,19 @@ var database = null;
 
 // Email
 var nodemailer = require('nodemailer');
+var transport = null;
+if(torii.conf.mail.service == 'smtp'){
+  transport = require('nodemailer-smtp-transport');
+}else{
+  transport = require('nodemailer-sendmail-transport');
+}
+
+if(transport == null){
+  throw Error('Mail transport not setup, please check your configuration file');
+}
+
 var mail = null;
 
-// Configuration
-var torii = require('./conf/torii.conf.js').torii;
 
 
 var app = express();
@@ -96,7 +108,7 @@ app.use(function(req, res, next){
 
     }
 
-    req.mail = mail = nodemailer.createTransport(torii.conf.mail.service, emailSetup);
+    req.mail = mail = nodemailer.createTransport(transport(emailSetup));
     next();
   }
 });

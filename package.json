@@ -22,15 +22,17 @@
     "mongoose": "~3.8.0",
     "mongoose-rbac": "matteocrippa/mongoose-rbac",
     "morgan": "~1.0.0",
-    "nodemailer": "~0.7.1",
+    "nodemailer": "^1.2.1",
+    "nodemailer-sendmail-transport": "^1.0.0",
+    "nodemailer-smtp-transport": "^0.1.12",
     "passport": "~0.2.0",
     "passport-local": "~1.0.0",
     "passport-local-mongoose": "~0.2.5",
     "passport-token": "~0.1.1",
     "static-favicon": "~1.0.0",
+    "string": "^1.9.1",
     "template": "^0.2.1",
     "token": "0.0.0",
-    "underscore": "~1.6.0",
-    "string": "^1.9.1"
+    "underscore": "~1.6.0"
   }
 }
