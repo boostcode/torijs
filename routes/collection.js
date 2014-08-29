@@ -229,7 +229,11 @@ var S = require('string');
 
       var struct = req.db.collection('torii_structure');
       
+      // lovercase name of collection
+      req.body.dati.nome_collezione = req.body.dati.nome_collezione.toLowerCase();
+      
       struct.insert(req.body.dati, {w:1}, function(err, result){
+      
         if(err){
           res.send(err);
           return;
@@ -394,6 +398,8 @@ var S = require('string');
 									});
 									
 									mailOptions["to"] = destArr;
+									
+									console.log('MSG: '+ mailOptions["text"]);
 
                   if(act.message.length > 1){
                     actionToSend.push(mailOptions);
@@ -771,7 +777,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                   act.message.forEach(function(msg) {
                     
                     msgVal.push(template(msg, {
-                      creator: req.user, item: values
+                      creator: req.user, item: values, editor: req.user
                     }));
                     
                   });
@@ -781,7 +787,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' Notification - '+ req.params.document_id,
-                    message: msgVal
+                    text: msgVal
                   };
                   
                   var destArr = [];
@@ -810,6 +816,8 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 									});
 									
 									mailOptions["to"] = destArr;
+									
+									console.log('MSG: '+ mailOptions["text"]);
 									
 									// If only 1 message mail immediately otherwise I send message to the page
 									if(act.message.length > 1) {

@@ -136,65 +136,91 @@
  		});
 
  		$('#btn_sub').on('click', function () {
- 		
- 			var collezioneObj = {};
- 			var campi = [];
- 			
- 			for (var i = 1; i <= nEl; i++) {
-	 			
-	 			var campoObj = {};
-	 			
-	 			var el = "#el_"+ i;
-	 			
-	 			var nome = $(el+'name').val();
-	 			var tipo = $(el+'value').val();
-	 			var option = $(el+'option').val();
-	 			var unico = $(el+'unique').is(':checked');
-        var sort = $(el+'sort').is(':checked');
-	 			
-	 			campoObj['label'] = nome;
-	 			campoObj['ordine'] = i;
-	 			campoObj['tipo'] = tipo;
-	 			campoObj['unico'] = unico;
-        campoObj['sort'] = sort;
-	 			campoObj['option'] = option;
-	 			campoObj['field_name'] = nome.replace(/ /g,'');
-	 			
-	 			campi.push(campoObj);
-	 			
- 			}
- 			
- 			var nome_collezione = $('#nome_coll').val();
- 			var importCsv = $( "#csvimport option:selected" ).text();
- 			
- 			if (nome_collezione) {
-	 			
-	 			collezioneObj['nome_collezione'] = nome_collezione;
-	 			collezioneObj['struttura'] = campi;
-	 			collezioneObj['import'] = importCsv;
-	 			
-	 			userAndToken["dati"] = collezioneObj;
-  		
-	 			$.post('/collection/'+ nome_collezione +'/create', userAndToken)
-	 				.done( function( data, status) {
-            $("html, body").animate({ scrollTop: 0 }, "slow");
-						$('#okdiv').show();
-						$('#okdiv').html(data.message);
+		
+			var nome_collezione = $('#nome_coll').val().toLowerCase();
+		
+			$.post("/collection/list.json", userAndToken, function(data) { 
+				
+				var coll = data['aaData'];
+				var doubleName = false;
+				
+				coll.forEach(function(col) {
+										
+					if (nome_collezione == col['name']) {
 						
-					})
-					.fail( function( req, status, error) {
-						$("html, body").animate({ scrollTop: 0 }, "slow");
-						$('#errordivu').show();
-						$('#erroru').html(error);
+						doubleName = true;
+						
+					}
+										
+				});
+				
+				if (doubleName) {
 					
-					});
-	 			
- 			}
-	 		
+					alert('Collection name alredy exists !');
+					
+				} else {
+					
+					var collezioneObj = {};
+					var campi = [];
+ 			
+		 			for (var i = 1; i <= nEl; i++) {
+			 			
+			 			var campoObj = {};
+			 			
+			 			var el = "#el_"+ i;
+			 			
+			 			var nome = $(el+'name').val();
+			 			var tipo = $(el+'value').val();
+			 			var option = $(el+'option').val();
+			 			var unico = $(el+'unique').is(':checked');
+		        var sort = $(el+'sort').is(':checked');
+			 			
+			 			campoObj['label'] = nome;
+			 			campoObj['ordine'] = i;
+			 			campoObj['tipo'] = tipo;
+			 			campoObj['unico'] = unico;
+		        campoObj['sort'] = sort;
+			 			campoObj['option'] = option;
+			 			campoObj['field_name'] = nome.replace(/ /g,'');
+			 			
+			 			campi.push(campoObj);
+			 			
+		 			}
+ 			
+			 		var importCsv = $( "#csvimport option:selected" ).text();
+			 			
+			 		if (nome_collezione) {
+				 			
+						collezioneObj['nome_collezione'] = nome_collezione;
+					 	collezioneObj['struttura'] = campi;
+					 	collezioneObj['import'] = importCsv;
+					 			
+					 	userAndToken["dati"] = collezioneObj;
+				  		
+					 	$.post('/collection/'+ nome_collezione +'/create', userAndToken)
+					 		.done( function( data, status) {
+				           
+				        $("html, body").animate({ scrollTop: 0 }, "slow");
+								$('#okdiv').show();
+								$('#okdiv').html(data.message);
+										
+							})
+							.fail( function( req, status, error) {
+								
+								$("html, body").animate({ scrollTop: 0 }, "slow");
+								$('#errordivu').show();
+								$('#erroru').html(error);
+									
+							});
+					 			
+				 }
+					
+				}
+				
+			});
+ 		
  		});
 
 	});
- 
- 
  
 </script>
