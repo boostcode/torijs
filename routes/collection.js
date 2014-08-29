@@ -376,7 +376,7 @@ var S = require('string');
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' Notification - '+ result._id,
-                    text: msgVal
+                    html: msgVal
                   };
                   
                   var destArr = [];
@@ -787,7 +787,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' Notification - '+ req.params.document_id,
-                    text: msgVal
+                    html: msgVal
                   };
                   
                   var destArr = [];
@@ -817,7 +817,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 									
 									mailOptions["to"] = destArr;
 									
-									console.log('MSG: '+ mailOptions["text"]);
+									console.log('MSG: '+ mailOptions["html"]);
 									
 									// If only 1 message mail immediately otherwise I send message to the page
 									if(act.message.length > 1) {
