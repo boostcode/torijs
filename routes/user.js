@@ -173,6 +173,7 @@ router.post('/update', function(req, res){
 // user logged
 router.post('/islogged', function(req, res){
   res.send({
+    confirm: 'ok',
     role: req.user.role
   });
 });

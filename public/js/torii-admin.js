@@ -1,13 +1,17 @@
 (function(){
   var app = angular.module('torii-admin', ['ipCookie']);
 
-  app.controller('AdminController',[ '$http', 'ipCookie', '$window', '$log' , function($http, ipCookie, $window, $log){
+  app.controller('AdminController', function($scope, $http, ipCookie, $window, $log){
     
-    this.user = {
+    $scope.user = {
       username: null,
       token: null,
       role: null
     };
+
+    $scope.error = null;
+
+    $scope.collections = null;
 
     if(!ipCookie('toriijs')){
       $window.location.href='/auth/login';
@@ -15,15 +19,17 @@
     
     var splits = ipCookie('toriijs').toString().split('|');
     
-    this.user.username = splits[0];
-		this.user.token = splits[1];
+    $scope.user.username = splits[0];
+		$scope.user.token = splits[1];
 
     var user = this.user;
+    var error = this.error;
+    var collections = this.collections;
 
     // check user
     $http.post('/user/islogged',{
-      username: this.user.username,
-      token: this.user.token
+      username: $scope.user.username,
+      token: $scope.user.token
     }).success(function(data, status){
 
       if( status == 200 && data.confirm != 'ok'){
@@ -32,7 +38,7 @@
 			}
 			
       if(data.role){
-        user.role = data.role;
+        $scope.user.role = data.role;
       }
 
     }).error(function(err, status){
@@ -42,12 +48,19 @@
 
     // retrieve backend componets
     $http.post('/collection/list.json', {
-      username: this.user.username,
-      token: this.user.token
+      username: $scope.user.username,
+      token: $scope.user.token
     }).success(function(data, status){
+      $log.debug(data);
+      if(status == 200 && data.aaData.length > 0){
+        $scope.collections = data.aaData;
+      }
+      $log.debug($scope.collections);
     }).error(function(err, status){
+      error = err;
     });
 
-  }]);
+  });
+
 
 })();

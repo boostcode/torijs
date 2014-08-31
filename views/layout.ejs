@@ -203,7 +203,7 @@
 
 	
 	</head>
-	<body class="skin-blue" ng-controller='AdminController'>
+	<body class="skin-blue" ng-controller='AdminController as admin'>
 		<!-- header logo: style can be found in header.less -->
 		<header class="header">
 			<a href="/admin" class="logo">
@@ -313,6 +313,19 @@
 							    </ul>
 						    <%}%>
 						  </li>
+
+              <li class="treeview" ng-repeat="collection in admin.collections">
+                <a href="/admin/{{collection.name}}">
+								    <i class="fa fa-archive"></i>
+                    <span>{{collection.name}}</span>
+								    <i class="fa fa-angle-left pull-right"></i>
+							    </a>
+							    <ul class="treeview-menu">
+								    <li><a href="/admin/{{collection.name}}"><i class="fa fa-angle-double-right"></i> List {{collection.name}}s</a></li>
+								    <li><a href="/admin/{{collection.name}}/new"><i class="fa fa-angle-double-right"></i> Add new {{collection.name}}</a></li>
+								    <li ng-show="collection.import"><a href="/admin/{{collection.name}}/import"><i class="fa fa-angle-double-right"></i> Import {{collection.name}} via CSV</a></li>
+							    </ul>
+              </li>
             <% } %>
 					</ul>
 				</section>
@@ -339,7 +352,9 @@
 					<div class="form-group has-error" id="errordiv" style="display:none;">
 						<label id="error" class="control-label" for="inputError"></label>
 					</div>
-					
+				  
+          User: {{ admin.user }}
+
 					<%- body %>
 
 				</section><!-- /.content -->
