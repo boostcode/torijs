@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="torii">
 	<head>
+    <base href="/">
 		<meta charset="UTF-8">
 		<title>Dashboard | <%= toriiTitle ? toriiTitle : 'Torii.js'%></title>
 		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
@@ -23,6 +24,13 @@
 		<![endif]-->
 		
 		<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <!-- Angular.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>
+    <script type="text/javascript" src="/js/angular-cookie.js"></script>
+    <script type="text/javascript" src="/js/torii.js"></script>
+    <script type="text/javascript" src="/js/torii-login.js"></script>
+    <script type="text/javascript" src="/js/torii-admin.js"></script>
 		
 		<!-- Cookie -->
 		<script src="/js/jquery.cookie.js" type="text/javascript"></script>
@@ -35,7 +43,7 @@
 
 		<!-- User Login -->
 		<script type="text/javascript">
-			var splits = [];
+			/*var splits = [];
 			var username;
 			var token;
 			var userAndToken;
@@ -190,12 +198,12 @@
 					});
 		
 				});
-			});
+			});*/
 		</script>
 
 	
 	</head>
-	<body class="skin-blue">
+	<body class="skin-blue" ng-controller='AdminController'>
 		<!-- header logo: style can be found in header.less -->
 		<header class="header">
 			<a href="/admin" class="logo">
