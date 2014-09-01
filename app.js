@@ -10,6 +10,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var engine = require('ejs-locals');
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
 
 // Routes
 var action = require('./routes/action');
@@ -152,6 +154,8 @@ app.use(passport.session());
 app.get('/', function(req, res){
   res.redirect('/auth/login');
 });
+
+app.all('/*/import', multipartMiddleware);
 
 app.all('/collection/*', passport.authenticate('token'));
 app.all('/user/*', passport.authenticate('token'));
