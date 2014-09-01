@@ -1,7 +1,7 @@
 (function(){
   var app = angular.module('torii-admin', ['ipCookie']);
 
-  app.controller('AdminController', ['$scope', '$http', 'ipCookie', '$window', '$log' , function($scope, $http, ipCookie, $window, $log){
+  app.controller('AdminController', function($scope, $http, ipCookie, $window, $log, $location){
     
     this.data = {
       user: {
@@ -27,7 +27,6 @@
     user.username = splits[0];
 		user.token = splits[1];
 
-    
     // check user
     $http.post('/user/islogged',{
       username: user.username,
@@ -59,8 +58,24 @@
     }).error(function(err, status){
     });
 
-
+    $scope.isActive = function(path){
+      if($window.location.href.indexOf(path) != -1){
+        return true;
+      }else{
+        return false;
+      }
+    };
   
-  }]);
+  });
+  
+  // call jquery to enable tree view
+  app.directive('sideCollList', function(){
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs){
+        scope.$eval(element.tree());
+      }
+    };
+  });
 
 })();

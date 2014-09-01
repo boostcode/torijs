@@ -43,133 +43,8 @@
 
 		<!-- User Login -->
 		<script type="text/javascript">
-			/*var splits = [];
-			var username;
-			var token;
-			var userAndToken;
 						
 			$( document ).ready(function() {
-				
-				// check session
-				if(!$.cookie('toriijs')){
-					location.href = '/auth/login';
-				}
-
-        // handle div dinamically
-        if(location.href.indexOf('/user') != -1){
-          $('#userMenu').addClass('active');
-        }
-
-        if(location.href.indexOf('/role') != -1){
-          $('#roleMenu').addClass('active');
-        }
-
-        if(location.href.indexOf('/action') != -1){
-          $('#actionMenu').addClass('active');
-        }
-
-        if(location.href.indexOf('/collections') != -1){
-          $('#collectionMenu').addClass('active');
-        }
-          
-          
-				
-				splits = $.cookie('toriijs').toString().split('|');
-				
-				username = splits[0];
-				token = splits[1];
-				userAndToken = { username: username, token: token };
-				
-				$('#userNameProfile').html(username);
-				$('#userNameProfileP').html(username);
-								
-				// check user
-				$.ajax({
-					type: "POST",
-					url: "/user/islogged",
-					data: userAndToken,
-					success: function( data, status) {
-							
-						//alert(JSON.stringify(data));	
-												
-						if( data.confirm != 'ok'){
-							
-							$.removeCookie('toriijs');
-							
-							location.href="/auth/login";
-							
-						}
-						
-						$('#userRole').html(data.role);
-
-						
-						// retrieve collections for menu
-						$.ajax({
-							type: "POST",
-							url: "/collection/list.json",
-							data: userAndToken,
-							success: function(data, status) {
-								                                
-								if(status == 'success') {
-									
-									if(data.aaData){
-										
-										data.aaData.forEach(function(collection) {
-																						
-											var collectionMenuBox = '\
-											<li class="treeview">\
-												<a href="/admin/'+ collection.name +'/documents">\
-													<i class="fa fa-table"></i>\
-													<span>'+ collection.name +'</span>\
-													<i class="fa fa-angle-left pull-right"></i>\
-												</a>\
-												<ul class="treeview-menu">\
-													<li>\
-														<a href="/admin/'+ collection.name +'/documents">\
-															<i class="fa fa-angle-double-right"></i> \
-															List '+ collection.name +'\
-														</a>\
-													</li>\
-													<li>\
-														<a href="/admin/'+ collection.name +'/new">\
-															<i class="fa fa-angle-double-right"></i> \
-															Add new '+ collection.name +'\
-														</a>\
-													</li>';
-											
-											// check if collection has CSV import or not show the field
-											if(collection.import == 'yes'){
-												collectionMenuBox += '<li>\
-													<a href="/admin/'+ collection.name +'/import">\
-														<i class="fa fa-angle-double-right"></i> \
-														Import '+ collection.name +' via CSV\
-													</a>\
-												</li>';
-											}
-													
-											collectionMenuBox +=	'</ul>\
-											</li>';
-	
-											$(collectionMenuBox).insertAfter('#collectionMenu');
-											
-										});
-										
-										$(".sidebar .treeview").tree();
-									}
-									
-								}
-							},
-							error: function(req, status, error){
-								$('#errordiv').show();
-								$('#error').html('<i class="fa fa-times-circle-o"></i> '+error);
-							}
-						});
-					},
-					error: function ( req, status, error){
-					
-						location.href="/auth/login";
-					}
-				});
 				
 				// logout
 				$("#logout").click(function() {
@@ -198,7 +73,7 @@
 					});
 		
 				});
-			});*/
+			});
 		</script>
 
 	
@@ -228,8 +103,8 @@
 								<li class="user-header bg-light-blue">
 									<img src="/img/avatar.png" class="img-circle" alt="User Image" />
 									<p id="userInfo">
-										<b id="userNameProfileP"><!-- userNameProfile replaced via JS --></b>
-										<small id="userRole"><!-- userRole replaced via JS --></small>
+										<b id="userNameProfileP">{{ admin.data.user.username }}</b>
+										<small id="userRole">{{ admin.data.user.role }}</small>
 									</p>
 								</li>
 								<!-- Menu Footer-->
@@ -259,7 +134,7 @@
 					  <% if (logged) { %>	
 						
               <% if( logged.isAdmin || logged.isDev ) {%>
-						    <li class="treeview" id="userMenu">
+						    <li class="treeview" ng-class="{active: isActive('/admin/user')}">
 							    <a href="/admin/user">
 								    <i class="fa fa-user"></i>
 								    <span>Users</span>
@@ -273,7 +148,7 @@
 						  <%}%>
 						
 						  <% if( logged.isAdmin  || logged.isDev ) {%>
-						  <li class="treeview" id="roleMenu">
+						  <li class="treeview" ng-class="{active: isActive('/admin/role')}">
 							  <a href="/admin/role">
 								  <i class="fa fa-group"></i>
 								  <span>Roles</span>
@@ -287,7 +162,7 @@
 						  <%}%>
 						
 						  <% if( logged.isDev ) {%>
-						  <li class="treeview" id="actionMenu">
+						  <li class="treeview" ng-class="{active: isActive('/admin/action')}">
 							  <a href="/admin/action">
 								  <i class="fa fa-bolt"></i>
 								  <span>Actions</span>
@@ -300,7 +175,7 @@
 						  </li>
 						  <%}%>
 						
-						  <li class="treeview" id="collectionMenu">
+						  <li class="treeview" ng-class="{active: isActive('/admin/collections')}">
 						    <% if( logged.isDev ) {%>
 								  <a href="/admin/collections">
 								    <i class="fa fa-archive"></i>
@@ -314,7 +189,7 @@
 						    <%}%>
 						  </li>
 
-              <li class="treeview" ng-repeat="collection in admin.data.colls">
+              <li class="treeview" ng-repeat="collection in admin.data.colls" side-coll-list ng-class="{active: isActive('/admin/{{collection.name}}')}">
                 <a href="/admin/{{collection.name}}">
 								    <i class="fa fa-archive"></i>
                     <span>{{collection.name}}</span>
@@ -353,9 +228,6 @@
 						<label id="error" class="control-label" for="inputError"></label>
 					</div>
 				  
-          User: {{ admin.data.user }}
-          Collections: {{ admin.data.colls }}
-
 					<%- body %>
 
 				</section><!-- /.content -->
