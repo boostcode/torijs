@@ -314,7 +314,7 @@
 						    <%}%>
 						  </li>
 
-              <li class="treeview" ng-repeat="collection in admin.collections">
+              <li class="treeview" ng-repeat="collection in admin.data.colls">
                 <a href="/admin/{{collection.name}}">
 								    <i class="fa fa-archive"></i>
                     <span>{{collection.name}}</span>
@@ -353,7 +353,8 @@
 						<label id="error" class="control-label" for="inputError"></label>
 					</div>
 				  
-          User: {{ admin.user }}
+          User: {{ admin.data.user }}
+          Collections: {{ admin.data.colls }}
 
 					<%- body %>
 

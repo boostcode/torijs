@@ -1,17 +1,22 @@
 (function(){
   var app = angular.module('torii-admin', ['ipCookie']);
 
-  app.controller('AdminController', function($scope, $http, ipCookie, $window, $log){
+  app.controller('AdminController', ['$scope', '$http', 'ipCookie', '$window', '$log' , function($scope, $http, ipCookie, $window, $log){
     
-    $scope.user = {
-      username: null,
-      token: null,
-      role: null
+    this.data = {
+      user: {
+        username: null,
+        token: null,
+        role: null
+      },
+      error: null
     };
+    
+    var data = this.data;
+    var user = this.data.user;
+    var error = this.data.error;
+    var colls = this.data.colls;
 
-    $scope.error = null;
-
-    $scope.collections = null;
 
     if(!ipCookie('toriijs')){
       $window.location.href='/auth/login';
@@ -19,17 +24,14 @@
     
     var splits = ipCookie('toriijs').toString().split('|');
     
-    $scope.user.username = splits[0];
-		$scope.user.token = splits[1];
+    user.username = splits[0];
+		user.token = splits[1];
 
-    var user = this.user;
-    var error = this.error;
-    var collections = this.collections;
-
+    
     // check user
     $http.post('/user/islogged',{
-      username: $scope.user.username,
-      token: $scope.user.token
+      username: user.username,
+      token: user.token
     }).success(function(data, status){
 
       if( status == 200 && data.confirm != 'ok'){
@@ -38,29 +40,27 @@
 			}
 			
       if(data.role){
-        $scope.user.role = data.role;
+        user.user.role = data.role;
       }
+
+      user.test = 'asd';
 
     }).error(function(err, status){
       ipCookie.remove('toriijs');
       $window.location.href = '/auth/login';
     });
 
-    // retrieve backend componets
-    $http.post('/collection/list.json', {
-      username: $scope.user.username,
-      token: $scope.user.token
-    }).success(function(data, status){
-      $log.debug(data);
-      if(status == 200 && data.aaData.length > 0){
-        $scope.collections = data.aaData;
-      }
-      $log.debug($scope.collections);
+    // check user
+    $http.post('/collection/list.json',{
+      username: user.username,
+      token: user.token
+    }).success(function(d, status){
+       data.colls = d.aaData;
     }).error(function(err, status){
-      error = err;
     });
 
-  });
 
+  
+  }]);
 
 })();
