@@ -1,0 +1,23 @@
+{
+  "name": "torii.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/toriijs/torii.js",
+  "authors": [
+    "ToriiJs Team"
+  ],
+  "description": "Nodejs BaaS",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "./public/js",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "angularjs": "~1.2.23"
+  }
+}
