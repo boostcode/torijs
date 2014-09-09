@@ -22,6 +22,7 @@
     "html5shiv": "~3.7.2",
     "respond": "~1.4.2",
     "bootstrap": "~3.2.0",
-    "angular-cookie": "~4.0.2"
+    "angular-cookie": "~4.0.2",
+    "ng-table": "~0.3.3"
   }
 }
