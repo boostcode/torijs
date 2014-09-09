@@ -1,5 +1,5 @@
 (function(){
-  var app = angular.module('torii-admin', ['ipCookie']);
+  var app = angular.module('admin', ['ipCookie']);
 
   app.controller('AdminController', function($scope, $http, ipCookie, $window, $log, $location){
     

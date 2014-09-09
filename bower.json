@@ -23,6 +23,7 @@
     "respond": "~1.4.2",
     "bootstrap": "~3.2.0",
     "angular-cookie": "~4.0.2",
-    "ng-table": "~0.3.3"
+    "ng-table": "~0.3.3",
+    "angular-resource": "~1.2.23"
   }
 }

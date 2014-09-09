@@ -1,5 +1,5 @@
 (function(){
-  var app = angular.module('torii-login', ['ipCookie']);
+  var app = angular.module('login', ['ipCookie']);
 
   app.controller('LoginController', ['$http', '$log', 'ipCookie', '$window', function($http, $log, ipCookie, $window){
     

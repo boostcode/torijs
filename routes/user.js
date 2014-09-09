@@ -5,6 +5,7 @@ var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
 var torii = require('../conf/torii.conf.js').torii;
+var _ = require('underscore');
 
 // registration
 router.post('/register', function(req, res){
@@ -218,13 +219,18 @@ router.post('/list.json', function(req, res){
         return;
       }
 
-      var totElementi = users.length;
-
-      if(req.body.iDisplayLength && req.body.iDisplayStart){
-        if(req.body.iDisplayLength > 0){
-          users = users.splice(req.body.iDisplayStart, req.body.iDisplayLength);
-        }
+      var totalElements = users.length;
+      
+     
+      if(req.body.page){
+        users = users.slice((req.body.page - 1 ) * req.body.count, req.body.page * req.body.count);
+        console.log(users);
       }
+
+      // TODO: order via underscore
+      //
+      // req.body.filter
+      // req.body.sorting
 
       users.forEach(function(user) {
         roles.forEach(function(role){
@@ -234,13 +240,19 @@ router.post('/list.json', function(req, res){
         });
       });
 
-      res.send({
+      /*res.send({
         sEcho: parseInt(req.query.sEcho),
         iTotalRecords: totElementi,
         iTotalDisplayRecords: users.length,
         aaData: users,
         serverTime: new Date().getTime()
+      });*/
+
+      res.send({
+        result: users,
+        total: totalElements
       });
+      
     });
   });
 });
