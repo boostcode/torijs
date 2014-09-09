@@ -42,4 +42,4 @@ build/Release
 node_modules
 conf/torii.conf.js
 
-public/js
+public/js/*
