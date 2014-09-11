@@ -376,7 +376,7 @@ var S = require('string');
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' Notification - '+ result._id,
-                    html: msgVal
+                    text: msgVal
                   };
                   
                   var destArr = [];
@@ -800,7 +800,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' Notification - '+ req.params.document_id,
-                    html: msgVal
+                    text: msgVal
                   };
                   
                   var destArr = [];
