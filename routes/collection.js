@@ -404,6 +404,7 @@ var S = require('string');
                   if(act.message.length > 1){
                     actionToSend.push(mailOptions);
                   }else{
+                  	mailOptions["text"] = mailOptions["text"][0];
                     req.body.mailActions = [mailOptions];
                     actionFunction.sendMail(req);
                   }
@@ -832,12 +833,13 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 									
 									mailOptions["to"] = destArr;
 									
-									console.log('MSG: '+ mailOptions["html"]);
+									console.log('MSG: '+ mailOptions["text"]);
 									
 									// If only 1 message mail immediately otherwise I send message to the page
 									if(act.message.length > 1) {
                   	actionToSend.push(mailOptions);
 									} else {
+										mailOptions["text"] = mailOptions["text"][0];
 										req.body.mailActions = [mailOptions];
 										actionFunction.sendMail(req);
 									}
