@@ -375,7 +375,7 @@ var S = require('string');
                   var mailOptions = {
                     from: torii.conf.mail.from,
                     to: '',
-                    subject: act.name + ' Notification - '+ result._id,
+                    subject: act.name + ' Notification - '+ result[0]._id,
                     text: msgVal
                   };
                   
