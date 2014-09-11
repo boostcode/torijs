@@ -458,6 +458,8 @@ var S = require('string');
   // import csv
   router.post('/:collection_name/import',function(req, res){
     
+    console.log('qua');
+    
     // check permission
     req.user.can('api-write', req.params.collection_name, function(err, can){		
       if(err){
@@ -466,6 +468,8 @@ var S = require('string');
       }
 
       if(can || req.user.isDev){
+        
+        console.log('SEI AUTO');
         
         if(req.files.csv){
       
@@ -575,6 +579,9 @@ var S = require('string');
 			}
 			
 		}else{
+		
+		console.log('non sei auto');
+		
 			res.send(401,'you are not allowed')
 			
 		}
@@ -654,9 +661,11 @@ router.post('/:collection_name/:document_id/update', function(req, res){
         
         var keysOfValuesChanged = [];
         
+        var item;
+        
         if (items.length > 0) {
 	        
-	        var item = items[0];
+	        item = items[0];
 	        
 	        console.log('ITEM: '+ JSON.stringify(item));
 				
@@ -756,6 +765,10 @@ router.post('/:collection_name/:document_id/update', function(req, res){
             
             console.log('ACTIONs ok : '+ JSON.stringify(actionsOk));
 						
+						console.log('OWN: '+ item.owner);
+						
+						//var ownerId = new oID.createFromHexString(item.owner);
+						
 						// I find the email of CREATOR
 	          account.findById(item.owner, '_id username role isAdmin isDev name surname', function(err, user) {
 	                  
@@ -801,6 +814,8 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                   
                   // If the CREATOR is one of the receivers
                   if (act.creatorMail == true) {
+	                  
+	                 console.log('USER: '+ JSON.stringify(user));
 	                  
 	                  // I add the CREATOR
 									  destArr.push(user.username);

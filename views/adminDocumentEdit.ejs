@@ -65,7 +65,118 @@ $( document ).ready(function() {
 		
 			var html = '';
 		
+			fields = data["aaData"][0]["struttura"];
+		
+			fields.forEach(function(campo) { 
+					
+					if (campo.tipo == "string") {
+					
+						html += '\
+							<div class="form-group">\
+								<label>'+ campo.label +'</label>\
+								<div class="input-group">\
+									<span class="input-group-addon">#</span>\
+									<input type="text" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'">\
+								</div>\
+							</div>';
+					}
+					
+					if (campo.tipo == "file") {
+					
+						html += '\
+							<div class="form-group">\
+								<label>'+ campo.label +'</label>\
+								<div class="input-group">\
+									<span class="input-group-addon">#</span>\
+									<input type="file" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'">\
+								</div>\
+							</div>';
+					}
+					
+					if (campo.tipo == "select") {
+						
+						html += '\
+						<div class="form-group">\
+							<label>'+ campo.label +'</label>\
+							<div class="input-group">\
+								<select class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'">\
+									<option></option>';
+									
+									campo.option.split("\n").forEach(function(opt){
+										
+										if(oggetto[campo["field_name"]] == opt) {
+											
+											html += '<option value="'+opt+'" selected>'+opt+'</option>'
+											
+										} else {
+											
+											html += '<option value="'+opt+'">'+opt+'</option>'
+											
+										}			
+										
+									})
+									
+						html +='</select>\
+							</div>\
+						</div>'
+						
+					}
+					
+					if (campo.tipo == "selectcollection") {
+						
+						html += '\
+						<div class="form-group">\
+							<label>'+ campo.label +'</label>\
+							<div class="input-group">\
+								<select class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'">\
+									<option></option>\
+								</select>\
+							</div>\
+						</div>'
+						
+						var collectionName = campo.option.split('.')[0]
+						var userAndTokenCollection = userAndToken
+						delete userAndTokenCollection.query	
+						
+						// populate select according option value
+						$.ajax({
+							type: "POST",
+							url: "/collection/"+collectionName+"/documents.json",
+							data: userAndTokenCollection,
+							success: function(data, status) {
+			
+								if(status == 'success') {
+				
+									//console.log(data)
+										
+									var options = '';
+									
+									data.aaData.forEach(function(el){
+										options += '<option>'+el[campo.option.split('.')[1]]+'</option>'
+									})
+									
+									
+									$('#field_'+campo.field_name).append(options)
+									
+								}
+							}
+						})
+						
+					}
+					
+				})
+		
+		/*
+		
 			campi.forEach(function(campo) { 
+		
+				
+				
+				if(campo["tipo"] == "select") {
+					
+					alert(JSON.stringify(campo));
+					
+				}
 		
 				html += '<div class="form-group">\
 							<label>'+ campo["label"] +'</label>\
@@ -76,6 +187,8 @@ $( document ).ready(function() {
 						</div>'
 				
 			})
+			
+			*/
 		
 			$('#form_campi').html(html);
 		

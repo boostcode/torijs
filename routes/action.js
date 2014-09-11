@@ -162,8 +162,12 @@ router.post('/remove', function(req, res){
 router.sendMail = function(req) {
 	
 	var actions = req.body.mailActions;
+	
+	
 
   actions.forEach(function(mailOptions){
+
+		console.log('M opt: '+ JSON.stringify(mailOptions));
 
     req.mail.sendMail(mailOptions, function(err, info){
       if(err){

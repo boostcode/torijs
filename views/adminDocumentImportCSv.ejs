@@ -116,7 +116,7 @@ $( document ).ready(function() {
 		'params': userAndToken,
 		'onComplete': function(response) {
 			console.log('custom handler for file:');
-			alert(JSON.stringify(response));
+			alert('Risultato nel complete: '+ JSON.stringify(response));
 		},
 		'onCancel': function() {
 			console.log('no file selected');
