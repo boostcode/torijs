@@ -652,8 +652,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
     values.last_update = new Date().getTime();
 
     var objectId = new oID.createFromHexString(req.params.document_id);
-
-    
       
     collection.find({ _id: objectId }).toArray(function(err, items){
       
@@ -776,84 +774,103 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 						*/
 						//var ownerId = new oID.createFromHexString(item.owner);
 						
-						// I find the email of CREATOR
-	          account.findById(item.owner, '_id username role isAdmin isDev name surname extraFields', function(err, user) {
-	                  
-							if(err){
-								res.send(err);
-								return;
-							}
-
-							actionsOk.forEach(function(act) {
-
-                if(act.action == 'email'){
-                  
-                  console.log('lenght: '+ act.message.length);
-
-                  // Replace key with parameters
-                  
-                  var msgVal = [];
-                  
-                  act.message.forEach(function(msg) {
-                    
-                    msgVal.push(template(msg, {
-                      creator: user, item: item, editor: req.user
-                    }));
-                    
-                  });
-                  
-                  // Email options
-                  var mailOptions = {
-                    from: torii.conf.mail.from,
-                    to: '',
-                    subject: act.name + ' Notification - '+ req.params.document_id,
-                    text: msgVal
-                  };
-                  
-                  var destArr = [];
-                                    
-                  // If there is also the EDITOR I add him
-	                if ((act.editorMail == true)) {
-	                  
-	                  destArr.push(req.user.username);
-	                  
-	                }
-                  
-                  // If the CREATOR is one of the receivers
-                  if (act.creatorMail == true) {
-	                  
-	                 console.log('USER: '+ JSON.stringify(user));
-	                  
-	                  // I add the CREATOR
-									  destArr.push(user.username);
-									   
+						collection.find({ _id: objectId }).toArray(function(err, itemsModified){
+      
+			        if(err){
+			          res.send(err);
+			          return;
+			        }
+			        
+			        var keysOfValuesChanged = [];
+			        
+			        var itemModified;
+			        
+			        if (itemsModified.length > 0) {
+				        
+				        itemModified = itemsModified[0];
+						
+								// I find the email of CREATOR
+			          account.findById(item.owner, '_id username role isAdmin isDev name surname extraFields', function(err, user) {
+			                  
+									if(err){
+										res.send(err);
+										return;
 									}
-									
-									var other = act.receiver.split(',');
-									
-									other.forEach(function(msgO) {
-										
-										destArr.push(S(msgO).trim().s);
-										
+		
+									actionsOk.forEach(function(act) {
+		
+		                if(act.action == 'email'){
+		                  
+		                  console.log('lenght: '+ act.message.length);
+		
+		                  // Replace key with parameters
+		                  
+		                  var msgVal = [];
+		                  
+		                  act.message.forEach(function(msg) {
+		                    
+		                    msgVal.push(template(msg, {
+		                      creator: user, item: item, editor: req.user
+		                    }));
+		                    
+		                  });
+		                  
+		                  // Email options
+		                  var mailOptions = {
+		                    from: torii.conf.mail.from,
+		                    to: '',
+		                    subject: act.name + ' Notification - '+ req.params.document_id,
+		                    text: msgVal
+		                  };
+		                  
+		                  var destArr = [];
+		                                    
+		                  // If there is also the EDITOR I add him
+			                if ((act.editorMail == true)) {
+			                  
+			                  destArr.push(req.user.username);
+			                  
+			                }
+		                  
+		                  // If the CREATOR is one of the receivers
+		                  if (act.creatorMail == true) {
+			                  
+			                 console.log('USER: '+ JSON.stringify(user));
+			                  
+			                  // I add the CREATOR
+											  destArr.push(user.username);
+											   
+											}
+											
+											var other = act.receiver.split(',');
+											
+											other.forEach(function(msgO) {
+												
+												destArr.push(S(msgO).trim().s);
+												
+											});
+											
+											mailOptions["to"] = destArr;
+											
+											console.log('MSG: '+ mailOptions["text"]);
+											
+											// If only 1 message mail immediately otherwise I send message to the page
+											if(act.message.length > 1) {
+		                  	actionToSend.push(mailOptions);
+											} else {
+												mailOptions["text"] = mailOptions["text"][0];
+												req.body.mailActions = [mailOptions];
+												actionFunction.sendMail(req);
+											}
+											
+		                } else if(act.action == 'push') {
+		                  // TODO add push
+		                }
+		          
 									});
 									
-									mailOptions["to"] = destArr;
-									
-									console.log('MSG: '+ mailOptions["text"]);
-									
-									// If only 1 message mail immediately otherwise I send message to the page
-									if(act.message.length > 1) {
-                  	actionToSend.push(mailOptions);
-									} else {
-										mailOptions["text"] = mailOptions["text"][0];
-										req.body.mailActions = [mailOptions];
-										actionFunction.sendMail(req);
-									}
-									
-                } else if(act.action == 'push') {
-                  // TODO add push
-                }
-          
+								}
+								
 							});
 							
 							console.log("ACT TO:"+ actionToSend);
