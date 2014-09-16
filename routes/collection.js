@@ -357,6 +357,8 @@ var S = require('string');
             var actionToSend = [];
 
             console.log(actions);
+            
+            console.log('UTENTE RICH: '+ req.user);
 
             actions.forEach(function(act){
 
@@ -771,7 +773,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 						//var ownerId = new oID.createFromHexString(item.owner);
 						
 						// I find the email of CREATOR
-	          account.findById(item.owner, '_id username role isAdmin isDev name surname', function(err, user) {
+	          account.findById(item.owner, '_id username role isAdmin isDev name surname extraFields', function(err, user) {
 	                  
 							if(err){
 								res.send(err);
@@ -791,7 +793,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                   act.message.forEach(function(msg) {
                     
                     msgVal.push(template(msg, {
-                      creator: req.user, item: values, editor: req.user
+                      creator: user, item: values, editor: req.user
                     }));
                     
                   });
