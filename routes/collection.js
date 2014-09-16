@@ -640,8 +640,9 @@ router.post('/:collection_name/:document_id', function(req, res){
 // update document
 router.post('/:collection_name/:document_id/update', function(req, res){
 
-  req.user.can('api-write', req.params.collection_name, function(err, can){
-    if(err){
+	req.user.can('api-write', req.params.collection_name, function(err, can) {
+  	
+  	if(err){
       res.send(err);
       return;
     }
@@ -881,7 +882,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
             
             });
             
-          });
+          
           
           
           	}
@@ -896,6 +897,9 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 	  });
 
     // close find
+  });
+  
+  	// close api
   });
   
   // close function
