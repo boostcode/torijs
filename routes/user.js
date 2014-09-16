@@ -101,9 +101,9 @@ router.post('/update', function(req, res){
       user.name = req.body.name;
     }
 
-      if(req.body.surname){
-        user.surname = req.body.surname;
-      }
+    if(req.body.surname){
+       user.surname = req.body.surname;
+    }
 
       if(req.body.isAdmin){
         if(req.user.isDev){
@@ -125,6 +125,10 @@ router.post('/update', function(req, res){
           });
           return;
         }
+      }
+      
+      if(req.body.extraFields){
+        user.extraFields = req.body.extraFields;
       }
 
       // store all changes
@@ -160,8 +164,6 @@ router.post('/update', function(req, res){
           }
         });
       }
-
-      // TODO: handle extra fields
       
       res.send({
         user: user.username

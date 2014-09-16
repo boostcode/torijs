@@ -84,8 +84,8 @@
 				
 				<div class="form-group">
 					<label>Extra fields</label>
-					<textarea class="form-control" id="extrafields">
-						<%= (user.extrafields) ? user.extrafields : '' %>
+					<textarea class="form-control" id="extraFields">
+						<%= (user.extraFields) ? user.extraFields : '' %>
 					</textarea>
 					<!-- TODO: handle extra fields editing -->
 				</div>
@@ -124,7 +124,8 @@ $( document ).ready(function() {
 				token: splits[1],
 				isAdmin: $("#isadmin").is(':checked'),
 				isDev: $("#isdev").is(':checked'),
-				role: $( "#role option:selected" ).text()
+				role: $( "#role option:selected" ).text(),
+				extraFields: $('#extraFields').val()
 			};
 			
 			if($('#password').val().length > 0) {
