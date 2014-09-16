@@ -810,7 +810,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		                  act.message.forEach(function(msg) {
 		                    
 		                    msgVal.push(template(msg, {
-		                      creator: user, item: item, editor: req.user
+		                      creator: user, item: itemModified, editor: req.user
 		                    }));
 		                    
 		                  });
