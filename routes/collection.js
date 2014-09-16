@@ -770,6 +770,10 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 						
 						console.log('OWN: '+ item.owner);
 						
+						console.log('val: '+ values);
+						
+						console.log('result: '+ result);
+						
 						//var ownerId = new oID.createFromHexString(item.owner);
 						
 						// I find the email of CREATOR
@@ -793,7 +797,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
                   act.message.forEach(function(msg) {
                     
                     msgVal.push(template(msg, {
-                      creator: user, item: result, editor: req.user
+                      creator: user, item: result[0], editor: req.user
                     }));
                     
                   });
