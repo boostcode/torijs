@@ -639,6 +639,7 @@ router.post('/:collection_name/:document_id', function(req, res){
 
 // update document
 router.post('/:collection_name/:document_id/update', function(req, res){
+
   req.user.can('api-write', req.params.collection_name, function(err, can){
     if(err){
       res.send(err);
@@ -869,9 +870,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		          
 									});
 									
-								}
 								
-							});
 							
 							console.log("ACT TO:"+ actionToSend);
 											
@@ -884,12 +883,22 @@ router.post('/:collection_name/:document_id/update', function(req, res){
             
           });
           
+          
+          	}
+								
+							});
+          
+          // close action find
          });
                
+               
+      // close update
 	  });
 
-    
+    // close find
   });
+  
+  // close function
 });
 
 // remove document
