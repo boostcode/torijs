@@ -37,7 +37,7 @@ router.get('/user/new', function(req, res){
 
 // user - edit
 router.get('/user/:userid/edit', function(req, res){
-  account.findById(req.params.userid, '_id username role isAdmin isDev name surname', function(err, user){
+  account.findById(req.params.userid, '_id username role isAdmin isDev name surname extraFields', function(err, user){
     if(err){
       res.send(err);
       return;
