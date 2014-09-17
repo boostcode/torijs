@@ -14,7 +14,7 @@ var template = require('template');
 var S = require('string');
 
   // list
-  router.post('/list.json', function(req, res){
+  router.post('/list.json', function(req, res) {
     var structure = req.db.collection('torii_structure');
 
     structure.find({}).toArray(function(err, collections){
@@ -63,6 +63,7 @@ var S = require('string');
 
   // check for updates
   router.post('/:collection_name/hasupdate', function(req, res){
+  
     req.user.can('api-read', req.params.collection_name, function(err, can){
       if(err){
         res.send(err);
