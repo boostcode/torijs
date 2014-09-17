@@ -115,7 +115,7 @@ var S = require('string');
         var collezione = req.db.collection(req.params.collection_name);
         
         var ordering = {};
-
+        var orderStr;
 
         var collectionStructure = req.db.collection('torii_structure');
 
@@ -127,25 +127,55 @@ var S = require('string');
             res.send(err);
             return;
           }
+          
+          console.log('torii: '+ req.params.collection_name);
 
           if(req.params.collection_name != 'torii_structure'){
-
 
             var orderKey = null;
 
             coll[0].struttura.forEach(function(element){
+            
+            	console.log('EL: '+ JSON.stringify(element));
+            
               if(element.order){
                 orderKey = element.field_name;
+                
+                //trick
+                var key = element.field_name;
+								//var json = { };
+								
+								if(element.order == 'asc')	{
+									
+									ordering[key] = 1;
+									
+								} else {
+									
+									ordering[key] = -1;
+									
+								}
+
+                //ordering = json;
               }
+              
             });
 
-            if(orderKey){
-              ordering = {
-                sort: [
-                  [ orderKey, 'desc']
-                ]
-              };
-            }
+           /* if(orderKey){
+            
+              ordering.push({orderKey : '-1'});
+              
+            }*/
+            
+            console.log('order: '+ JSON.stringify(ordering));
+					
+						if(ordering) {
+							
+							console.log('dentro ordering');
+							
+							orderStr = ordering;  // {$orderby : ordering};
+							
+						}
+            
           }
 
           var query;
@@ -172,9 +202,11 @@ var S = require('string');
             query = req.body.query;
           }
 
-          account.find({}, function(err, users){
+          account.find({}, function(err, users) {
+          
+          console.log('QUER: '+ query +' and SORT '+ JSON.stringify(orderStr));
 
-          collezione.find(query, ordering).toArray(function(err, items){
+          collezione.find(query).sort(orderStr).toArray(function(err, items) {
 
             var totElems = items.length;
             
@@ -881,8 +913,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 							res.send(responseJ);
             
             });
-            
-          
           
           
           	}
