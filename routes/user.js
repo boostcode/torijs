@@ -28,6 +28,9 @@ router.post('/register', function(req, res){
     // extra check for current user to avoid any injection by public
     // registration form
     
+    console.log('BODY isADMIN'+ req.body.isAdmin + ' isDev'+ req.body.isDev);
+    console.log('USER isDEv'+ req.user.isDev);
+    
     if((req.body.isAdmin == true) && (req.user.isDev == true)){
       account.isAdmin = true;
     }
