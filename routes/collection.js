@@ -379,7 +379,7 @@ var S = require('string');
                   var mailOptions = {
                     from: torii.conf.mail.from,
                     to: '',
-                    subject: act.name + ' Notification - '+ result[0]._id,
+                    subject: act.name + ' - ' + result[0]._id,
                     text: msgVal
                   };
                   
@@ -791,7 +791,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		                  var mailOptions = {
 		                    from: torii.conf.mail.from,
 		                    to: '',
-		                    subject: act.name + ' Notification - '+ req.params.document_id,
+		                    subject: act.name + ' - '+ req.params.document_id,
 		                    text: msgVal
 		                  };
 		                  
