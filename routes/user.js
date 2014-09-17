@@ -28,19 +28,12 @@ router.post('/register', function(req, res){
     // extra check for current user to avoid any injection by public
     // registration form
     
-    console.log('BODY isADMIN'+ req.body.isAdmin + ' isDev'+ req.body.isDev);
-    console.log('USER isDEv'+ req.user.isDev);
-    
     if((JSON.parse(req.body.isAdmin) == true) && (JSON.parse(req.user.isDev) == true)){
-    
-    	console.log('Dentro admin');
     
       account.isAdmin = true;
     }
 
     if((JSON.parse(req.body.isDev) == true) && (JSON.parse(req.user.isDev) == true)){
-    
-    	console.log('dentro dev');
     
       account.isDev = true;
     }
