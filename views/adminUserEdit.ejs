@@ -78,7 +78,7 @@
 						<option value=""></option>					
 						<% 	
 							roles.forEach(function(role, index){%>
-						<option value="<%=role.name%>" <%= ((user.roles[0]) ? (user.roles[0] : ''  == role._id) ? 'selected=selected' : '' %>><%=role.name%></option>
+						<option value="<%=role.name%>" <%= ((user.roles[0]) ? user.roles[0] : ''  == role._id) ? 'selected=selected' : '' %>><%=role.name%></option>
 						<% }) %>
 					</select>
 				</div>
