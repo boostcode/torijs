@@ -155,6 +155,8 @@ var S = require('string');
             });
             
           }
+          
+          ordering['_id'] = -1;
 
           var query;
         
