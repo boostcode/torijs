@@ -77,7 +77,7 @@
 					<select class="form-control" id="role">
 						<option value=""></option>					
 						<% 	
-								var userRole = (user.roles[0]) ? user.roles[0] : '';
+								var userRole = (user.roles) ? user.roles[0] : '';
 
 							roles.forEach(function(role, index){%>
 						<option value="<%=role.name%>" <%= (userRole == role._id) ? 'selected=selected' : '' %>><%=role.name%></option>
