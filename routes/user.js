@@ -31,14 +31,14 @@ router.post('/register', function(req, res){
     console.log('BODY isADMIN'+ req.body.isAdmin + ' isDev'+ req.body.isDev);
     console.log('USER isDEv'+ req.user.isDev);
     
-    if((req.body.isAdmin == true) && (req.user.isDev == true)){
+    if((JSON.parse(req.body.isAdmin) == true) && (JSON.parse(req.user.isDev) == true)){
     
     	console.log('Dentro admin');
     
       account.isAdmin = true;
     }
 
-    if((req.body.isDev == true) && (req.user.isDev == true)){
+    if((JSON.parse(req.body.isDev) == true) && (JSON.parse(req.user.isDev) == true)){
     
     	console.log('dentro dev');
     
