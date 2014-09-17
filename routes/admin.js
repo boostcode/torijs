@@ -190,16 +190,12 @@ router.get('/:collection_name/import', function(req, res){
 
     if(can || req.user.isDev){
     
-    	console.log('autoriz');
-    
       res.render('adminDocumentImportCSv', {
         toriiTitle: torii.conf.core.title,
         req: req,
         logged: req.user
       });
     }else{
-    
-    	console.log('non');
     
       res.send(401, 'user not allowed');
       return;

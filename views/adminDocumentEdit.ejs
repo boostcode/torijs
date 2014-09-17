@@ -146,15 +146,12 @@ $( document ).ready(function() {
 							success: function(data, status) {
 			
 								if(status == 'success') {
-				
-									//console.log(data)
 										
 									var options = '';
 									
 									data.aaData.forEach(function(el){
 										options += '<option>'+el[campo.option.split('.')[1]]+'</option>'
 									})
-									
 									
 									$('#field_'+campo.field_name).append(options)
 									
@@ -165,30 +162,6 @@ $( document ).ready(function() {
 					}
 					
 				})
-		
-		/*
-		
-			campi.forEach(function(campo) { 
-		
-				
-				
-				if(campo["tipo"] == "select") {
-					
-					alert(JSON.stringify(campo));
-					
-				}
-		
-				html += '<div class="form-group">\
-							<label>'+ campo["label"] +'</label>\
-							<div class="input-group">\
-								<span class="input-group-addon">#</span>\
-								<input type="text" class="form-control" name="field_'+ campo["field_name"] +'" id="field_'+ campo["field_name"] +'" placeholder="Set '+ campo["label"] +'" value="'+ oggetto[campo["field_name"]] +'">\
-							</div>\
-						</div>'
-				
-			})
-			
-			*/
 		
 			$('#form_campi').html(html);
 		

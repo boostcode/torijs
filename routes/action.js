@@ -154,20 +154,14 @@ router.post('/remove', function(req, res){
       confirm: 'ok'
     });
   
-  //console.log('dentro');
-  
 });
 
 // send email 
 router.sendMail = function(req) {
 	
 	var actions = req.body.mailActions;
-	
-	
 
   actions.forEach(function(mailOptions){
-
-		console.log('M opt: '+ JSON.stringify(mailOptions));
 
     req.mail.sendMail(mailOptions, function(err, info){
       if(err){
@@ -176,6 +170,7 @@ router.sendMail = function(req) {
         console.log(info);
       }
     });
+    
   });
 	
 };

@@ -127,23 +127,18 @@ var S = require('string');
             res.send(err);
             return;
           }
-          
-          console.log('torii: '+ req.params.collection_name);
 
           if(req.params.collection_name != 'torii_structure'){
 
             var orderKey = null;
 
-            coll[0].struttura.forEach(function(element){
-            
-            	console.log('EL: '+ JSON.stringify(element));
+            coll[0].struttura.forEach(function(element) {
             
               if(element.order){
                 orderKey = element.field_name;
                 
                 //trick
                 var key = element.field_name;
-								//var json = { };
 								
 								if(element.order == 'asc')	{
 									
@@ -155,26 +150,9 @@ var S = require('string');
 									
 								}
 
-                //ordering = json;
               }
               
             });
-
-           /* if(orderKey){
-            
-              ordering.push({orderKey : '-1'});
-              
-            }*/
-            
-            console.log('order: '+ JSON.stringify(ordering));
-					
-						if(ordering) {
-							
-							console.log('dentro ordering');
-							
-							orderStr = ordering;  // {$orderby : ordering};
-							
-						}
             
           }
 
@@ -203,10 +181,8 @@ var S = require('string');
           }
 
           account.find({}, function(err, users) {
-          
-          console.log('QUER: '+ query +' and SORT '+ JSON.stringify(orderStr));
 
-          collezione.find(query).sort(orderStr).toArray(function(err, items) {
+          collezione.find(query).sort(ordering).toArray(function(err, items) {
 
             var totElems = items.length;
             
@@ -373,8 +349,6 @@ var S = require('string');
           responseJ.status = 'ok';
           responseJ.data = result;
 
-          console.log(req.params.collection_name);
-
           action.find({
             $and:[
               { 
@@ -387,10 +361,6 @@ var S = require('string');
           }, function(err, actions){
             
             var actionToSend = [];
-
-            console.log(actions);
-            
-            console.log('UTENTE RICH: '+ req.user);
 
             actions.forEach(function(act){
 
@@ -432,8 +402,6 @@ var S = require('string');
 									});
 									
 									mailOptions["to"] = destArr;
-									
-									console.log('MSG: '+ mailOptions["text"]);
 
                   if(act.message.length > 1){
                     actionToSend.push(mailOptions);
@@ -493,8 +461,6 @@ var S = require('string');
   // import csv
   router.post('/:collection_name/import',function(req, res){
     
-    console.log('qua');
-    
     // check permission
     req.user.can('api-write', req.params.collection_name, function(err, can){		
       if(err){
@@ -503,8 +469,6 @@ var S = require('string');
       }
 
       if(can || req.user.isDev){
-        
-        console.log('SEI AUTO');
         
         if(req.files.csv){
       
@@ -615,8 +579,6 @@ var S = require('string');
 			
 		}else{
 		
-		console.log('non sei auto');
-		
 			res.send(401,'you are not allowed')
 			
 		}
@@ -701,14 +663,10 @@ router.post('/:collection_name/:document_id/update', function(req, res){
         if (items.length > 0) {
 	        
 	        item = items[0];
-	        
-	        console.log('ITEM: '+ JSON.stringify(item));
 				
 					for (var key in item) {
 					
 						if (item.hasOwnProperty(key)) {
-						
-							console.log('KEY: '+ key +' | '+ JSON.stringify(values[key]) + ' == ' + JSON.stringify(item[key]));
 
 							if (!_.isEqual(values[key], item[key])) {
 								
@@ -721,8 +679,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 					}
 					
 					keysOfValuesChanged = _.difference(keysOfValuesChanged, ['_id', 'text', 'last_update', 'owner']);
-					
-					console.log('VALUS CHANG : '+ JSON.stringify(keysOfValuesChanged));
 	        
         }
         
@@ -758,8 +714,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
             
             var actionToSend = [];
             
-            console.log('ACTIONs : '+ JSON.stringify(actions));
-            
             var actionsOk = [];
             
             actions.forEach(function(act) {
@@ -770,8 +724,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 	            	
             	} else if (act.filter == 'to') {
 	            	
-	            	console.log('KEY: '+ act.filter +' | '+ JSON.stringify(values) + ' == ' + JSON.stringify(act));
-	            	
 	            	if (_.isEqual(values[act.field], act.to)) {
 		            	
 		            	actionsOk.push(act);
@@ -779,8 +731,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 	            	}
 	            	
             	} else if (act.filter == 'from') {
-            	
-            		console.log('KEY: '+ act.filter +' | '+ JSON.stringify(item[act.field]) + ' == ' + JSON.stringify(act.from));
 	            	
 	            	if (_.isEqual(item[act.field], act.from)) {
 		            	
@@ -797,16 +747,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
             	}
             
             });
-            
-           /* console.log('ACTIONs ok : '+ JSON.stringify(actionsOk));
-						
-						console.log('OWN: '+ item.owner);
-						
-						console.log('val: '+ JSON.stringify(values));
-						
-						console.log('result: '+ result);
-						*/
-						//var ownerId = new oID.createFromHexString(item.owner);
 						
 						collection.find({ _id: objectId }).toArray(function(err, itemsModified){
       
@@ -834,8 +774,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 									actionsOk.forEach(function(act) {
 		
 		                if(act.action == 'email'){
-		                  
-		                  console.log('lenght: '+ act.message.length);
 		
 		                  // Replace key with parameters
 		                  
@@ -869,8 +807,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		                  // If the CREATOR is one of the receivers
 		                  if (act.creatorMail == true) {
 			                  
-			                 console.log('USER: '+ JSON.stringify(user));
-			                  
 			                  // I add the CREATOR
 											  destArr.push(user.username);
 											   
@@ -886,8 +822,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 											
 											mailOptions["to"] = destArr;
 											
-											console.log('MSG: '+ mailOptions["text"]);
-											
 											// If only 1 message mail immediately otherwise I send message to the page
 											if(act.message.length > 1) {
 		                  	actionToSend.push(mailOptions);
@@ -902,10 +836,6 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		                }
 		          
 									});
-									
-								
-							
-							console.log("ACT TO:"+ actionToSend);
 											
 							if(actionToSend.length > 0){
 								responseJ.actions = actionToSend;
