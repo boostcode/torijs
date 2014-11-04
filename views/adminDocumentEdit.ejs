@@ -69,6 +69,8 @@ $( document ).ready(function() {
 		
 			fields.forEach(function(campo) { 
 					
+					notModificable = (campo["not_modificable"] == "true") ? "disabled" : "";
+					
 					if (campo.tipo == "string") {
 					
 						html += '\
@@ -76,7 +78,7 @@ $( document ).ready(function() {
 								<label>'+ campo.label +'</label>\
 								<div class="input-group">\
 									<span class="input-group-addon">#</span>\
-									<input type="text" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'">\
+									<input type="text" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'"'+ notModificable +'>\
 								</div>\
 							</div>';
 					}
@@ -88,7 +90,7 @@ $( document ).ready(function() {
 								<label>'+ campo.label +'</label>\
 								<div class="input-group">\
 									<span class="input-group-addon">#</span>\
-									<input type="file" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'">\
+									<input type="file" class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'" placeholder="Set '+ campo.label +'" required="required" value="'+ oggetto[campo["field_name"]] +'"'+ notModificable +'>\
 								</div>\
 							</div>';
 					}
@@ -99,7 +101,7 @@ $( document ).ready(function() {
 						<div class="form-group">\
 							<label>'+ campo.label +'</label>\
 							<div class="input-group">\
-								<select class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'">\
+								<select class="form-control" name="field_'+ campo.field_name +'" id="field_'+ campo.field_name +'"'+ notModificable +'>\
 									<option></option>';
 									
 									campo.option.split("\n").forEach(function(opt){
