@@ -36,6 +36,14 @@
 					<option value="yes">yes</option> 
 				</select>
 			</div>
+			
+			<div class="form-group">
+				<label>Export CSV<b>*</b></label>
+				<select class="form-control" id="csvexport"> 
+					<option value="no">no</option> 
+					<option value="yes">yes</option> 
+				</select>
+			</div>
 		
 			<div class="form-group" id="el_1">
 				<div class="row">
@@ -188,12 +196,15 @@
 		 			}
  			
 			 		var importCsv = $( "#csvimport option:selected" ).text();
-			 			
+			 		
+			 		var exportCsv = $( "#csvexport option:selected" ).text();
+			 		
 			 		if (nome_collezione) {
 				 			
 						collezioneObj['nome_collezione'] = nome_collezione;
 					 	collezioneObj['struttura'] = campi;
 					 	collezioneObj['import'] = importCsv;
+					 	collezioneObj['export'] = exportCsv;
 					 			
 					 	userAndToken["dati"] = collezioneObj;
 				  		

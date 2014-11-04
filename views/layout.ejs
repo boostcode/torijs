@@ -140,6 +140,16 @@
 													</a>\
 												</li>';
 											}
+											
+											// check if collection has CSV export or not show the field
+											if(collection.export == 'yes'){
+												collectionMenuBox += '<li>\
+													<a href="/admin/'+ collection.name +'/export">\
+														<i class="fa fa-angle-double-right"></i> \
+														Export '+ collection.name +' via CSV\
+													</a>\
+												</li>';
+											}
 													
 											collectionMenuBox +=	'</ul>\
 											</li>';

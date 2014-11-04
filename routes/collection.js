@@ -36,7 +36,8 @@ var S = require('string');
             
             colls.push({
               'name': colName,
-              'import': col.import
+              'import': col.import,
+              'export': col.export
             });
           }
         });
