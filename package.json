@@ -16,7 +16,7 @@
     "ejs-locals": "~1.0.2",
     "express": "~4.2.0",
     "express-session": "~1.7.5",
-    "fast-csv": "~0.4.2",
+    "fast-csv": "~0.5.3",
     "gcm": "~1.0.1",
     "mongodb": "~1.4.8",
     "mongoose": "~3.8.0",

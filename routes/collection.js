@@ -589,6 +589,136 @@ var S = require('string');
 	})	
 });
 
+// list export
+router.post('/:collection_name/export', function(req, res) {
+	  
+	// check permission
+  req.user.can('api-write', req.params.collection_name, function(err, can) {
+	    
+    if(err) {
+      res.send(err);
+      return;
+    }
+
+		if(can || req.params.collection_name == 'torii_structure' || req.user.isDev) {
+        
+      var collezione;
+      var objRemoved;
+
+      if(req.body.queryRemoved) {
+        collezione = req.db.collection('torii_removed');
+        collezione.find(req.body.queryRemoved).toArray(function(err, items){
+          objRemoved = items;
+        });
+      }
+
+      var collezione = req.db.collection(req.params.collection_name);
+        
+      var ordering = {};
+      var orderStr;
+
+      var collectionStructure = req.db.collection('torii_structure');
+
+      collectionStructure.find({
+        'nome_collezione': req.params.collection_name
+      }).toArray(function(err, coll){
+
+      if(err){
+        res.send(err);
+        return;
+      }
+
+      if(req.params.collection_name != 'torii_structure'){
+
+        var orderKey = null;
+
+        coll[0].struttura.forEach(function(element) {
+            
+          if(element.order){
+            orderKey = element.field_name;
+                
+            //trick
+            var key = element.field_name;
+								
+						if(element.order == 'asc')	{
+									
+							ordering[key] = 1;
+									
+						} else {
+									
+							ordering[key] = -1;
+									
+						}
+
+          }
+              
+        });
+            
+      }
+          
+      ordering['_id'] = -1;
+
+      var query;
+        
+      if(req.body.sSearch){
+
+        query = [];
+
+        coll[0].struttura.forEach(function(field) {
+
+        	var filter = {};
+
+          filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
+            
+          query.push( filter );
+
+        });
+            
+        query = { $or : query };
+
+      }
+
+      if(req.body.query){
+        query = req.body.query;
+      }
+      
+      
+
+      account.find({}, function(err, users) {
+
+      	collezione.find(query).sort(ordering).toArray(function(err, items) {
+
+
+
+ 
+
+csv.writeToString(
+    items,
+    {headers: true},
+    function(err, data){
+        console.log(data); //"a,b\na1,b1\na2,b2\n"
+        
+        res.set({"Content-Disposition":"attachment; filename=export.csv"});
+	    
+	    res.send(data);
+        
+    }
+);
+					
+
+/*
+        	;*/
+        	
+        });
+                
+      }); });
+      
+    }
+
+  });
+
+});
+
 // show document in collection
 router.post('/:collection_name/:document_id', function(req, res){
   req.user.can('api-read', req.params.collection_name, function(err, can) {
@@ -936,7 +1066,5 @@ router.post('/:collection_name/:document_id/delete', function(req, res){
     }
   });
 });
-
-
 
 module.exports = router;
