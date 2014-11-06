@@ -6,6 +6,7 @@ var role = rbac.Role;
 var permission = rbac.Permission;
 var torii = require('../conf/torii.conf.js').torii;
 
+
 // registration
 router.post('/register', function(req, res){
   account.register(new account({
@@ -88,7 +89,6 @@ router.post('/logout', function(req, res){
     action: 'logout'
   });
 });
-
 
 // update
 router.post('/update', function(req, res){

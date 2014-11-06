@@ -69,8 +69,6 @@
           $('#collectionMenu').addClass('active');
         }
           
-          
-				
 				splits = $.cookie('toriijs').toString().split('|');
 				
 				username = splits[0];
@@ -217,25 +215,11 @@
 						url: "/collection/"+ collectionName.replace("export_", "") +"/export",
 						data: userAndToken,
 						success: function( data, status) {
-												
-							//location.href='data:application/download,' + encodeURIComponent(data)
 							
-							//var pom = document.createElement('a');
-							//pom.setAttribute('href', 'data:application/download,' + encodeURIComponent(data));
-							//pom.setAttribute('download', collectionName +'.csv');
-							//pom.click();
-										
-							//var BOM = "\uFEFF";
 							var BOM = "";
 							var csvData = BOM + data;
 							var blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
 							saveAs(blob, collectionName +'.csv');
-										
-							//var blob = new Blob("data", {type: "text/csv;charset=utf-8"});
-							//saveAs(blob, collectionName +'.csv');
-												
-							$('#errordiv').show();
-							$('#error').html(JSON.stringify(status));
 							
 						},
 						error: function ( req, status, error){

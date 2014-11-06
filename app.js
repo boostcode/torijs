@@ -49,8 +49,6 @@ if(transport == null){
 
 var mail = null;
 
-
-
 var app = express();
 
 // view engine setup
