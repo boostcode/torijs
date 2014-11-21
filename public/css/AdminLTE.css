@@ -3533,3 +3533,24 @@ fieldset[disabled] .btn-vk.active {
   color: #587ea3;
   background-color: #ffffff;
 }
+
+#boxRicercaMultipla {
+	
+	border: #ddd 1px solid;
+	margin-bottom: 20px;
+	padding: 10px;
+	
+}
+
+.opt_general {
+	
+	border: 0px solid;
+	margin: 5px;
+	/*font-size: 20px;*/
+	float: left;
+	width: 45%;
+	
+}
+
+.opt_general input { width: 20px; height: 20px; margin-right: 5px; margin-top: -5px; } 
+.opt_general label { position: relative; top: -3px; font-weight: 600; }

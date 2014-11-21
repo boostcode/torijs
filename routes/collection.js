@@ -172,6 +172,8 @@ var S = require('string');
 
               filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
             
+            console.log('Fs: '+ JSON.stringify(filter));
+            
               query.push( filter );
 
             });
@@ -179,9 +181,32 @@ var S = require('string');
             query = { $or : query };
 
           }
+          
 
           if(req.body.query){
             query = req.body.query;
+          }
+          
+          
+          // Query datatables
+          if(req.body.queryDataTablesCampo && req.body.queryDataTablesRicerca){
+	          
+	          query = [];
+	          
+	          var elm = req.body.queryDataTablesRicerca.split(',');
+	          
+	          elm.forEach(function(term){
+
+              var filterD = {};
+
+              filterD[req.body.queryDataTablesCampo] = { $regex : ".*"+term+".*", $options: "i" };
+            
+              query.push(filterD);
+
+            });
+	          
+	          query = { $or : query };
+
           }
 
           account.find({}, function(err, users) {
