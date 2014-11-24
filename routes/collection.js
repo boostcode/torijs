@@ -648,98 +648,90 @@ router.post('/:collection_name/export', function(req, res) {
         'nome_collezione': req.params.collection_name
       }).toArray(function(err, coll){
 
-      if(err){
-        res.send(err);
-        return;
-      }
+      	if(err){
+        	res.send(err);
+					return;
+      	}
 
-      if(req.params.collection_name != 'torii_structure'){
-
-        var orderKey = null;
-
-        coll[0].struttura.forEach(function(element) {
-            
-          if(element.order){
-            orderKey = element.field_name;
-                
-            //trick
-            var key = element.field_name;
-								
-						if(element.order == 'asc')	{
+	      if(req.params.collection_name != 'torii_structure'){
+	
+	        var orderKey = null;
+	
+	        coll[0].struttura.forEach(function(element) {
+	            
+	          if(element.order){
+	            orderKey = element.field_name;
+	                
+	            //trick
+	            var key = element.field_name;
 									
-							ordering[key] = 1;
-									
-						} else {
-									
-							ordering[key] = -1;
-									
-						}
-
-          }
-              
-        });
-            
-      }
+							if(element.order == 'asc')	{
+										
+								ordering[key] = 1;
+										
+							} else {
+										
+								ordering[key] = -1;
+										
+							}
+	
+	          }
+	              
+	        });
+	            
+	      }
           
-      ordering['_id'] = -1;
+	      ordering['_id'] = -1;
+	
+	      var query;
+	        
+	      /*if(req.body.sSearch){
+	
+	        query = [];
+	
+	        coll[0].struttura.forEach(function(field) {
+	
+	        	var filter = {};
+	
+	          filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
+	            
+	          query.push( filter );
+	
+	        });
+	            
+	        query = { $or : query };
+	
+	      }
+	
+	      if(req.body.query){
+	        query = req.body.query;
+	      }
+      */
+				console.log('query: '+ query);
 
-      var query;
-        
-      if(req.body.sSearch){
+				account.find({}, function(err, users) {
 
-        query = [];
-
-        coll[0].struttura.forEach(function(field) {
-
-        	var filter = {};
-
-          filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
-            
-          query.push( filter );
-
-        });
-            
-        query = { $or : query };
-
-      }
-
-      if(req.body.query){
-        query = req.body.query;
-      }
-      
-      
-
-      account.find({}, function(err, users) {
-
-      	collezione.find(query).sort(ordering).toArray(function(err, items) {
+      		collezione.find(query).sort(ordering).toArray(function(err, items) {
 
 
-
+						console.log('item: '+ JSON.stringify(items));
  
 
-csv.writeToString(
-    items,
-    {headers: true},
-    function(err, data){
-        console.log(data); //"a,b\na1,b1\na2,b2\n"
-        
-        res.set({"Content-Disposition":"attachment; filename=export.csv"});
-	    
-	    res.send(data);
-        
+						csv.writeToString(
+						  items,
+						  {headers: true},
+						  function(err, data){
+						    
+						    console.log(data); //"a,b\na1,b1\na2,b2\n"    
+						    res.set({"Content-Disposition":"attachment; filename=export.csv"});
+							  res.send(data);
+						        
+						  }
+						);
+        	});          
+      	});
+      });
     }
-);
-					
-
-/*
-        	;*/
-        	
-        });
-                
-      }); });
-      
-    }
-
   });
 
 });
