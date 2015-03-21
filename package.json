@@ -10,6 +10,8 @@
     "apns": "~0.1.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.0.0",
+    "captcha": "0.0.4",
+    "connect-multiparty": "~1.2.4",
     "cookie-parser": "~1.0.1",
     "debug": "~0.7.4",
     "ejs": "~0.8.5",
@@ -29,12 +31,12 @@
     "passport-local": "~1.0.0",
     "passport-local-mongoose": "~0.2.5",
     "passport-token": "~0.1.1",
+    "rand-token": "0.2.1",
+    "rusty": "0.0.2",
     "static-favicon": "~1.0.0",
     "string": "^1.9.1",
     "template": "^0.2.1",
     "token": "0.0.0",
-    "underscore": "~1.6.0",
-    "connect-multiparty": "~1.2.4",
-    "rand-token" : "0.2.1"
+    "underscore": "~1.6.0"
   }
 }

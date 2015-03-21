@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var action = require('../models/action');
-var torii = require('../conf/torii.conf.js').torii;
+var torii = require('../conf/torii.conf.js');
 
 // list
 router.post('/list.json',function(req,res){
@@ -119,7 +119,7 @@ router.post('/update', function(req, res){
     if(req.body.from.length >0 && req.body.from != action.from){
       action.from = req.body.from;
     }
-    
+
     if(req.body.message.length >0 && req.body.message != action.message){
       action.message = req.body.message;
     }
@@ -145,20 +145,20 @@ router.post('/remove', function(req, res){
   });
 });
 
-// send email 
+// send email
   router.post('/sendmail', function(req, res){
-  
+
   router.sendMail(req);
-  
+
   res.send({
       confirm: 'ok'
     });
-  
+
 });
 
-// send email 
+// send email
 router.sendMail = function(req) {
-	
+
 	var actions = req.body.mailActions;
 
   actions.forEach(function(mailOptions){
@@ -170,9 +170,9 @@ router.sendMail = function(req) {
         console.log(info);
       }
     });
-    
+
   });
-	
+
 };
 
 module.exports = router;

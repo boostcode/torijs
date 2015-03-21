@@ -8,7 +8,7 @@ var csv = require('fast-csv');
 var _ = require('underscore');
 var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js').torii;
+var torii = require('../conf/torii.conf.js');
 var actionFunction = require('../routes/action');
 var template = require('template');
 var S = require('string');
@@ -33,7 +33,7 @@ var S = require('string');
           var colName = col.nome_collezione;
 
           if((colName != 'system') && (colName != 'torii_structure') && (colName != 'torii_removed')){
-            
+
             colls.push({
               'name': colName,
               'import': col.import,
@@ -64,7 +64,7 @@ var S = require('string');
 
   // check for updates
   router.post('/:collection_name/hasupdate', function(req, res){
-  
+
     req.user.can('api-read', req.params.collection_name, function(err, can){
       if(err){
         res.send(err);
@@ -103,7 +103,7 @@ var S = require('string');
         return;
       }
       if(can || req.params.collection_name == 'torii_structure' || req.user.isDev){
-        
+
         var collezione;
         var objRemoved;
 
@@ -115,7 +115,7 @@ var S = require('string');
         }
 
         var collezione = req.db.collection(req.params.collection_name);
-        
+
         var ordering = {};
         var orderStr;
 
@@ -135,33 +135,33 @@ var S = require('string');
             var orderKey = null;
 
             coll[0].struttura.forEach(function(element) {
-            
+
               if(element.order){
                 orderKey = element.field_name;
-                
+
                 //trick
                 var key = element.field_name;
-								
+
 								if(element.order == 'asc')	{
-									
+
 									ordering[key] = 1;
-									
+
 								} else {
-									
+
 									ordering[key] = -1;
-									
+
 								}
 
               }
-              
+
             });
-            
+
           }
-          
+
           ordering['_id'] = -1;
 
           var query;
-        
+
           if(req.body.sSearch){
 
             query = [];
@@ -171,40 +171,40 @@ var S = require('string');
               var filter = {};
 
               filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
-            
+
             console.log('Fs: '+ JSON.stringify(filter));
-            
+
               query.push( filter );
 
             });
-            
+
             query = { $or : query };
 
           }
-          
+
 
           if(req.body.query){
             query = req.body.query;
           }
-          
-          
+
+
           // Query datatables
           if(req.body.queryDataTablesCampo && req.body.queryDataTablesRicerca){
-	          
+
 	          query = [];
-	          
+
 	          var elm = req.body.queryDataTablesRicerca.split(',');
-	          
+
 	          elm.forEach(function(term){
 
               var filterD = {};
 
               filterD[req.body.queryDataTablesCampo] = { $regex : ".*"+term+".*", $options: "i" };
-            
+
               query.push(filterD);
 
             });
-	          
+
 	          query = { $or : query };
 
           }
@@ -214,9 +214,9 @@ var S = require('string');
           collezione.find(query).sort(ordering).toArray(function(err, items) {
 
             var totElems = items.length;
-            
+
             // TODO: sub filter elements
-            
+
             // order according selection
             // let's use underscore to sort but need to retrieve the element of the collection structu
 
@@ -265,12 +265,12 @@ var S = require('string');
       }
 
       var struct = req.db.collection('torii_structure');
-      
+
       // lovercase name of collection
       req.body.dati.nome_collezione = req.body.dati.nome_collezione.toLowerCase();
-      
+
       struct.insert(req.body.dati, {w:1}, function(err, result){
-      
+
         if(err){
           res.send(err);
           return;
@@ -301,7 +301,7 @@ var S = require('string');
             return;
           }
         });
-        
+
         res.send({
           status: 'ok'
         });
@@ -339,7 +339,7 @@ var S = require('string');
               data: result
             });
           });
-        
+
           permission.remove({
             subject: req.params.collection_name
           },function(err){
@@ -351,7 +351,7 @@ var S = require('string');
 
         });
       }else{
-        res.send(401, 'user not allowed');  
+        res.send(401, 'user not allowed');
       }
     });
   });
@@ -369,7 +369,7 @@ var S = require('string');
         value.text = '';
 
         value.owner = req.user._id;
-        
+
         var responseJ = {};
 
         collection.insert(value, {w:1}, function(err, result){
@@ -380,7 +380,7 @@ var S = require('string');
 
           action.find({
             $and:[
-              { 
+              {
                 trigger: 'create'
               },
               {
@@ -388,48 +388,48 @@ var S = require('string');
               }
             ]
           }, function(err, actions){
-            
+
             var actionToSend = [];
 
             actions.forEach(function(act){
 
                 if(act.action == 'email'){
-                  
+
                   var msgVal = [];
-                  
+
                   act.message.forEach(function(msg) {
-                    
+
                     msgVal.push(template(msg, {
                       creator: req.user, item: value
                     }));
-                    
+
                   });
-                  
+
                   var mailOptions = {
                     from: torii.conf.mail.from,
                     to: '',
                     subject: act.name + ' - ' + result[0]._id,
                     text: msgVal
                   };
-                  
+
                   var destArr = [];
-                  
+
                   // If the CREATOR is one of the receivers
                   if (act.creatorMail == true) {
-	                  
+
 	                  // I add the CREATOR
 									  destArr.push(req.user.username);
-									   
+
 									}
-									
+
 									var other = act.receiver.split(',');
-									
+
 									other.forEach(function(msgO) {
-										
+
 										destArr.push(S(msgO).trim().s);
-										
+
 									});
-									
+
 									mailOptions["to"] = destArr;
 
                   if(act.message.length > 1){
@@ -439,18 +439,18 @@ var S = require('string');
                     req.body.mailActions = [mailOptions];
                     actionFunction.sendMail(req);
                   }
-                  
+
                 }else if(act.action == 'push'){
                   // TODO add push
                 }
-          
+
             });
 
             if(actionToSend.length > 0){
               responseJ.actions = actionToSend;
             }
             res.send(responseJ);
-          }); 
+          });
         });
       }else{
         res.send(401, 'user not allowed');
@@ -468,7 +468,7 @@ var S = require('string');
 
       if(can || req.user.isDev){
         var collection = req.db.collection(req.params.collection_name);
-        
+
         collection.remove(function(err, result){
           if(err){
             res.send(err);
@@ -489,22 +489,22 @@ var S = require('string');
 
   // import csv
   router.post('/:collection_name/import',function(req, res){
-    
+
     // check permission
-    req.user.can('api-write', req.params.collection_name, function(err, can){		
+    req.user.can('api-write', req.params.collection_name, function(err, can){
       if(err){
         res.send(err);
         return;
       }
 
       if(can || req.user.isDev){
-        
+
         if(req.files.csv){
-      
+
           var structure = req.db.collection('torii_structure');
-      
+
           var uniqueId = '';
-      
+
           structure.find({'nome_collezione': req.params.collection_name }).toArray(function(err, items) {
             if(err){
               res.send(err);
@@ -513,120 +513,120 @@ var S = require('string');
 
             // let's assume that we have only a collection with that very name
             item = items[0];
-        
+
             // loop within the structure
             item.struttura.forEach(function(element) {
-                  
+
               if(element.unico == 'true'){
                 uniqueId = element.field_name;
                 return;
               }
             });
-        
+
             // if structure has unique id
             if(uniqueId != ''){
-          
+
               // retrieve collection items
               var collection = req.db.collection(req.params.collection_name);
               collection.find({}).toArray(function(err, colls){
-                
+
                 if(err){
                   res.send(err);
                   return;
                 }
-            
+
                 // open csv file
                 var stream = fs.createReadStream(req.files.csv.path);
-            
+
                 // process csv
                 csv.fromStream(stream, {
                   headers : true,
                   delimiter : ';'
                 })
                 .on("record", function(data){
-                          
+
                   var lists = [];
-              
+
                   var query = {};
                   query[uniqueId] = data[uniqueId];
-                          
+
                   // check if item exists
                   lists = _.where(colls, query);
-                          
+
                   // if already exists
                   if(lists.length > 0){
-                                            
+
                     // Cerco il document in base all'objectId e modifico i campi passati da req.body
                     collection.update({'_id':lists[0]._id}, {$set:data}, {w:1}, function(err, result) {
-                
-                        if(err) { 
+
+                        if(err) {
                           res.send(err);
                           return;
                         }
-                
+
                     });
-                              
+
                   }else{ // create new
-                
+
                     collection.insert(data, {w:1}, function(err, result) {
                       if(err){
                         res.send(err);
                         return;
                       }
                     });
-                
+
                   }
-              
+
                 })
                 .on("end", function(){
-              
+
                   // unlink it
                   fs.unlink(req.files.csv.path);
-              
-                  // response 
+
+                  // response
                   res.json({
                     'status': 'Csv import completed!'
                   });
-              
+
                 });
-            
+
               });
-          
+
             }else{
               res.json({
                 'error':'missing unique field for import'
               });
 					}
-			
+
 				})
-		
+
 			}else{
 				res.json({
 					'error': 'csv file error'
 				});
 			}
-			
+
 		}else{
-		
+
 			res.send(401,'you are not allowed')
-			
+
 		}
-	})	
+	})
 });
 
 // list export
 router.post('/:collection_name/export', function(req, res) {
-	  
+
 	// check permission
   req.user.can('api-write', req.params.collection_name, function(err, can) {
-	    
+
     if(err) {
       res.send(err);
       return;
     }
 
 		if(can || req.params.collection_name == 'torii_structure' || req.user.isDev) {
-        
+
       var collezione;
       var objRemoved;
 
@@ -638,7 +638,7 @@ router.post('/:collection_name/export', function(req, res) {
       }
 
       var collezione = req.db.collection(req.params.collection_name);
-        
+
       var ordering = {};
       var orderStr;
 
@@ -654,55 +654,55 @@ router.post('/:collection_name/export', function(req, res) {
       	}
 
 	      if(req.params.collection_name != 'torii_structure'){
-	
+
 	        var orderKey = null;
-	
+
 	        coll[0].struttura.forEach(function(element) {
-	            
+
 	          if(element.order){
 	            orderKey = element.field_name;
-	                
+
 	            //trick
 	            var key = element.field_name;
-									
+
 							if(element.order == 'asc')	{
-										
+
 								ordering[key] = 1;
-										
+
 							} else {
-										
+
 								ordering[key] = -1;
-										
+
 							}
-	
+
 	          }
-	              
+
 	        });
-	            
+
 	      }
-          
+
 	      ordering['_id'] = -1;
-	
+
 	      var query;
-	        
+
 	      /*if(req.body.sSearch){
-	
+
 	        query = [];
-	
+
 	        coll[0].struttura.forEach(function(field) {
-	
+
 	        	var filter = {};
-	
+
 	          filter[field.field_name] = { $regex : ".*"+req.body.sSearch+".*", $options: "i" };
-	            
+
 	          query.push( filter );
-	
+
 	        });
-	            
+
 	        query = { $or : query };
-	
+
 	      }
-	
+
 	      if(req.body.query){
 	        query = req.body.query;
 	      }
@@ -715,20 +715,20 @@ router.post('/:collection_name/export', function(req, res) {
 
 
 						console.log('item: '+ JSON.stringify(items));
- 
+
 
 						csv.writeToString(
 						  items,
 						  {headers: true},
 						  function(err, data){
-						    
-						    console.log(data); //"a,b\na1,b1\na2,b2\n"    
+
+						    console.log(data); //"a,b\na1,b1\na2,b2\n"
 						    res.set({"Content-Disposition":"attachment; filename=export.csv"});
 							  res.send(data);
-						        
+
 						  }
 						);
-        	});          
+        	});
       	});
       });
     }
@@ -739,14 +739,14 @@ router.post('/:collection_name/export', function(req, res) {
 // show document in collection
 router.post('/:collection_name/:document_id', function(req, res){
   req.user.can('api-read', req.params.collection_name, function(err, can) {
-    
+
     if(err){
       res.send(err);
       returnl;
     }
-    
+
     if(can || req.user.isDev) {
-    
+
       var collection = req.db.collection(req.params.collection_name);
 
       if(req.params.document_id) {
@@ -763,7 +763,7 @@ router.post('/:collection_name/:document_id', function(req, res){
       }
 
       collection.find(query).toArray(function(err, items){
-      
+
         if(err){
           res.send(err);
           return;
@@ -773,7 +773,7 @@ router.post('/:collection_name/:document_id', function(req, res){
           status: 'ok',
           data: items
         });
-        
+
       });
 
     } else {
@@ -786,7 +786,7 @@ router.post('/:collection_name/:document_id', function(req, res){
 router.post('/:collection_name/:document_id/update', function(req, res){
 
 	req.user.can('api-write', req.params.collection_name, function(err, can) {
-  	
+
   	if(err){
       res.send(err);
       return;
@@ -799,43 +799,43 @@ router.post('/:collection_name/:document_id/update', function(req, res){
     values.last_update = new Date().getTime();
 
     var objectId = new oID.createFromHexString(req.params.document_id);
-      
+
     collection.find({ _id: objectId }).toArray(function(err, items){
-      
+
         if(err){
           res.send(err);
           return;
         }
-        
+
         var keysOfValuesChanged = [];
-        
+
         var item;
-        
+
         if (items.length > 0) {
-	        
+
 	        item = items[0];
-				
+
 					for (var key in item) {
-					
+
 						if (item.hasOwnProperty(key)) {
 
 							if (!_.isEqual(values[key], item[key])) {
-								
+
 								keysOfValuesChanged.push(key);
-								
+
 							}
-						
+
 						}
-						
+
 					}
-					
+
 					keysOfValuesChanged = _.difference(keysOfValuesChanged, ['_id', 'text', 'last_update', 'owner']);
-	        
+
         }
-        
+
         // aggiorno solo dopo aver controllato quali valori sono da modificare
         collection.update({ _id: objectId }, { $set: values }, { w: 1 }, function(err, result){
-		      
+
 		      if(err){
 		        res.send(err);
 		        return;
@@ -845,15 +845,15 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		        status: 'ok',
 		        data: result
 		      });*/
-		      
+
 					var responseJ = {};
-					
+
 					responseJ.status = 'ok';
           responseJ.data = result;
-		    
+
 		    action.find({
             $and:[
-              { 
+              {
                 trigger: 'edit'
               },
               {
@@ -862,82 +862,82 @@ router.post('/:collection_name/:document_id/update', function(req, res){
               { field: { $in: keysOfValuesChanged } }
             ]
           }, function(err, actions){
-            
+
             var actionToSend = [];
-            
+
             var actionsOk = [];
-            
+
             actions.forEach(function(act) {
-            
+
             	if (act.filter == 'value') {
-	            	
+
 	            	actionsOk.push(act);
-	            	
+
             	} else if (act.filter == 'to') {
-	            	
+
 	            	if (_.isEqual(values[act.field], act.to)) {
-		            	
+
 		            	actionsOk.push(act);
-		            	
+
 	            	}
-	            	
+
             	} else if (act.filter == 'from') {
-	            	
+
 	            	if (_.isEqual(item[act.field], act.from)) {
-		            	
+
 		            	actionsOk.push(act);
-		            	
+
 	            	}
-	            	
+
             	} else if (act.filter == 'fromto') {
-	            	
+
 	            	// TO DO
-		            
+
 		            actionsOk.push(act);
-		            	
+
             	}
-            
+
             });
-						
+
 						collection.find({ _id: objectId }).toArray(function(err, itemsModified){
-      
+
 			        if(err){
 			          res.send(err);
 			          return;
 			        }
-			        
+
 			        var keysOfValuesChanged = [];
-			        
+
 			        var itemModified;
-			        
+
 			        if (itemsModified.length > 0) {
-				        
+
 				        itemModified = itemsModified[0];
-						
+
 								// I find the email of CREATOR
 			          account.findById(item.owner, '_id username role isAdmin isDev name surname extraFields', function(err, user) {
-			                  
+
 									if(err){
 										res.send(err);
 										return;
 									}
-		
+
 									actionsOk.forEach(function(act) {
-		
+
 		                if(act.action == 'email'){
-		
+
 		                  // Replace key with parameters
-		                  
+
 		                  var msgVal = [];
-		                  
+
 		                  act.message.forEach(function(msg) {
-		                    
+
 		                    msgVal.push(template(msg, {
 		                      creator: user, item: itemModified, editor: req.user
 		                    }));
-		                    
+
 		                  });
-		                  
+
 		                  // Email options
 		                  var mailOptions = {
 		                    from: torii.conf.mail.from,
@@ -945,34 +945,34 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 		                    subject: act.name + ' - '+ req.params.document_id,
 		                    text: msgVal
 		                  };
-		                  
+
 		                  var destArr = [];
-		                                    
+
 		                  // If there is also the EDITOR I add him
 			                if ((act.editorMail == true)) {
-			                  
+
 			                  destArr.push(req.user.username);
-			                  
+
 			                }
-		                  
+
 		                  // If the CREATOR is one of the receivers
 		                  if (act.creatorMail == true) {
-			                  
+
 			                  // I add the CREATOR
 											  destArr.push(user.username);
-											   
+
 											}
-											
+
 											var other = act.receiver.split(',');
-											
+
 											other.forEach(function(msgO) {
-												
+
 												destArr.push(S(msgO).trim().s);
-												
+
 											});
-											
+
 											mailOptions["to"] = destArr;
-											
+
 											// If only 1 message mail immediately otherwise I send message to the page
 											if(act.message.length > 1) {
 		                  	actionToSend.push(mailOptions);
@@ -981,38 +981,38 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 												req.body.mailActions = [mailOptions];
 												actionFunction.sendMail(req);
 											}
-											
+
 		                } else if(act.action == 'push') {
 		                  // TODO add push
 		                }
-		          
+
 									});
-											
+
 							if(actionToSend.length > 0){
 								responseJ.actions = actionToSend;
 							}
 							res.send(responseJ);
-            
+
             });
-          
-          
+
+
           	}
-								
+
 							});
-          
+
           // close action find
          });
-               
-               
+
+
       // close update
 	  });
 
     // close find
   });
-  
+
   	// close api
   });
-  
+
   // close function
 });
 
@@ -1028,7 +1028,7 @@ router.post('/:collection_name/:document_id/delete', function(req, res){
       var collection = req.db.collection(req.params.collection_name);
 
       var objectId = new oID.createFromHexString(req.params.document_id);
-      
+
       var query = {};
 
       if(objectId){
@@ -1053,9 +1053,9 @@ router.post('/:collection_name/:document_id/delete', function(req, res){
         _id: objectId
       },{
         w: 1
-      }, 
+      },
       function(err, result){
-      
+
         if(err){
           res.send(err);
           return;

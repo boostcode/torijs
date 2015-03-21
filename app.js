@@ -1,5 +1,5 @@
 // Configuration
-var torii = require('./conf/torii.conf.js').torii;
+var torii = require('./conf/torii.conf.js');
 
 // Express
 var express = require('express');
@@ -28,6 +28,9 @@ var localStrategy = require('passport-local').Strategy;
 var tokenStrategy = require('passport-token').Strategy;
 var token = require('token');
 var account = require('./models/account');
+
+// Captcha
+var rusty = require("rusty");
 
 // Database
 var mongoClient = require('mongodb').MongoClient;
@@ -61,11 +64,19 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session({ 
-  secret: 'js.iirot' 
+app.use(session({
+  secret: 'js.iirot'
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use("/captcha.png", rusty.middleware({
+    width: 120,
+    height: 50,
+    chars: 'abcdefghjkmnopqrstuvwxyz',
+    length: 4,
+    fonts: ['20px sans', '20px bold sans'],
+    session: 'captcha'
+}));
 
 // database setup
 app.use(function(req, res, next){
@@ -92,7 +103,7 @@ app.use(function(req, res, next){
     req.mail = mail;
     next();
   }else{
-    
+
     var emailSetup = {};
 
     if(torii.conf.mail.host){
@@ -160,7 +171,13 @@ app.all('/user/*', passport.authenticate('token'));
 app.all('/role/*', passport.authenticate('token'));
 app.all('/action/*', passport.authenticate('token'));
 
-app.post('/auth/login', passport.authenticate('local'));
+app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
+    if(req.verifyCaptcha(req.body.captcha)) {
+      passport.authenticate('local')(req, res, next);
+    }else{
+      res.send(401,{ error: 'invalid captcha' })
+    }
+});
 
 app.all('/admin/*', isLogged);
 

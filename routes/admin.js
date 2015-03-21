@@ -3,7 +3,7 @@ var router = express.Router();
 var account = require('../models/account');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
-var torii = require('../conf/torii.conf.js').torii;
+var torii = require('../conf/torii.conf.js');
 
 // admin root
 router.get('/', function(req, res){
@@ -42,7 +42,7 @@ router.get('/user/:userid/edit', function(req, res){
       res.send(err);
       return;
     }
-    
+
     user._id = user._id.toHexString();
 
     role.find({}, function(err, roles){
@@ -110,7 +110,7 @@ router.get('/role/:role_id/edit', function(req, res){
       res.send(err);
       return;
     }
-    
+
     res.render('adminRoleEdit', {
       toriiTitle: torii.conf.core.title,
       logged: req.user,
@@ -189,14 +189,14 @@ router.get('/:collection_name/import', function(req, res){
     }
 
     if(can || req.user.isDev){
-    
+
       res.render('adminDocumentImportCSv', {
         toriiTitle: torii.conf.core.title,
         req: req,
         logged: req.user
       });
     }else{
-    
+
       res.send(401, 'user not allowed');
       return;
     }
