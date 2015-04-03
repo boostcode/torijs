@@ -174,7 +174,7 @@ app.get('/', function(req, res){
   res.redirect('/auth/login');
 });
 
-app.post("/auth/login/mobile", passport.authenticate('local'));
+app.post("/auth/mobile", passport.authenticate('local'));
 
 app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     if(req.body.api){
