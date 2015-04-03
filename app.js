@@ -193,6 +193,8 @@ app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     }
 });
 
+app.post('/auth/login/mobile', passport.authenticate('local'));
+
 app.all('/admin/*', isLogged);
 
 
