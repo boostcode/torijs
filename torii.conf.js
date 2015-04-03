@@ -6,6 +6,7 @@ var torii = {
       user: 'torii_user_db'
     },
     core: {
+      https: false,
       title: 'Torii.js',
       welcomeTitle: 'Hint & Tips',
       welcomeMessage: 'Welcome to Torii.js Admin dashboard!',
