@@ -37,6 +37,21 @@ router.post('/login', function(req, res){
 
 });
 
+router.post('/mobile', function(req, res){
+  var userToken = token.generate(req.user.username+'|'+req.user.id);
+
+  account.findById(req.user.id, function(err, user){
+    user.token = userToken;
+    user.save();
+  });
+
+  res.send({
+    name: req.user.username,
+    token: userToken,
+    id: req.user.id
+  });
+})
+
 router.get('/register', function(req, res){
 
 	if(!torii.conf.core.allowPublicUserRegistration){
@@ -92,7 +107,7 @@ router.post('/getuniquecode', function(req, res) {
       	from: torii.conf.mail.from,
 				to: user.username,
 				subject: 'Reset password',
-				text: 'Questo � il tuo nuovo codice: '+ user.resetPassword +' inseriscilo sull ipad'
+				text: 'Questo e il tuo nuovo codice: '+ user.resetPassword +' inseriscilo sull ipad'
 
     	};
 
