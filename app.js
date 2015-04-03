@@ -174,22 +174,22 @@ app.get('/', function(req, res){
   res.redirect('/auth/login');
 });
 
-app.post("/auth/mobile", passport.authenticate('local'));
-
-app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
-      if(req.verifyCaptcha(req.body.captcha)) {
-        passport.authenticate('local')(req, res, next);
-      }else{
-        res.send(401,{ error: 'invalid captcha' })
-      }
-});
-
 app.all('/*/import', multipartMiddleware);
 
 app.all('/collection/*', passport.authenticate('token'));
 app.all('/user/*', passport.authenticate('token'));
 app.all('/role/*', passport.authenticate('token'));
 app.all('/action/*', passport.authenticate('token'));
+
+app.post("/auth/mobile", passport.authenticate('local'));
+
+/*app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
+  if(req.verifyCaptcha(req.body.captcha)) {
+    passport.authenticate('local')(req, res, next);
+  }else{
+    res.send(401,{ error: 'invalid captcha' })
+  }
+});*/
 
 app.all('/admin/*', isLogged);
 
