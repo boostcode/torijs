@@ -174,14 +174,7 @@ app.get('/', function(req, res){
   res.redirect('/auth/login');
 });
 
-app.all('/*/import', multipartMiddleware);
-
-app.all('/collection/*', passport.authenticate('token'));
-app.all('/user/*', passport.authenticate('token'));
-app.all('/role/*', passport.authenticate('token'));
-app.all('/action/*', passport.authenticate('token'));
-
-app.post('/auth/login/mobile', passport.authenticate('local'));
+app.post("/auth/login/mobile", passport.authenticate('local'));
 
 app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     if(req.body.api){
@@ -195,6 +188,12 @@ app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     }
 });
 
+app.all('/*/import', multipartMiddleware);
+
+app.all('/collection/*', passport.authenticate('token'));
+app.all('/user/*', passport.authenticate('token'));
+app.all('/role/*', passport.authenticate('token'));
+app.all('/action/*', passport.authenticate('token'));
 
 app.all('/admin/*', isLogged);
 
