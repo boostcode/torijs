@@ -125,6 +125,15 @@ app.use(function(req, res, next){
   }
 });
 
+// force https
+if(torii.conf.https){
+    app.use(function(req, res, next) {
+	  if (req.headers["x-forwarded-proto"] === "https"){
+		  return next();
+	  }
+	  res.redirect("https://" + req.headers.host + req.url);
+  });
+}
 
 // auth strategies
 passport.use(new localStrategy(account.authenticate()));
