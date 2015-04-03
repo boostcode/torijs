@@ -75,7 +75,8 @@ app.use("/captcha.png", rusty.middleware({
     chars: 'abcdefghjkmnopqrstuvwxyz',
     length: 4,
     fonts: ['20px sans', '20px bold sans'],
-    session: 'captcha'
+    session: 'captcha',
+    color: '#000000'
 }));
 
 // database setup
