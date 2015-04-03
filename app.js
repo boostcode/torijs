@@ -182,10 +182,14 @@ app.all('/role/*', passport.authenticate('token'));
 app.all('/action/*', passport.authenticate('token'));
 
 app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
-    if(req.verifyCaptcha(req.body.captcha)) {
+    if(req.body.api){
       passport.authenticate('local')(req, res, next);
     }else{
-      res.send(401,{ error: 'invalid captcha' })
+      if(req.verifyCaptcha(req.body.captcha)) {
+        passport.authenticate('local')(req, res, next);
+      }else{
+        res.send(401,{ error: 'invalid captcha' })
+      }
     }
 });
 
