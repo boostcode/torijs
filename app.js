@@ -181,6 +181,8 @@ app.all('/user/*', passport.authenticate('token'));
 app.all('/role/*', passport.authenticate('token'));
 app.all('/action/*', passport.authenticate('token'));
 
+app.post('/auth/login/mobile', passport.authenticate('local'));
+
 app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     if(req.body.api){
       passport.authenticate('local')(req, res, next);
@@ -193,7 +195,6 @@ app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
     }
 });
 
-app.post('/auth/login/mobile', passport.authenticate('local'));
 
 app.all('/admin/*', isLogged);
 
