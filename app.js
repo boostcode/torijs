@@ -44,7 +44,7 @@ if(tori.conf.mail.service == 'smtp'){
 }
 
 if(transport == null){
-  throw Error('Mail transport not setup, please check your configuration file');
+  throw Error('❌  📨  Mail transport not setup, please check your configuration file');
 }
 
 var mail = null;

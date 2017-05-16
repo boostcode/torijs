@@ -2,8 +2,12 @@
 var app = require('../app');
 
 // get tori configuration
-var tori = require('../conf/tori.conf.js').tori;
-
+try {
+  var tori = require('../conf/tori.conf.js').tori;
+} catch (e) {
+  console.error('❌  🗄  torijs configuration is not valid, please check it under /conf/tori.conf.js');
+  process.exit();
+}
 
 app.set('port', tori.conf.core.port || 8000);
 
