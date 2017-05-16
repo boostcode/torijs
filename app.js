@@ -16,7 +16,6 @@ var multipartMiddleware = multipart();
 // Routes
 var action = require('./routes/action');
 var admin = require('./routes/admin');
-var auth = require('./routes/authenticate');
 var collection = require('./routes/collection');
 var role = require('./routes/role');
 var perm = require('./routes/permission');
@@ -205,7 +204,6 @@ app.all('/admin/*', function (req, res, next){
 // Setup Routes
 app.use('/role', role);
 app.use('/action', action);
-app.use('/auth', auth);
 app.use('/api/user', userApi);
 app.use('/collection', collection);
 app.use('/permission', perm);
