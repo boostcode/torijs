@@ -16,11 +16,14 @@ var multipartMiddleware = multipart();
 // Routes
 var action = require('./routes/action');
 var admin = require('./routes/admin');
-var auth = require('./routes/auth');
+var auth = require('./routes/authenticate');
 var collection = require('./routes/collection');
 var role = require('./routes/role');
 var perm = require('./routes/permission');
 var user = require('./routes/user');
+
+// Api
+var userApi = require('./routes/api/user');
 
 // Authentication
 var jwt = require('jsonwebtoken');
@@ -118,48 +121,82 @@ passport.use(account.createStrategy());
 passport.serializeUser(account.serializeUser());
 passport.deserializeUser(account.deserializeUser());
 
-// local token strategy
-passport.use(new tokenStrategy( function(username, tokenLogin, done) {
-    account.findOne({ username: username }, function (err, user) {
-      if(err){
-        return done(err);
-      }
+// token strategy
+function tokenAuth(req, res, next) {
+  // try to get the token
+  var token = req.body.token || req.param('token') || req.headers['x-access-token'];
 
-      if(!user){
-        return done(null, false);
-      }
+  // try to get username
+  var username = req.body.username || req.param('username') || req.headers['x-access-username'];
 
-      if(tokenLogin != user.token){
-        return done(null, false);
-      }
-
-      return done(null, user);
+  // if username is missing
+  if (!username) {
+    return res.status(403).send({
+      success: false,
+      message: 'Missing username.'
     });
-  })
-);
+  }
+
+  // if token exists, and has at least a char
+  if (token && token.length > 1) {
+    jwt.verify(token, tori.core.secret, function(err, decoded){
+      if (err) {
+        return res.json({
+          success: false,
+          message: 'Invalid token.'
+        });
+      } else {
+        account.findOne({ username: username, token: token }, function (err, user) {
+          if (err) {
+            return res.json({
+              success: false,
+              message: 'Invalid username.'
+            });
+          } else {
+            if (user) {
+              req.user = user
+              next();
+            } else {
+              return res.json({
+                success: false,
+                message: 'Invalid token.'
+              });
+            }
+          }
+        });
+      }
+    })
+  } else {
+    return res.status(403).send({
+      success: false,
+      message: 'Missing token.'
+    });
+  }
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', function(req, res){
-  res.redirect('/auth/login');
+  res.redirect('/authenticate/login');
 });
 
 app.all('/*/import', multipartMiddleware);
 
-app.all('/collection/*', passport.authenticate('token'));
-app.all('/user/*', passport.authenticate('token'));
-app.all('/role/*', passport.authenticate('token'));
-app.all('/action/*', passport.authenticate('token'));
+app.all('/collection/*', tokenAuth);
+app.all('/user/*', tokenAuth);
+app.all('/role/*', tokenAuth);
+app.all('/action/*', tokenAuth);
 
-app.post('/auth/login', passport.authenticate('local'));
+app.post('/api/user/login', passport.authenticate('local'));
+app.all('/api/user/logout', tokenAuth);
 
 app.all('/admin/*', function (req, res, next){
   // checks if user is logged
   if(req.user){
     return next();
   }else{
-    res.redirect('/auth/login');
+    res.redirect('/authenticate/login');
   }
 });
 
@@ -168,6 +205,7 @@ app.all('/admin/*', function (req, res, next){
 app.use('/role', role);
 app.use('/action', action);
 app.use('/auth', auth);
+app.use('/api/user', userApi);
 app.use('/collection', collection);
 app.use('/permission', perm);
 app.use('/user', user);
