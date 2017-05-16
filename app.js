@@ -141,14 +141,14 @@ function tokenAuth(req, res, next) {
   if (token && token.length > 1) {
     jwt.verify(token, tori.core.secret, function(err, decoded){
       if (err) {
-        return res.json({
+        return res.status(401).json({
           success: false,
           message: 'Invalid token.'
         });
       } else {
         account.findOne({ username: username, token: token }, function (err, user) {
           if (err) {
-            return res.json({
+            return res.status(403).json({
               success: false,
               message: 'Invalid username.'
             });
@@ -157,7 +157,7 @@ function tokenAuth(req, res, next) {
               req.user = user
               next();
             } else {
-              return res.json({
+              return res.status(401).json({
                 success: false,
                 message: 'Invalid token.'
               });
@@ -190,6 +190,7 @@ app.all('/action/*', tokenAuth);
 
 app.post('/api/user/login', passport.authenticate('local'));
 app.post('/api/user/logout', tokenAuth);
+app.post('/api/user/update', tokenAuth);
 
 app.all('/admin/*', function (req, res, next){
   // checks if user is logged

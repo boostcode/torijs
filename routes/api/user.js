@@ -56,8 +56,9 @@ router.post('/register', function(req, res){
       message: 'User created.',
       success: true
     });
-
   });
+
+  // TODO: improve registration with extra fields
 });
 
 /// Request token for password
@@ -214,6 +215,16 @@ router.post('/change/password', function(req, res) {
 
   });
 
+});
+
+/// Update
+router.post('/update', function(req, res) {
+  // TODO: finish
+});
+
+/// Refresh token
+router.post('/refresh/token', function(req, res) {
+  // TODO: refresh tokens
 });
 
 module.exports = router;
