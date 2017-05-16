@@ -4,8 +4,8 @@ var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
 var _ = require('underscore');
 
-// list
-router.post('/list.json', function(req, res){
+/// List
+router.post('/list', function(req, res){
   var query = {};
 
   permission.find(query, function(err, perms){
