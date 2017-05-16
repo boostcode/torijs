@@ -43,3 +43,4 @@ node_modules
 conf/torii.conf.js
 
 public/js/*
+.npm
