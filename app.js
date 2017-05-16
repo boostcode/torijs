@@ -37,14 +37,15 @@ var database = null;
 // Email
 var nodemailer = require('nodemailer');
 var transport = null;
-if(tori.conf.mail.service == 'smtp'){
+if(tori.conf.mail.service == 'smtp') {
   transport = require('nodemailer-smtp-transport');
-}else{
+} else {
   transport = require('nodemailer-sendmail-transport');
 }
 
-if(transport == null){
-  throw Error('❌  📨  Mail transport not setup, please check your configuration file');
+if (transport == null) {
+  console.error('❌  📨  Mail transport not setup, please check your configuration file');
+  process.exit();
 }
 
 var mail = null;
@@ -64,7 +65,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-  secret: 'js.iirot',
+  secret: 'torijs',
   resave: true,
   saveUninitialized: true
 }));
@@ -82,7 +83,8 @@ app.use(function(req, res, next){
         req.db = database = db;
         next();
       }else{
-        throw Error('Database connection problem');
+        console.error('❌  🗄  Database connection problem');
+        process.exit();
       }
     });
   }
