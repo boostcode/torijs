@@ -1,14 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var account = require('../../models/account');
-var rbac = require('mongoose-rbac');
-var role = rbac.Role;
-var permission = rbac.Permission;
 var tori = require('../../conf/tori.conf.js');
-var oID = require('mongodb').ObjectID;
 var jwt = require('jsonwebtoken');
+var randtoken = require('rand-token');
 
-
+/// Login
 router.post('/login', function(req, res){
   var token = jwt.sign(req.user, tori.core.secret, {
     expiresIn: tori.core.expires // expires in 2 days
@@ -25,6 +22,7 @@ router.post('/login', function(req, res){
 
 });
 
+/// Logout
 router.post('/logout', function(req, res){
 
   // remove token
@@ -37,6 +35,7 @@ router.post('/logout', function(req, res){
   });
 });
 
+/// Register
 router.post('/register', function(req, res){
 
   account.register(new account({
@@ -47,21 +46,32 @@ router.post('/register', function(req, res){
         success: false,
         message: err
       });
-      return
+      return;
     }
 
     res.json({
       user: req.body.username,
+      message: 'User created.',
       success: true
     });
 
   });
 });
 
-// new password
+/// Request token for password
 router.post('/reset/token', function(req, res) {
 
-  account.find({"username" : req.body.username}, function(err, users) {
+  var username = req.body.username;
+
+  if(!username) {
+    res.json({
+      success: false,
+      message: 'Missing username.'
+    });
+    return
+  }
+
+  account.find({ 'username' : username}, function(err, users) {
 
     if(err) {
       res.json({
@@ -83,12 +93,10 @@ router.post('/reset/token', function(req, res) {
 			user.save();
 
 			var mailOptions = {
-
       	from: tori.mail.from,
 				to: user.username,
-				subject: 'Reset password',
-				text: 'Questo e il tuo nuovo codice: '+ user.resetPassword +' inseriscilo sull ipad'
-
+				subject: tori.core.title + ' | Reset password',
+				text: 'Here you reset code: '+ user.resetPassword
     	};
 
 			req.mail.sendMail(mailOptions, function(err, info){
@@ -126,10 +134,38 @@ router.post('/reset/token', function(req, res) {
 
 });
 
-// change password
+/// Change password
 router.post('/change/password', function(req, res) {
 
-  account.find({"username" : req.body.username, "resetPassword" : req.body.uniquecode}, function(err, users) {
+  var username = req.body.username;
+  var resetPassword = req.body.resetpassword;
+  var newPassword = req.body.newpassword;
+
+  if (!username) {
+    res.json({
+      success: false,
+      message: 'Missing username.'
+    });
+    return;
+  }
+
+  if (!resetPassword) {
+    res.json({
+      success: false,
+      message: 'Missing reset password.'
+    });
+    return;
+  }
+
+  if (!newPassword) {
+    res.json({
+      success: false,
+      message: 'Missing new password.'
+    });
+    return;
+  }
+
+  account.find({ 'username' : username, 'resetPassword' : resetPassword }, function(err, users) {
 
     if(err) {
       res.json({
@@ -143,7 +179,7 @@ router.post('/change/password', function(req, res) {
 
 	    user = users[0];
 
-			user.setPassword(req.body.newpassword, function(err){
+			user.setPassword(newPassword, function(err){
           if(err){
             console.log(err);
 
