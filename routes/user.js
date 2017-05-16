@@ -4,15 +4,15 @@ var account = require('../models/account');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js');
-
+var torii = require('../conf/torii.conf.js').torii;
+var _ = require('underscore');
 
 // registration
 router.post('/register', function(req, res){
   account.register(new account({
     username: req.body.usernamereg
   }), req.body.password, function(err, account){
-
+      
     if(err){
       res.send(err);
       return;
@@ -28,19 +28,16 @@ router.post('/register', function(req, res){
 
     // extra check for current user to avoid any injection by public
     // registration form
-
-    if((JSON.parse(req.body.isAdmin) == true) && (JSON.parse(req.user.isDev) == true)){
-
+    if(req.body.isAdmin && req.user.isDev){
       account.isAdmin = true;
     }
 
-    if((JSON.parse(req.body.isDev) == true) && (JSON.parse(req.user.isDev) == true)){
-
+    if(req.body.isDev && req.user.isDev){
       account.isDev = true;
     }
 
     account.save();
-
+      
     // on role attribution check if current user is Admin or Dev
     // this will decrease risk of injections
     if(req.body.role && (req.user.isDev || req.user.isAdmin)){
@@ -63,7 +60,7 @@ router.post('/register', function(req, res){
 
       console.log(info);
     });
-
+    
     res.send({
       username: req.body.usernamereg
     });
@@ -90,11 +87,12 @@ router.post('/logout', function(req, res){
   });
 });
 
+
 // update
 router.post('/update', function(req, res){
-
+    
   account.findById(req.body.userid, function(err, user){
-
+    
     if(err){
       res.send(err);
       return;
@@ -104,9 +102,9 @@ router.post('/update', function(req, res){
       user.name = req.body.name;
     }
 
-    if(req.body.surname){
-       user.surname = req.body.surname;
-    }
+      if(req.body.surname){
+        user.surname = req.body.surname;
+      }
 
       if(req.body.isAdmin){
         if(req.user.isDev){
@@ -128,10 +126,6 @@ router.post('/update', function(req, res){
           });
           return;
         }
-      }
-
-      if(req.body.extraFields){
-        user.extraFields = req.body.extraFields;
       }
 
       // store all changes
@@ -168,9 +162,11 @@ router.post('/update', function(req, res){
         });
       }
 
+      // TODO: handle extra fields
+      
       res.send({
         user: user.username
-
+      
     });
   });
 });
@@ -186,7 +182,7 @@ router.post('/islogged', function(req, res){
 // remove
 router.post('/remove', function(req, res){
   account.findByIdAndRemove(req.body.userid, function(err, user){
-
+  
     if(err){
       res.send(err);
       return;
@@ -195,7 +191,7 @@ router.post('/remove', function(req, res){
     res.send({
       confirm: 'ok'
     });
-
+  
   });
 });
 
@@ -204,8 +200,8 @@ router.post('/list.json', function(req, res){
   var query = {};
 
   if(req.body.sSearch){
-    query = {
-      'name': req.body.sSeach
+    query = { 
+      'name': req.body.sSeach 
     };
   }
 
@@ -223,13 +219,18 @@ router.post('/list.json', function(req, res){
         return;
       }
 
-      var totElementi = users.length;
-
-      if(req.body.iDisplayLength && req.body.iDisplayStart){
-        if(req.body.iDisplayLength > 0){
-          users = users.splice(req.body.iDisplayStart, req.body.iDisplayLength);
-        }
+      var totalElements = users.length;
+      
+     
+      if(req.body.page){
+        users = users.slice((req.body.page - 1 ) * req.body.count, req.body.page * req.body.count);
+        console.log(users);
       }
+
+      // TODO: order via underscore
+      //
+      // req.body.filter
+      // req.body.sorting
 
       users.forEach(function(user) {
         roles.forEach(function(role){
@@ -239,13 +240,19 @@ router.post('/list.json', function(req, res){
         });
       });
 
-      res.send({
+      /*res.send({
         sEcho: parseInt(req.query.sEcho),
         iTotalRecords: totElementi,
         iTotalDisplayRecords: users.length,
         aaData: users,
         serverTime: new Date().getTime()
+      });*/
+
+      res.send({
+        result: users,
+        total: totalElements
       });
+      
     });
   });
 });

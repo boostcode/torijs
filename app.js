@@ -1,10 +1,10 @@
 // Configuration
-var torii = require('./conf/torii.conf.js');
+var torii = require('./conf/torii.conf.js').torii;
 
 // Express
 var express = require('express');
 var path = require('path');
-var favicon = require('static-favicon');
+var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -29,9 +29,6 @@ var tokenStrategy = require('passport-token').Strategy;
 var token = require('token');
 var account = require('./models/account');
 
-// Captcha
-var rusty = require("rusty");
-
 // Database
 var mongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
@@ -52,6 +49,8 @@ if(transport == null){
 
 var mail = null;
 
+
+
 var app = express();
 
 // view engine setup
@@ -59,25 +58,18 @@ app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon());
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-  secret: 'js.iirot'
+  secret: 'js.iirot',
+  resave: true,
+  saveUninitialized: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/captcha.png", rusty.middleware({
-    width: 120,
-    height: 50,
-    chars: 'abcdefghjkmnopqrstuvwxyz',
-    length: 4,
-    fonts: ['20px sans', '20px bold sans'],
-    session: 'captcha',
-    color: '#000000'
-}));
 
 // database setup
 app.use(function(req, res, next){
@@ -125,15 +117,6 @@ app.use(function(req, res, next){
   }
 });
 
-// force https
-/*if(torii.conf.https){
-    app.use(function(req, res, next) {
-	  if (req.headers["x-forwarded-proto"] === "https"){
-		  return next();
-	  }
-	  res.redirect("https://" + req.headers.host + req.url);
-  });
-}*/
 
 // auth strategies
 passport.use(new localStrategy(account.authenticate()));
@@ -181,15 +164,7 @@ app.all('/user/*', passport.authenticate('token'));
 app.all('/role/*', passport.authenticate('token'));
 app.all('/action/*', passport.authenticate('token'));
 
-app.post("/auth/mobile", passport.authenticate('local'));
-
-app.post("/auth/login", rusty.verifyCaptcha, function(req, res,next) {
-  if(req.verifyCaptcha(req.body.captcha)) {
-    passport.authenticate('local')(req, res, next);
-  }else{
-    res.send(401,{ error: 'invalid captcha' })
-  }
-});
+app.post('/auth/login', passport.authenticate('local'));
 
 app.all('/admin/*', isLogged);
 
