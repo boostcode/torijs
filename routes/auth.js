@@ -15,52 +15,41 @@ token.defaults.timeStep = 24 * 60 * 60;
 
 router.get('/login', function(req, res){
   res.render('userLoginForm', {
-    toriAllowPublicRegistration: tori.conf.core.allowPublicUserRegistration,
-    toriTitle: tori.conf.core.title
+    toriAllowPublicRegistration: tori.core.allowPublicUserRegistration,
+    toriTitle: tori.core.title
   });
 });
 
 router.post('/login', function(req, res){
 
-  var userToken = token.generate(req.user.username+'|'+req.user.id);
+  var token = token.generate(req.user.username+'|'+req.user.id);
+
+  var token = jwt.sign(req.user.id, app.get('superSecret'), {
+          expiresInMinutes: 1440 // expires in 24 hours
+        });
 
   account.findById(req.user.id, function(err, user){
-    user.token = userToken;
+    user.token = token;
     user.save();
   });
 
   res.send({
     name: req.user.username,
-    token: userToken,
+    token: token,
     id: req.user.id
   });
 
 });
 
-router.post('/mobile', function(req, res){
-  var userToken = token.generate(req.user.username+'|'+req.user.id);
-
-  account.findById(req.user.id, function(err, user){
-    user.token = userToken;
-    user.save();
-  });
-
-  res.send({
-    name: req.user.username,
-    token: userToken,
-    id: req.user.id
-  });
-})
-
 router.get('/register', function(req, res){
 
-	if(!tori.conf.core.allowPublicUserRegistration){
+	if(!tori.core.allowPublicUserRegistration){
 		res.redirect('/auth/login')
 		return
 	}
 
 	res.render('userRegistrationForm',{
-		toriTitle: tori.conf.core.title
+		toriTitle: tori.core.title
 	});
 });
 
@@ -104,7 +93,7 @@ router.post('/getuniquecode', function(req, res) {
 
 			var mailOptions = {
 
-      	from: tori.conf.mail.from,
+      	from: tori.mail.from,
 				to: user.username,
 				subject: 'Reset password',
 				text: 'Questo e il tuo nuovo codice: '+ user.resetPassword +' inseriscilo sull ipad'

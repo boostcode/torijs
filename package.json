@@ -18,6 +18,7 @@
     "express-session": "^1.15.2",
     "fast-csv": "~0.4.2",
     "gcm": "~1.0.1",
+    "jsonwebtoken": "^7.4.0",
     "mongodb": "^2.2.26",
     "mongoose-rbac": "matteocrippa/mongoose-rbac",
     "morgan": "^1.8.1",

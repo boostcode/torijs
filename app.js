@@ -1,5 +1,5 @@
 // Configuration
-var tori = require('./conf/tori.conf.js').tori;
+var tori = require('./conf/tori.conf.js');
 
 // Express
 var express = require('express');
@@ -23,6 +23,7 @@ var perm = require('./routes/permission');
 var user = require('./routes/user');
 
 // Authentication
+var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var tokenStrategy = require('passport-token').Strategy;
@@ -37,7 +38,7 @@ var database = null;
 // Email
 var nodemailer = require('nodemailer');
 var transport = null;
-if(tori.conf.mail.service == 'smtp') {
+if(tori.mail.service == 'smtp') {
   transport = require('nodemailer-smtp-transport');
 } else {
   transport = require('nodemailer-sendmail-transport');
@@ -78,7 +79,7 @@ app.use(function(req, res, next){
     req.db = database;
     next();
   }else{
-    mongoClient.connect('mongodb://'+tori.conf.db.host+'/'+tori.conf.db.data, function(err, db) {
+    mongoClient.connect('mongodb://'+tori.database.host+'/'+tori.database.data, function(err, db) {
       if(db){
         req.db = database = db;
         next();
@@ -90,7 +91,7 @@ app.use(function(req, res, next){
   }
 });
 
-mongoose.connect('mongodb://'+tori.conf.db.host+'/'+tori.conf.db.user);
+mongoose.connect('mongodb://'+tori.database.host+'/'+tori.database.user);
 
 // email setup
 app.use(function(req, res, next){
@@ -101,17 +102,9 @@ app.use(function(req, res, next){
 
     var emailSetup = {};
 
-    if(tori.conf.mail.host){
-      emailSetup =  {
-      host: tori.conf.mail.host,
-      port: tori.conf.mail.port,
-      secureConnection: tori.conf.mail.secureConnection,
-      auth: {
-        user: tori.conf.mail.user,
-        pass: tori.conf.mail.pass
-        }
-      };
-
+    // check if smtp is supported
+    if(tori.mail.smtp.host != null){
+      emailSetup =  tori.mail.smtp;
     }
 
     req.mail = mail = nodemailer.createTransport(transport(emailSetup));
@@ -120,11 +113,12 @@ app.use(function(req, res, next){
 });
 
 
-// auth strategies
-passport.use(new localStrategy(account.authenticate()));
+// local mongoose strategy
+passport.use(account.createStrategy());
 passport.serializeUser(account.serializeUser());
 passport.deserializeUser(account.deserializeUser());
 
+// local token strategy
 passport.use(new tokenStrategy( function(username, tokenLogin, done) {
     account.findOne({ username: username }, function (err, user) {
       if(err){
@@ -144,14 +138,6 @@ passport.use(new tokenStrategy( function(username, tokenLogin, done) {
   })
 );
 
-function isLogged(req, res,next){
-  if(req.user){
-    return next();
-  }else{
-    res.redirect('/auth/login');
-  }
-}
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -168,7 +154,14 @@ app.all('/action/*', passport.authenticate('token'));
 
 app.post('/auth/login', passport.authenticate('local'));
 
-app.all('/admin/*', isLogged);
+app.all('/admin/*', function (req, res, next){
+  // checks if user is logged
+  if(req.user){
+    return next();
+  }else{
+    res.redirect('/auth/login');
+  }
+});
 
 
 // Setup Routes

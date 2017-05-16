@@ -12,7 +12,7 @@ router.post('/register', function(req, res){
   account.register(new account({
     username: req.body.usernamereg
   }), req.body.password, function(err, account){
-      
+
     if(err){
       res.send(err);
       return;
@@ -37,7 +37,7 @@ router.post('/register', function(req, res){
     }
 
     account.save();
-      
+
     // on role attribution check if current user is Admin or Dev
     // this will decrease risk of injections
     if(req.body.role && (req.user.isDev || req.user.isAdmin)){
@@ -60,7 +60,7 @@ router.post('/register', function(req, res){
 
       console.log(info);
     });
-    
+
     res.send({
       username: req.body.usernamereg
     });
@@ -90,9 +90,9 @@ router.post('/logout', function(req, res){
 
 // update
 router.post('/update', function(req, res){
-    
+
   account.findById(req.body.userid, function(err, user){
-    
+
     if(err){
       res.send(err);
       return;
@@ -163,10 +163,10 @@ router.post('/update', function(req, res){
       }
 
       // TODO: handle extra fields
-      
+
       res.send({
         user: user.username
-      
+
     });
   });
 });
@@ -182,7 +182,7 @@ router.post('/islogged', function(req, res){
 // remove
 router.post('/remove', function(req, res){
   account.findByIdAndRemove(req.body.userid, function(err, user){
-  
+
     if(err){
       res.send(err);
       return;
@@ -191,7 +191,7 @@ router.post('/remove', function(req, res){
     res.send({
       confirm: 'ok'
     });
-  
+
   });
 });
 
@@ -200,8 +200,8 @@ router.post('/list.json', function(req, res){
   var query = {};
 
   if(req.body.sSearch){
-    query = { 
-      'name': req.body.sSeach 
+    query = {
+      'name': req.body.sSeach
     };
   }
 
@@ -220,8 +220,8 @@ router.post('/list.json', function(req, res){
       }
 
       var totalElements = users.length;
-      
-     
+
+
       if(req.body.page){
         users = users.slice((req.body.page - 1 ) * req.body.count, req.body.page * req.body.count);
         console.log(users);
@@ -252,7 +252,7 @@ router.post('/list.json', function(req, res){
         result: users,
         total: totalElements
       });
-      
+
     });
   });
 });

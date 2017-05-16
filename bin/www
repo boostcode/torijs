@@ -3,13 +3,13 @@ var app = require('../app');
 
 // get tori configuration
 try {
-  var tori = require('../conf/tori.conf.js').tori;
+  var tori = require('../conf/tori.conf.js');
 } catch (e) {
   console.error('❌  🎚  torijs configuration is not valid, please check it under /conf/tori.conf.js');
   process.exit();
 }
 
-app.set('port', tori.conf.core.port || 8000);
+app.set('port', tori.core.port || 8000);
 
 var server = app.listen(app.get('port'), function() {
   console.log('⛩  torijs is listening on port: ' + server.address().port);
