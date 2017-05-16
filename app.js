@@ -18,11 +18,11 @@ var action = require('./routes/action');
 var admin = require('./routes/admin');
 var collection = require('./routes/collection');
 var role = require('./routes/role');
-var perm = require('./routes/permission');
 var user = require('./routes/user');
 
 // Api
 var userApi = require('./routes/api/user');
+var permissionApi = require('./routes/api/permission');
 
 // Authentication
 var jwt = require('jsonwebtoken');
@@ -202,11 +202,11 @@ app.all('/admin/*', function (req, res, next){
 
 
 // Setup Routes
+app.use('/api/user', userApi);
+app.use('/api/permission', permissionApi);
 app.use('/role', role);
 app.use('/action', action);
-app.use('/api/user', userApi);
 app.use('/collection', collection);
-app.use('/permission', perm);
 app.use('/user', user);
 app.use('/admin', admin);
 
@@ -221,7 +221,7 @@ if (app.get('env') === 'development') {
         console.log(err.message);
         res.render('error', {
             message: err.message,
-            error: err
+            success: false
         });
     });
 }
@@ -232,7 +232,7 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
-        error: {}
+        success: false
     });
 });
 

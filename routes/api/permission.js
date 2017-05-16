@@ -10,11 +10,15 @@ router.post('/list.json', function(req, res){
 
   permission.find(query, function(err, perms){
     if(err){
-      res.send(err);
+      res.json({
+        success: false,
+        message: err
+      });
       return;
     }
 
-    res.send(_.groupBy(perms, 'subject'));
+    // TODO: improve respose
+    res.json(_.groupBy(perms, 'subject'));
 
   });
 });
