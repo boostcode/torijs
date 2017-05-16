@@ -61,10 +61,12 @@ app.set('view engine', 'ejs');
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ 
-  secret: 'js.iirot' 
+app.use(session({
+  secret: 'js.iirot',
+  resave: true,
+  saveUninitialized: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -94,7 +96,7 @@ app.use(function(req, res, next){
     req.mail = mail;
     next();
   }else{
-    
+
     var emailSetup = {};
 
     if(torii.conf.mail.host){
