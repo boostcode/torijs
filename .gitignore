@@ -44,3 +44,4 @@ conf/torii.conf.js
 
 public/js/*
 .npm
+.cache
