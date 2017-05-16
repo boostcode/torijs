@@ -13,15 +13,15 @@ All the fields are customizable and role defined. Also the system make use of a 
 ### Installation
 Here the quick steps to start working with **torii.js**:
 
-- git clone torii.js 
+- git clone torii.js
 - cd torii.js
-- npm install
-- DEBUG=torii.js ./bin/www
-- Open your browser at http://localhost:3000/ proceed with user registration.
+- npm install && bower install
+- node /bin/www
+- Open your browser at http://localhost:8000/ proceed with user registration.
 - CTRL-C to kill torii.js from your terminal
 - edit in scripts adding the email you used to register the user;
 - execute the script ./script/
-- restart torii with the above command 
+- restart torii with the above command
 - visit again the same address but now proceed with login using the credentials you used in registration;
 
 That's all, now you can start using torii.js
