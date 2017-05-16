@@ -29,6 +29,8 @@ router.post('/logout', function(req, res){
   req.user.token = null;
   req.user.save();
 
+  req.logout();
+
   res.json({
     success: true,
     message: 'User logged out.'

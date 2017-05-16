@@ -189,7 +189,7 @@ app.all('/role/*', tokenAuth);
 app.all('/action/*', tokenAuth);
 
 app.post('/api/user/login', passport.authenticate('local'));
-app.all('/api/user/logout', tokenAuth);
+app.post('/api/user/logout', tokenAuth);
 
 app.all('/admin/*', function (req, res, next){
   // checks if user is logged
