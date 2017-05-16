@@ -3,16 +3,16 @@ var router = express.Router();
 var account = require('../models/account');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
-var torii = require('../conf/torii.conf.js');
+var tori = require('../conf/tori.conf.js');
 
 // admin root
 router.get('/', function(req, res){
   res.render('adminHome', {
     logged: req.user,
-    toriiTitle: torii.conf.core.title,
-    welcomeSubtitle: torii.conf.core.welcomeSubtitle,
-    welcomeTitle: torii.conf.core.welcomeTitle,
-    welcomeMessage: torii.conf.core.welcomeMessage
+    toriTitle: tori.conf.core.title,
+    welcomeSubtitle: tori.conf.core.welcomeSubtitle,
+    welcomeTitle: tori.conf.core.welcomeTitle,
+    welcomeMessage: tori.conf.core.welcomeMessage
   });
 });
 
@@ -20,7 +20,7 @@ router.get('/', function(req, res){
 router.get('/user/list', function(req, res){
   res.render('adminUserList',{
     logged: req.user,
-    toriiTitle: torii.conf.core.title
+    toriTitle: tori.conf.core.title
   });
 });
 
@@ -28,7 +28,7 @@ router.get('/user/list', function(req, res){
 router.get('/user/new', function(req, res){
   role.find({}, function(err, roles){
     res.render('adminUserNew',{
-      toriiTitle: torii.conf.core.title,
+      toriTitle: tori.conf.core.title,
       logged: req.user,
       roles: roles
     });
@@ -52,7 +52,7 @@ router.get('/user/:userid/edit', function(req, res){
       }
 
       res.render('adminUserEdit',{
-        toriiTitle: torii.conf.core.title,
+        toriTitle: tori.conf.core.title,
         logged: req.user,
         user: user,
         roles: roles
@@ -65,7 +65,7 @@ router.get('/user/:userid/edit', function(req, res){
 // action - list
 router.get('/action/list', function(req, res){
   res.render('adminActionList', {
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     logged: req.user
   });
 });
@@ -73,7 +73,7 @@ router.get('/action/list', function(req, res){
 // action - new
 router.get('/action/new', function(req, res){
   res.render('adminActionNew', {
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     logged: req.user
   });
 });
@@ -81,7 +81,7 @@ router.get('/action/new', function(req, res){
 // action - edit
 router.get('/action/:action_id/edit', function(req, res){
   res.render('adminActionEdit', {
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     logged: req.user
   });
 });
@@ -90,7 +90,7 @@ router.get('/action/:action_id/edit', function(req, res){
 // role - new
 router.get('/role/new', function(req, res){
   res.render('adminRoleNew',{
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     logged: req.user
   });
 });
@@ -98,7 +98,7 @@ router.get('/role/new', function(req, res){
 // role - list
 router.get('/role/list', function(req, res){
   res.render('adminRoleList',{
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     logged: req.user
   });
 });
@@ -112,7 +112,7 @@ router.get('/role/:role_id/edit', function(req, res){
     }
 
     res.render('adminRoleEdit', {
-      toriiTitle: torii.conf.core.title,
+      toriTitle: tori.conf.core.title,
       logged: req.user,
       req: req,
       role: role
@@ -124,7 +124,7 @@ router.get('/role/:role_id/edit', function(req, res){
 // collections list
 router.get('/collections', function(req, res){
   res.render('adminCollectionList', {
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     req: req,
     logged: req.user
   });
@@ -133,7 +133,7 @@ router.get('/collections', function(req, res){
 // collection new
 router.get('/collection/new', function(req, res){
   res.render('adminCollectionNew', {
-    toriiTitle: torii.conf.core.title,
+    toriTitle: tori.conf.core.title,
     req: req,
     logged: req.user
   });
@@ -149,7 +149,7 @@ router.get('/:collection_name/documents', function(req, res){
 
     if(can || req.user.isDev){
       res.render('adminDocumentList', {
-        toriiTitle: torii.conf.core.title,
+        toriTitle: tori.conf.core.title,
         req: req,
         logged: req.user
       });
@@ -170,7 +170,7 @@ router.get('/:collection_name/new', function(req, res){
 
     if(can || req.user.isDev){
       res.render('adminDocumentNew',{
-        toriiTitle: torii.conf.core.title,
+        toriTitle: tori.conf.core.title,
         req: req,
         logged: req.user
       });
@@ -191,7 +191,7 @@ router.get('/:collection_name/import', function(req, res){
     if(can || req.user.isDev){
 
       res.render('adminDocumentImportCSv', {
-        toriiTitle: torii.conf.core.title,
+        toriTitle: tori.conf.core.title,
         req: req,
         logged: req.user
       });
@@ -213,7 +213,7 @@ router.get('/:collection_name/:document_id/edit', function(req, res){
 
     if(can || req.user.isDev){
       res.render('adminDocumentEdit',{
-        toriiTitle: torii.conf.core.title,
+        toriTitle: tori.conf.core.title,
         req: req,
         logged: req.user
       });

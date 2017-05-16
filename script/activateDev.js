@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 var account = require('../models/account');
-var torii = require('../conf/torii.conf.js');
+var tori = require('../conf/tori.conf.js');
 
-mongoose.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.user);
+mongoose.connect('mongodb://'+tori.conf.db.host+'/'+tori.conf.db.user);
 
 var query = {
   username: 'a@a.it'

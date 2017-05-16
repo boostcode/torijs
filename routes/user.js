@@ -4,7 +4,7 @@ var account = require('../models/account');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js').torii;
+var tori = require('../conf/tori.conf.js').tori;
 var _ = require('underscore');
 
 // registration
@@ -46,9 +46,9 @@ router.post('/register', function(req, res){
     }
 
     var mailOptions = {
-      from: torii.conf.mail.from,
+      from: tori.conf.mail.from,
       to: req.body.usernamereg,
-      subject: torii.conf.core.title+' - Password Confirmation',
+      subject: tori.conf.core.title+' - Password Confirmation',
       text: 'Dear '+(req.body.name ? req.body.name : req.body.username)+'\n here your password: '+req.body.password+'\n\nPlease note that down!'
     };
 

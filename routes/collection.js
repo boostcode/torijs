@@ -8,14 +8,14 @@ var csv = require('fast-csv');
 var _ = require('underscore');
 var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js');
+var tori = require('../conf/tori.conf.js');
 var actionFunction = require('../routes/action');
 var template = require('template');
 var S = require('string');
 
   // list
   router.post('/list.json', function(req, res) {
-    var structure = req.db.collection('torii_structure');
+    var structure = req.db.collection('tori_structure');
 
     structure.find({}).toArray(function(err, collections){
 
@@ -32,7 +32,7 @@ var S = require('string');
 
           var colName = col.nome_collezione;
 
-          if((colName != 'system') && (colName != 'torii_structure') && (colName != 'torii_removed')){
+          if((colName != 'system') && (colName != 'tori_structure') && (colName != 'tori_removed')){
 
             colls.push({
               'name': colName,
@@ -102,13 +102,13 @@ var S = require('string');
         res.send(err);
         return;
       }
-      if(can || req.params.collection_name == 'torii_structure' || req.user.isDev){
+      if(can || req.params.collection_name == 'tori_structure' || req.user.isDev){
 
         var collezione;
         var objRemoved;
 
         if(req.body.queryRemoved){
-          collezione = req.db.collection('torii_removed');
+          collezione = req.db.collection('tori_removed');
           collezione.find(req.body.queryRemoved).toArray(function(err, items){
             objRemoved = items;
           });
@@ -119,7 +119,7 @@ var S = require('string');
         var ordering = {};
         var orderStr;
 
-        var collectionStructure = req.db.collection('torii_structure');
+        var collectionStructure = req.db.collection('tori_structure');
 
         collectionStructure.find({
           'nome_collezione': req.params.collection_name
@@ -130,7 +130,7 @@ var S = require('string');
             return;
           }
 
-          if(req.params.collection_name != 'torii_structure'){
+          if(req.params.collection_name != 'tori_structure'){
 
             var orderKey = null;
 
@@ -264,7 +264,7 @@ var S = require('string');
         return;
       }
 
-      var struct = req.db.collection('torii_structure');
+      var struct = req.db.collection('tori_structure');
 
       // lovercase name of collection
       req.body.dati.nome_collezione = req.body.dati.nome_collezione.toLowerCase();
@@ -325,7 +325,7 @@ var S = require('string');
             return;
           }
 
-          var collection = req.db.collection('torii_structure');
+          var collection = req.db.collection('tori_structure');
 
           collection.remove({
             nome_collezione: req.params.collection_name
@@ -406,7 +406,7 @@ var S = require('string');
                   });
 
                   var mailOptions = {
-                    from: torii.conf.mail.from,
+                    from: tori.conf.mail.from,
                     to: '',
                     subject: act.name + ' - ' + result[0]._id,
                     text: msgVal
@@ -501,7 +501,7 @@ var S = require('string');
 
         if(req.files.csv){
 
-          var structure = req.db.collection('torii_structure');
+          var structure = req.db.collection('tori_structure');
 
           var uniqueId = '';
 
@@ -625,13 +625,13 @@ router.post('/:collection_name/export', function(req, res) {
       return;
     }
 
-		if(can || req.params.collection_name == 'torii_structure' || req.user.isDev) {
+		if(can || req.params.collection_name == 'tori_structure' || req.user.isDev) {
 
       var collezione;
       var objRemoved;
 
       if(req.body.queryRemoved) {
-        collezione = req.db.collection('torii_removed');
+        collezione = req.db.collection('tori_removed');
         collezione.find(req.body.queryRemoved).toArray(function(err, items){
           objRemoved = items;
         });
@@ -642,7 +642,7 @@ router.post('/:collection_name/export', function(req, res) {
       var ordering = {};
       var orderStr;
 
-      var collectionStructure = req.db.collection('torii_structure');
+      var collectionStructure = req.db.collection('tori_structure');
 
       collectionStructure.find({
         'nome_collezione': req.params.collection_name
@@ -653,7 +653,7 @@ router.post('/:collection_name/export', function(req, res) {
 					return;
       	}
 
-	      if(req.params.collection_name != 'torii_structure'){
+	      if(req.params.collection_name != 'tori_structure'){
 
 	        var orderKey = null;
 
@@ -940,7 +940,7 @@ router.post('/:collection_name/:document_id/update', function(req, res){
 
 		                  // Email options
 		                  var mailOptions = {
-		                    from: torii.conf.mail.from,
+		                    from: tori.conf.mail.from,
 		                    to: '',
 		                    subject: act.name + ' - '+ req.params.document_id,
 		                    text: msgVal
@@ -1061,8 +1061,8 @@ router.post('/:collection_name/:document_id/delete', function(req, res){
           return;
         }
 
-        if(objToDel.collection != 'torii_removed'){
-          collection = req.db.collection('torii_removed');
+        if(objToDel.collection != 'tori_removed'){
+          collection = req.db.collection('tori_removed');
 
           collection.insert(objToDel, {w:1}, function(err, result){
             if(err){

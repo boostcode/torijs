@@ -15,7 +15,7 @@
       }).success(function(data, status){
         
         if(status == 200 && data.name == login.username && data.token){
-          ipCookie('toriijs', data.name+'|'+data.token+'|'+data.id, { path: '/' });
+          ipCookie('torijs', data.name+'|'+data.token+'|'+data.id, { path: '/' });
           $window.location.href = '/admin';
         }else{
           login.error = 'Something went wrong during sign in, please retry.';
@@ -27,7 +27,7 @@
     };
 
     login.signOut = function(){
-      ipCookie.remove('toriijs');
+      ipCookie.remove('torijs');
       $window.location.href = '/auth/login';
     };
 

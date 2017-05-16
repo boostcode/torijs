@@ -35,7 +35,7 @@ $( document ).ready(function() {
 	var queryDataTablesRicerca = [];
 
 	// check session
-	if(!$.cookie('toriijs')){
+	if(!$.cookie('torijs')){
 		location.href = '/auth/login';
 	}
 
@@ -46,7 +46,7 @@ $( document ).ready(function() {
 	// retrieve collections for menu
 	$.ajax({
 		type: "POST",
-		url: "/collection/torii_structure/documents.json",
+		url: "/collection/tori_structure/documents.json",
 		data: userAndToken,
 		success: function(data, status) {
 

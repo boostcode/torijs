@@ -1,9 +1,9 @@
 {
-  "name": "torii.js",
+  "name": "tori.js",
   "version": "0.0.1",
-  "homepage": "https://github.com/toriijs/torii.js",
+  "homepage": "https://github.com/torijs/tori.js",
   "authors": [
-    "ToriiJs Team"
+    "toriJs Team"
   ],
   "description": "Nodejs BaaS",
   "license": "MIT",

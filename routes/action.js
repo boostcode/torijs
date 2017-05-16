@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var action = require('../models/action');
-var torii = require('../conf/torii.conf.js');
+var tori = require('../conf/tori.conf.js');
 
 // list
 router.post('/list.json',function(req,res){

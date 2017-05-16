@@ -2,7 +2,7 @@
 
 <div class="form-box" id="login-box">
 
-	<div class="header"><%= toriiTitle ? toriiTitle : 'Torii.js'%></div>
+	<div class="header"><%= toriTitle ? toriTitle : 'tori.js'%></div>
 	<form name="loginForm" ng-controller="LoginController as login" ng-submit="loginForm.$valid && login.signIn()" novalidate>
 	
 		<div class="body bg-gray">
@@ -23,7 +23,7 @@
 
 		<div class="footer">                                                               
 			<button type="submit" class="btn bg-olive btn-block" id="login" >Sign me in</button>
-			<% if (toriiAllowPublicRegistration) { %>
+			<% if (toriAllowPublicRegistration) { %>
 				<a href="/auth/register">Not yet registered?</a>
 			<% } %>                       
 		</div>

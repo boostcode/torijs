@@ -3,7 +3,7 @@
 
   app.controller('UserController', function($scope, $http, $log, ipCookie, $window, $timeout, ngTableParams){
     
-    var splits = ipCookie('toriijs').toString().split('|');
+    var splits = ipCookie('torijs').toString().split('|');
     
     var user = {};
     user.username = splits[0];
@@ -33,7 +33,7 @@
         }).success(function(data, status){
 
         if( status == 200 && !data.result ){
-          ipCookie.remove('toriijs');
+          ipCookie.remove('torijs');
           $window.location.href = '/auth/login';
 			  }
         
@@ -41,7 +41,7 @@
         $defer.resolve(data.result);
 
       }).error(function(err, status){
-        ipCookie.remove('toriijs');
+        ipCookie.remove('torijs');
         $window.location.href = '/auth/login';
       });
 

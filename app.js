@@ -1,5 +1,5 @@
 // Configuration
-var torii = require('./conf/torii.conf.js').torii;
+var tori = require('./conf/tori.conf.js').tori;
 
 // Express
 var express = require('express');
@@ -37,7 +37,7 @@ var database = null;
 // Email
 var nodemailer = require('nodemailer');
 var transport = null;
-if(torii.conf.mail.service == 'smtp'){
+if(tori.conf.mail.service == 'smtp'){
   transport = require('nodemailer-smtp-transport');
 }else{
   transport = require('nodemailer-sendmail-transport');
@@ -77,7 +77,7 @@ app.use(function(req, res, next){
     req.db = database;
     next();
   }else{
-    mongoClient.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.data, function(err, db) {
+    mongoClient.connect('mongodb://'+tori.conf.db.host+'/'+tori.conf.db.data, function(err, db) {
       if(db){
         req.db = database = db;
         next();
@@ -88,7 +88,7 @@ app.use(function(req, res, next){
   }
 });
 
-mongoose.connect('mongodb://'+torii.conf.db.host+'/'+torii.conf.db.user);
+mongoose.connect('mongodb://'+tori.conf.db.host+'/'+tori.conf.db.user);
 
 // email setup
 app.use(function(req, res, next){
@@ -99,14 +99,14 @@ app.use(function(req, res, next){
 
     var emailSetup = {};
 
-    if(torii.conf.mail.host){
+    if(tori.conf.mail.host){
       emailSetup =  {
-      host: torii.conf.mail.host,
-      port: torii.conf.mail.port,
-      secureConnection: torii.conf.mail.secureConnection,
+      host: tori.conf.mail.host,
+      port: tori.conf.mail.port,
+      secureConnection: tori.conf.mail.secureConnection,
       auth: {
-        user: torii.conf.mail.user,
-        pass: torii.conf.mail.pass
+        user: tori.conf.mail.user,
+        pass: tori.conf.mail.pass
         }
       };
 

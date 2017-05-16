@@ -5,18 +5,18 @@ var token = require('token');
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
-var torii = require('../conf/torii.conf.js');
+var tori = require('../conf/tori.conf.js');
 var oID = require('mongodb').ObjectID;
 var randtoken = require('rand-token');
 
 // token setup
-token.defaults.secret = 'toriijs';
+token.defaults.secret = 'torijs';
 token.defaults.timeStep = 24 * 60 * 60;
 
 router.get('/login', function(req, res){
   res.render('userLoginForm', {
-    toriiAllowPublicRegistration: torii.conf.core.allowPublicUserRegistration,
-    toriiTitle: torii.conf.core.title
+    toriAllowPublicRegistration: tori.conf.core.allowPublicUserRegistration,
+    toriTitle: tori.conf.core.title
   });
 });
 
@@ -54,13 +54,13 @@ router.post('/mobile', function(req, res){
 
 router.get('/register', function(req, res){
 
-	if(!torii.conf.core.allowPublicUserRegistration){
+	if(!tori.conf.core.allowPublicUserRegistration){
 		res.redirect('/auth/login')
 		return
 	}
 
 	res.render('userRegistrationForm',{
-		toriiTitle: torii.conf.core.title
+		toriTitle: tori.conf.core.title
 	});
 });
 
@@ -104,7 +104,7 @@ router.post('/getuniquecode', function(req, res) {
 
 			var mailOptions = {
 
-      	from: torii.conf.mail.from,
+      	from: tori.conf.mail.from,
 				to: user.username,
 				subject: 'Reset password',
 				text: 'Questo e il tuo nuovo codice: '+ user.resetPassword +' inseriscilo sull ipad'

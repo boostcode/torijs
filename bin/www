@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 var app = require('../app');
 
-app.set('port', process.env.PORT || 8000);
+// get tori configuration
+var tori = require('../conf/tori.conf.js').tori;
+
+
+app.set('port', tori.conf.core.port || 8000);
 
 var server = app.listen(app.get('port'), function() {
   console.log('⛩  torijs is listening on port: ' + server.address().port);

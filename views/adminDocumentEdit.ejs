@@ -59,7 +59,7 @@ $( document ).ready(function() {
 		
 		userAndToken["query"] = {"nome_collezione" : nome_collezione};
 		
-		$.post("/collection/torii_structure/documents.json", userAndToken, function(data) {
+		$.post("/collection/tori_structure/documents.json", userAndToken, function(data) {
 		
 			campi = data["aaData"][0]["struttura"];
 		

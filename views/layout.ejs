@@ -3,7 +3,7 @@
 	<head>
     <base href="/">
 		<meta charset="UTF-8">
-		<title>Dashboard | <%= toriiTitle ? toriiTitle : 'Torii.js'%></title>
+		<title>Dashboard | <%= toriTitle ? toriTitle : 'tori.js'%></title>
 		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
 		<!-- bootstrap  -->
 		<link href="/js/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -31,10 +31,10 @@
     <script type="text/javascript" src="/js/angular-cookie/angular-cookie.min.js"></script>
     <script type="text/javascript" src="/js/ng-table/ng-table.min.js"></script>
 
-    <!-- Torii.js -->
-    <script type="text/javascript" src="/torii/backend.js"></script>
-    <script type="text/javascript" src="/torii/user.js"></script>
-    <script type="text/javascript" src="/torii/admin.js"></script>
+    <!-- tori.js -->
+    <script type="text/javascript" src="/tori/backend.js"></script>
+    <script type="text/javascript" src="/tori/user.js"></script>
+    <script type="text/javascript" src="/tori/admin.js"></script>
 		
 		<!-- Bootstrap -->
 		<script type="text/javascript" src="/js/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -58,7 +58,7 @@
 												
 							if(status == 'success' && data.action == 'logout'){
 								
-								$.removeCookie('toriijs');
+								$.removeCookie('torijs');
 								
 								location.href="/auth/login";
 								
@@ -84,7 +84,7 @@
 		<header class="header">
 			<a href="/admin" class="logo">
 				<!-- Add the class icon to your logo image or logo icon to add the margining -->
-				<%= toriiTitle ? toriiTitle : 'Torii.js'%>
+				<%= toriTitle ? toriTitle : 'tori.js'%>
 			</a>
 
 			<!-- Header Navbar: style can be found in header.less -->
@@ -213,7 +213,7 @@
 				<!-- Content Header (Page header) -->
 				<section class="content-header">
 					<h1>
-						<%= toriiTitle ? toriiTitle : 'Torii.js'%>
+						<%= toriTitle ? toriTitle : 'tori.js'%>
 						<small>Control panel</small>
 					</h1>
 					<ol class="breadcrumb">
