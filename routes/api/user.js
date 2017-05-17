@@ -270,8 +270,8 @@ function updateUser(req, user, data) {
   data = _.omit(data, ['username', 'password', 'token', 'resetPassword']);
 
   // only admin or dev user can change other user level
-  if (req.user.isAdmin == false || req.user.isDev == false) {
-    data = _.omit(data, ['isDev', 'isAdmin']);
+  if (req.user.isAdmin == false) {
+    data = _.omit(data, ['isAdmin']);
   }
 
   // return updated user
@@ -293,7 +293,7 @@ router.post('/update', function(req, res) {
 /// Update third party user
 router.post('/update/:id', function(req, res) {
   // only admin or dev can change third party user
-  if (req.user.isAdmin == true || req.user.isDev == true) {
+  if (req.user.isAdmin == true) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested user
@@ -352,9 +352,9 @@ router.get('/list', function(req, res) {
     }
 
     // if current user is not admin or dev
-    if (req.user.isDev == false && req.user.isAdmin == false) {
+    if (req.user.isAdmin == false) {
       users = _.map(users, function(user) {
-        return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
+        return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
       });
     }
 
@@ -368,7 +368,7 @@ router.get('/list', function(req, res) {
 /// Profile
 router.get('/profile', function(req, res) {
   // omit forbidden fields
-  var sanitizedUser = _.omit(req.user.toObject(), ['__v', 'password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
+  var sanitizedUser = _.omit(req.user.toObject(), ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
 
   res.json({
     success: true,

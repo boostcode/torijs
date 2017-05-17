@@ -22,10 +22,6 @@ var account = new schema({
     type: Boolean,
     default: false
   },
-  isDev: {
-    type: Boolean,
-    default: false
-  },
   extraFields: schema.Types.Mixed
 });
 
