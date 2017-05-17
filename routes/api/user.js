@@ -93,6 +93,8 @@ router.post('/register', function(req, res) {
       return;
     }
 
+    // TODO: consider add email confirmation
+
     res.json({
       user: req.body.username,
       message: 'User created.',
@@ -269,9 +271,29 @@ function updateUser(req, user, data) {
   // omit forbidden fields
   data = _.omit(data, ['username', 'password', 'token', 'resetPassword']);
 
-  // only admin or dev user can change other user level
-  if (req.user.isAdmin == false) {
+  // extract roles
+  var roles = _.pick(data, 'roles');
+  // and remove from data
+  data = _.omit(data, 'roles');
+
+  // only admin user can change other user level
+  if (req.user.isAdmin === false) {
     data = _.omit(data, ['isAdmin']);
+  }
+
+  // if admin
+  if (req.user.isAdmin === true) {
+    // and we have roles
+    if (roles) {
+      // remove all roles first
+      user.removeAllRoles(function(err) {
+        console.error(err);
+      });
+      // add that to user
+      user.addRole(roles, function(err) {
+        console.error(err);
+      });
+    }
   }
 
   // return updated user
