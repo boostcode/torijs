@@ -12,51 +12,9 @@ var session = require('express-session');
 var engine = require('ejs-locals');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
-
-// Routes
-var action = require('./routes/action');
-var admin = require('./routes/admin');
-var collection = require('./routes/collection');
-var role = require('./routes/role');
-var user = require('./routes/user');
-
-// Api
-var userApi = require('./routes/api/user');
-var permissionApi = require('./routes/api/permission');
-
-// Authentication
-var jwt = require('jsonwebtoken');
-var passport = require('passport');
-var localStrategy = require('passport-local').Strategy;
-var tokenStrategy = require('passport-token').Strategy;
-var account = require('./models/account');
-
-// Database
-var mongoClient = require('mongodb').MongoClient;
-var mongoose = require('mongoose');
-var database = null;
-
-// Email
-var nodemailer = require('nodemailer');
-var transport = null;
-if(tori.mail.service == 'smtp') {
-  transport = require('nodemailer-smtp-transport');
-} else {
-  transport = require('nodemailer-sendmail-transport');
-}
-
-if (transport == null) {
-  console.error('❌  📨  Mail transport not setup, please check your configuration file');
-  process.exit();
-}
-
-var mail = null;
-
-
-
 var app = express();
 
-// view engine setup
+/// Engine setup
 app.engine('ejs', engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -73,53 +31,30 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Routes
+var action = require('./routes/action');
+var admin = require('./routes/admin');
+var collection = require('./routes/collection');
+var role = require('./routes/role');
+var user = require('./routes/user');
 
-// database setup
-app.use(function(req, res, next){
-  if(database){
-    req.db = database;
-    next();
-  }else{
-    mongoClient.connect('mongodb://'+tori.database.host+'/'+tori.database.data, function(err, db) {
-      if(db){
-        req.db = database = db;
-        next();
-      }else{
-        console.error('❌  🗄  Database connection problem');
-        process.exit();
-      }
-    });
-  }
-});
+// Api
+var userApi = require('./routes/api/user');
+var permissionApi = require('./routes/api/permission');
 
-mongoose.connect('mongodb://'+tori.database.host+'/'+tori.database.user);
+// 🔑  Authentication
+var jwt = require('jsonwebtoken');
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
+var tokenStrategy = require('passport-token').Strategy;
+var account = require('./models/account');
 
-// email setup
-app.use(function(req, res, next){
-  if(mail){
-    req.mail = mail;
-    next();
-  }else{
-
-    var emailSetup = {};
-
-    // check if smtp is supported
-    if(tori.mail.smtp.host != null){
-      emailSetup =  tori.mail.smtp;
-    }
-
-    req.mail = mail = nodemailer.createTransport(transport(emailSetup));
-    next();
-  }
-});
-
-
-// local mongoose strategy
+/// local mongoose strategy
 passport.use(account.createStrategy());
 passport.serializeUser(account.serializeUser());
 passport.deserializeUser(account.deserializeUser());
 
-// token strategy
+/// token strategy
 function tokenAuth(req, res, next) {
   // try to get the token
   var token = req.body.token || req.param('token') || req.headers['x-access-token'];
@@ -175,6 +110,68 @@ function tokenAuth(req, res, next) {
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+/// 🗄 Database setup
+var mongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
+var database = null;
+app.use(function(req, res, next){
+  if(database){
+    req.db = database;
+    next();
+  }else{
+    mongoClient.connect('mongodb://'+tori.database.host+'/'+tori.database.data, function(err, db) {
+      if(db){
+        req.db = database = db;
+        next();
+      }else{
+        console.error('❌  🗄  Database connection problem');
+        process.exit();
+      }
+    });
+  }
+});
+
+mongoose.connect('mongodb://'+tori.database.host+'/'+tori.database.user);
+
+
+/// 📨 Email
+var nodemailer = require('nodemailer');
+var transport = null;
+if(tori.mail.service == 'smtp') {
+  transport = require('nodemailer-smtp-transport');
+} else {
+  transport = require('nodemailer-sendmail-transport');
+}
+
+if (transport == null) {
+  console.error('❌  📨  Mail transport not setup, please check your configuration file');
+  process.exit();
+}
+
+var mail = null;
+
+app.use(function(req, res, next){
+  if(mail){
+    req.mail = mail;
+    next();
+  }else{
+
+    var emailSetup = {};
+
+    // check if smtp is supported
+    if(tori.mail.smtp.host != null){
+      emailSetup =  tori.mail.smtp;
+    }
+
+    req.mail = mail = nodemailer.createTransport(transport(emailSetup));
+    next();
+  }
+});
+
+
+
+/// Routing
 app.get('/', function(req, res){
   res.redirect('/authenticate/login');
 });
@@ -202,7 +199,7 @@ app.all('/admin/*', function (req, res, next){
 });
 
 
-// Setup Routes
+/// Setup Routes
 app.use('/api/user', userApi);
 app.use('/api/permission', permissionApi);
 app.use('/role', role);
@@ -212,11 +209,10 @@ app.use('/user', user);
 app.use('/admin', admin);
 
 
-/// error handlers
+/// Error handlers
 
-// development error handler
-// will print stacktrace
 if (app.get('env') === 'development') {
+  // development error handler, will print stacktrace
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         console.log(err.message);
@@ -227,8 +223,7 @@ if (app.get('env') === 'development') {
     });
 }
 
-// production error handler
-// no stacktraces leaked to user
+// production error handler, no stacktraces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
