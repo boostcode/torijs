@@ -320,7 +320,27 @@ router.get('/remove', function(req, res){
 
 /// List of user
 router.get('/list', function(req, res){
+  account.find({}).lean().exec(function(err, users){
+    if (err) {
+      res.json({
+        success: false,
+        message: err.message
+      });
+      return;
+    }
 
+    // if current user is not admin or dev
+    if (req.user.isDev == false && req.user.isAdmin == false) {
+      users = _.map(users, function(user) {
+        return _.omit(user, ['__v','password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
+      });
+    }
+
+    res.json({
+      success: true,
+      users: users
+    });
+  });
 });
 
 /// Profile
