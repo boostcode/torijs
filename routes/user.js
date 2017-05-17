@@ -8,31 +8,31 @@ var tori = require('../conf/tori.conf.js').tori;
 var _ = require('underscore');
 
 // registration
-router.post('/register', function(req, res){
+router.post('/register', function(req, res) {
   account.register(new account({
     username: req.body.usernamereg
-  }), req.body.password, function(err, account){
+  }), req.body.password, function(err, account) {
 
-    if(err){
+    if (err) {
       res.send(err);
       return;
     }
 
-    if(req.body.name){
+    if (req.body.name) {
       account.name = req.body.name;
     }
 
-    if(req.body.surname){
+    if (req.body.surname) {
       account.surname = req.body.surname;
     }
 
     // extra check for current user to avoid any injection by public
     // registration form
-    if(req.body.isAdmin && req.user.isDev){
+    if (req.body.isAdmin && req.user.isDev) {
       account.isAdmin = true;
     }
 
-    if(req.body.isDev && req.user.isDev){
+    if (req.body.isDev && req.user.isDev) {
       account.isDev = true;
     }
 
@@ -40,20 +40,19 @@ router.post('/register', function(req, res){
 
     // on role attribution check if current user is Admin or Dev
     // this will decrease risk of injections
-    if(req.body.role && (req.user.isDev || req.user.isAdmin)){
-      account.addRole(req.body.role, function(err){
-      });
+    if (req.body.role && (req.user.isDev || req.user.isAdmin)) {
+      account.addRole(req.body.role, function(err) {});
     }
 
     var mailOptions = {
       from: tori.conf.mail.from,
       to: req.body.usernamereg,
-      subject: tori.conf.core.title+' - Password Confirmation',
-      text: 'Dear '+(req.body.name ? req.body.name : req.body.username)+'\n here your password: '+req.body.password+'\n\nPlease note that down!'
+      subject: tori.conf.core.title + ' - Password Confirmation',
+      text: 'Dear ' + (req.body.name ? req.body.name : req.body.username) + '\n here your password: ' + req.body.password + '\n\nPlease note that down!'
     };
 
-    req.mail.sendMail(mailOptions, function(err, info){
-      if(err){
+    req.mail.sendMail(mailOptions, function(err, info) {
+      if (err) {
         console.log(err);
         return;
       }
@@ -70,90 +69,90 @@ router.post('/register', function(req, res){
 
 
 // update
-router.post('/update', function(req, res){
+router.post('/update', function(req, res) {
 
-  account.findById(req.body.userid, function(err, user){
+  account.findById(req.body.userid, function(err, user) {
 
-    if(err){
+    if (err) {
       res.send(err);
       return;
     }
 
-    if(req.body.name){
+    if (req.body.name) {
       user.name = req.body.name;
     }
 
-      if(req.body.surname){
-        user.surname = req.body.surname;
+    if (req.body.surname) {
+      user.surname = req.body.surname;
+    }
+
+    if (req.body.isAdmin) {
+      if (req.user.isDev) {
+        user.isAdmin = req.body.isAdmin;
+      } else {
+        res.send({
+          error: 'You are not allowed to change user privileges'
+        });
+        return;
       }
+    }
 
-      if(req.body.isAdmin){
-        if(req.user.isDev){
-          user.isAdmin = req.body.isAdmin;
-        }else{
-          res.send({
-            error: 'You are not allowed to change user privileges'
-          });
-          return;
-        }
+    if (req.body.isDev) {
+      if (req.user.isDev) {
+        user.isDev = req.body.isDev;
+      } else {
+        res.send({
+          error: 'You are not allowed to change user privileges'
+        });
+        return;
       }
+    }
 
-      if(req.body.isDev){
-        if(req.user.isDev){
-          user.isDev = req.body.isDev;
-        }else{
-          res.send({
-            error: 'You are not allowed to change user privileges'
-          });
-          return;
-        }
-      }
+    // store all changes
+    user.save();
 
-      // store all changes
-      user.save();
-
-      if(req.body.role){
-        if (req.user.isDev || req.user.isAdmin){
-          user.removeAllRoles(function(err){
-            if(err){
-              console.log(err);
-            }
-          });
-
-          user.addRole(req.body.role, function(err){
-            if(err){
-              console.log(err);
-            }
-          });
-        }else{
-          res.send({
-            error: 'You are not allowed to change user roles'
-          });
-          return;
-        }
-      }
-
-      if(req.body.password){
-        user.setPassword(req.body.password, function(err){
-          if(err){
+    if (req.body.role) {
+      if (req.user.isDev || req.user.isAdmin) {
+        user.removeAllRoles(function(err) {
+          if (err) {
             console.log(err);
-          }else{
-            user.save();
           }
         });
+
+        user.addRole(req.body.role, function(err) {
+          if (err) {
+            console.log(err);
+          }
+        });
+      } else {
+        res.send({
+          error: 'You are not allowed to change user roles'
+        });
+        return;
       }
+    }
 
-      // TODO: handle extra fields
+    if (req.body.password) {
+      user.setPassword(req.body.password, function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          user.save();
+        }
+      });
+    }
 
-      res.send({
-        user: user.username
+    // TODO: handle extra fields
+
+    res.send({
+      user: user.username
 
     });
   });
 });
 
 // user logged
-router.post('/islogged', function(req, res){
+router.post('/islogged', function(req, res) {
   res.send({
     confirm: 'ok',
     role: req.user.role
@@ -161,10 +160,10 @@ router.post('/islogged', function(req, res){
 });
 
 // remove
-router.post('/remove', function(req, res){
-  account.findByIdAndRemove(req.body.userid, function(err, user){
+router.post('/remove', function(req, res) {
+  account.findByIdAndRemove(req.body.userid, function(err, user) {
 
-    if(err){
+    if (err) {
       res.send(err);
       return;
     }
@@ -179,23 +178,23 @@ router.post('/remove', function(req, res){
 
 
 // list
-router.post('/list.json', function(req, res){
+router.post('/list.json', function(req, res) {
   var query = {};
 
-  if(req.body.sSearch){
+  if (req.body.sSearch) {
     query = {
       'name': req.body.sSeach
     };
   }
 
-  role.find({}, function(err, roles){
-    if(err){
+  role.find({}, function(err, roles) {
+    if (err) {
       res.send(err);
       return;
     }
 
-    account.find(query, '_id username roles token name surname', function(err, users){
-      if(err){
+    account.find(query, '_id username roles token name surname', function(err, users) {
+      if (err) {
         res.send({
           error: 'User list not found'
         });
@@ -205,8 +204,8 @@ router.post('/list.json', function(req, res){
       var totalElements = users.length;
 
 
-      if(req.body.page){
-        users = users.slice((req.body.page - 1 ) * req.body.count, req.body.page * req.body.count);
+      if (req.body.page) {
+        users = users.slice((req.body.page - 1) * req.body.count, req.body.page * req.body.count);
         console.log(users);
       }
 
@@ -216,8 +215,8 @@ router.post('/list.json', function(req, res){
       // req.body.sorting
 
       users.forEach(function(user) {
-        roles.forEach(function(role){
-          if(JSON.stringify(user.roles[0]) == JSON.stringify(role._id)){
+        roles.forEach(function(role) {
+          if (JSON.stringify(user.roles[0]) == JSON.stringify(role._id)) {
             user.roles[0] = role.name;
           }
         });
@@ -241,9 +240,9 @@ router.post('/list.json', function(req, res){
 });
 
 // apns token
-router.post('/set/apnstoken', function(req, res){
-  account.findbyId(req.user.id, function(err, user){
-    if(err){
+router.post('/set/apnstoken', function(req, res) {
+  account.findbyId(req.user.id, function(err, user) {
+    if (err) {
       res.send(err);
       return;
     }
@@ -258,9 +257,9 @@ router.post('/set/apnstoken', function(req, res){
 });
 
 // gcm token
-router.post('/set/gcmtoken', function(req, res){
-  account.findById(req.user.id, function(err, user){
-    if(err){
+router.post('/set/gcmtoken', function(req, res) {
+  account.findById(req.user.id, function(err, user) {
+    if (err) {
       res.send(err);
       return;
     }

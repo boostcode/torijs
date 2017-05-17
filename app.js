@@ -22,7 +22,9 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser());
 app.use(session({
   secret: tori.core.secret,
@@ -72,7 +74,7 @@ function tokenAuth(req, res, next) {
 
   // if token exists, and has at least a char
   if (token && token.length > 1) {
-    jwt.verify(token, tori.core.secret, function(err, decoded){
+    jwt.verify(token, tori.core.secret, function(err, decoded) {
       if (err) {
         return res.status(401).json({
           success: false,
@@ -80,7 +82,10 @@ function tokenAuth(req, res, next) {
         });
       } else {
         // retrieve current user
-        account.findOne({ username: username, token: token }).exec(function (err, user) { // mongoose.lean() transform the Model to Object
+        account.findOne({
+          username: username,
+          token: token
+        }).exec(function(err, user) { // mongoose.lean() transform the Model to Object
           if (err) {
             return res.status(401).json({
               success: false,
@@ -116,16 +121,16 @@ app.use(passport.session());
 var mongoClient = require('mongodb').MongoClient;
 var mongoose = require('mongoose');
 var database = null;
-app.use(function(req, res, next){
-  if(database){
+app.use(function(req, res, next) {
+  if (database) {
     req.db = database;
     next();
-  }else{
-    mongoClient.connect('mongodb://'+tori.database.host+'/'+tori.database.data, function(err, db) {
-      if(db){
+  } else {
+    mongoClient.connect('mongodb://' + tori.database.host + '/' + tori.database.data, function(err, db) {
+      if (db) {
         req.db = database = db;
         next();
-      }else{
+      } else {
         console.error('❌  🗄  Database connection problem');
         process.exit();
       }
@@ -133,13 +138,13 @@ app.use(function(req, res, next){
   }
 });
 
-mongoose.connect('mongodb://'+tori.database.host+'/'+tori.database.user);
+mongoose.connect('mongodb://' + tori.database.host + '/' + tori.database.user);
 
 
 /// 📨 Email
 var nodemailer = require('nodemailer');
 var transport = null;
-if(tori.mail.service == 'smtp') {
+if (tori.mail.service == 'smtp') {
   transport = require('nodemailer-smtp-transport');
 } else {
   transport = require('nodemailer-sendmail-transport');
@@ -152,17 +157,17 @@ if (transport == null) {
 
 var mail = null;
 
-app.use(function(req, res, next){
-  if(mail){
+app.use(function(req, res, next) {
+  if (mail) {
     req.mail = mail;
     next();
-  }else{
+  } else {
 
     var emailSetup = {};
 
     // check if smtp is supported
-    if(tori.mail.smtp.host != null){
-      emailSetup =  tori.mail.smtp;
+    if (tori.mail.smtp.host != null) {
+      emailSetup = tori.mail.smtp;
     }
 
     req.mail = mail = nodemailer.createTransport(transport(emailSetup));
@@ -173,7 +178,7 @@ app.use(function(req, res, next){
 
 
 /// Routing
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.redirect('/authenticate/login');
 });
 
@@ -214,31 +219,31 @@ app.use('/admin', admin);
 
 if (app.get('env') === 'development') {
   // development error handler, will print stacktrace
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        console.log(err.message);
-        res.render('error', {
-            message: err.message,
-            success: false
-        });
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    console.log(err.message);
+    res.render('error', {
+      message: err.message,
+      success: false
     });
+  });
 }
 
 // production error handler, no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        success: false
-    });
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    success: false
+  });
 });
 
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 module.exports = app;

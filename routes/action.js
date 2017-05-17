@@ -12,7 +12,7 @@ router.post('/list.json',function(req,res){
       name: req.body.sSearch
     };
   }
-
+  
   action.find(query, function(err, actions){
     if(err){
       res.send({

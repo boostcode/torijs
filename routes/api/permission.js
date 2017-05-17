@@ -5,11 +5,11 @@ var permission = rbac.Permission;
 var _ = require('underscore');
 
 /// List
-router.post('/list', function(req, res){
+router.post('/list', function(req, res) {
   var query = {};
 
-  permission.find(query, function(err, perms){
-    if(err){
+  permission.find(query, function(err, perms) {
+    if (err) {
       res.json({
         success: false,
         message: err

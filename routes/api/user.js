@@ -24,7 +24,7 @@ function issueJwt(req, res) {
 }
 
 /// Login
-router.post('/login', function(req, res){
+router.post('/login', function(req, res) {
   // issue jwt
   issueJwt(req, res);
 });
@@ -40,7 +40,10 @@ router.post('/refresh/token', function(req, res) {
   var username = req.body.username || req.param('username') || req.headers['x-access-username'];
 
   // check if user and expired token exist
-  account.findOne({ username: username, token: token }, function (err, user) {
+  account.findOne({
+    username: username,
+    token: token
+  }, function(err, user) {
     if (err) {
       return res.status(401).json({
         success: false,
@@ -62,7 +65,7 @@ router.post('/refresh/token', function(req, res) {
 });
 
 /// Logout
-router.get('/logout', function(req, res){
+router.get('/logout', function(req, res) {
 
   // remove token
   req.user.token = null;
@@ -77,12 +80,12 @@ router.get('/logout', function(req, res){
 });
 
 /// Register
-router.post('/register', function(req, res){
+router.post('/register', function(req, res) {
 
   account.register(new account({
     username: req.body.username
-  }), req.body.password, function(err, account){
-    if(err){
+  }), req.body.password, function(err, account) {
+    if (err) {
       res.json({
         success: false,
         message: err
@@ -105,7 +108,7 @@ router.post('/reset/password', function(req, res) {
 
   var username = req.body.username;
 
-  if(!username) {
+  if (!username) {
     res.json({
       success: false,
       message: 'Missing username.'
@@ -113,9 +116,11 @@ router.post('/reset/password', function(req, res) {
     return
   }
 
-  account.find({ 'username' : username}, function(err, users) {
+  account.find({
+    'username': username
+  }, function(err, users) {
 
-    if(err) {
+    if (err) {
       res.json({
         success: false,
         message: err
@@ -125,50 +130,50 @@ router.post('/reset/password', function(req, res) {
 
     if (users.length > 0) {
 
-	    user = users[0];
+      user = users[0];
 
-			var token = randtoken.generate(16);
+      var token = randtoken.generate(16);
 
-			user.resetPassword = token;
+      user.resetPassword = token;
 
-    	// store all changes
-			user.save();
+      // store all changes
+      user.save();
 
-			var mailOptions = {
-      	from: tori.mail.from,
-				to: user.username,
-				subject: tori.core.title + ' | Reset password',
-				text: 'Here you reset code: '+ user.resetPassword
-    	};
+      var mailOptions = {
+        from: tori.mail.from,
+        to: user.username,
+        subject: tori.core.title + ' | Reset password',
+        text: 'Here you reset code: ' + user.resetPassword
+      };
 
-			req.mail.sendMail(mailOptions, function(err, info){
+      req.mail.sendMail(mailOptions, function(err, info) {
 
-      	if(err) {
+        if (err) {
 
-        	console.log(err);
-					res.json({
+          console.log(err);
+          res.json({
             success: false,
-						message: err
-  				});
+            message: err
+          });
 
-      	} else {
+        } else {
 
-        	console.log(info);
-					res.json({
-						success: true,
-						msg: 'Mail sent.'
-  				});
+          console.log(info);
+          res.json({
+            success: true,
+            msg: 'Mail sent.'
+          });
 
-      	}
+        }
 
-    	});
+      });
 
     } else {
 
-	    res.json({
-				success: false,
-				message: 'User does not exists.'
-  		});
+      res.json({
+        success: false,
+        message: 'User does not exists.'
+      });
 
     }
 
@@ -207,48 +212,51 @@ router.post('/change/password', function(req, res) {
     return;
   }
 
-  account.find({ 'username' : username, 'resetPassword' : resetPassword }, function(err, users) {
+  account.find({
+    'username': username,
+    'resetPassword': resetPassword
+  }, function(err, users) {
 
-    if(err) {
+    if (err) {
       res.json({
-				success: false,
-				message: err
-  		});
+        success: false,
+        message: err
+      });
       return;
     }
 
     if (users.length > 0) {
 
-	    user = users[0];
+      user = users[0];
 
-			user.setPassword(newPassword, function(err){
-          if(err){
-            console.log(err);
+      user.setPassword(newPassword, function(err) {
+        if (err) {
+          console.log(err);
 
-            res.json({
-              success: false,
-              message: err
-  				  });
+          res.json({
+            success: false,
+            message: err
+          });
 
-          }else{
+        } else {
 
-	          user.resetPassword = undefined
-            user.save();
+          user.resetPassword = undefined
+          user.save();
 
-            res.json({
-							success: true,
-              message: 'Password modified successfully.'
-  					});
+          res.json({
+            success: true,
+            message: 'Password modified successfully.'
+          });
 
-          }
-        });
+        }
+      });
 
     } else {
 
-	    res.send({
-				success: false,
+      res.send({
+        success: false,
         message: 'User and token supplied are not valid.'
-  		});
+      });
 
     }
 
@@ -289,8 +297,8 @@ router.post('/update/:id', function(req, res) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested user
-    account.findById(id, function(err, user){
-      if (err){
+    account.findById(id, function(err, user) {
+      if (err) {
         res.json({
           success: false,
           message: err.message
@@ -314,13 +322,13 @@ router.post('/update/:id', function(req, res) {
 });
 
 /// Remove user
-router.get('/remove', function(req, res){
-
+router.get('/remove/:id', function(req, res) {
+  // TODO: add remove user
 });
 
 /// List of user
-router.get('/list', function(req, res){
-  account.find({}).lean().exec(function(err, users){
+router.get('/list', function(req, res) {
+  account.find({}).lean().exec(function(err, users) {
     if (err) {
       res.json({
         success: false,
@@ -332,7 +340,7 @@ router.get('/list', function(req, res){
     // if current user is not admin or dev
     if (req.user.isDev == false && req.user.isAdmin == false) {
       users = _.map(users, function(user) {
-        return _.omit(user, ['__v','password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
+        return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
       });
     }
 
@@ -344,10 +352,9 @@ router.get('/list', function(req, res){
 });
 
 /// Profile
-router.get('/profile', function(req, res){
-
+router.get('/profile', function(req, res) {
   // omit forbidden fields
-  var sanitizedUser = _.omit(req.user.toObject(), ['__v','password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
+  var sanitizedUser = _.omit(req.user.toObject(), ['__v', 'password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
 
   res.json({
     success: true,
