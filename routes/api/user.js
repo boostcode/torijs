@@ -324,6 +324,20 @@ router.post('/update/:id', function(req, res) {
 /// Remove user
 router.get('/remove/:id', function(req, res) {
   // TODO: add remove user
+  /*
+  account.findByIdAndRemove(req.body.userid, function(err, user) {
+
+    if (err) {
+      res.send(err);
+      return;
+    }
+
+    res.send({
+      confirm: 'ok'
+    });
+
+  });
+  */
 });
 
 /// List of user
