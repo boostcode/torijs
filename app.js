@@ -29,7 +29,6 @@ var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var tokenStrategy = require('passport-token').Strategy;
-var token = require('token');
 var account = require('./models/account');
 
 // Database

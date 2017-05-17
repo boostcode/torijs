@@ -33,7 +33,6 @@
     "serve-favicon": "^2.4.2",
     "string": "^1.9.1",
     "template": "^0.2.1",
-    "token": "0.0.0",
     "underscore": "^1.8.3"
   }
 }
