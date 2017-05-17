@@ -79,7 +79,8 @@ function tokenAuth(req, res, next) {
           message: err.message
         });
       } else {
-        account.findOne({ username: username, token: token }, function (err, user) {
+        // retrieve current user
+        account.findOne({ username: username, token: token }).lean().exec(function (err, user) { // mongoose.lean() transform the Model to Object
           if (err) {
             return res.status(401).json({
               success: false,
@@ -188,6 +189,7 @@ app.get('/api/user/logout', tokenAuth);
 app.post('/api/user/update', tokenAuth);
 app.get('/api/user/remove', tokenAuth);
 app.get('/api/user/list', tokenAuth);
+app.get('/api/user/profile', tokenAuth);
 
 app.all('/admin/*', function (req, res, next){
   // checks if user is logged
