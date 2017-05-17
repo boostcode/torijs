@@ -38,6 +38,7 @@ router.post('/refresh/token', function(req, res) {
   // try to get username
   var username = req.body.username || req.param('username') || req.headers['x-access-username'];
 
+  // check if user and expired token exist
   account.findOne({ username: username, token: token }, function (err, user) {
     if (err) {
       return res.status(401).json({
@@ -65,7 +66,7 @@ router.get('/logout', function(req, res){
   // remove token
   req.user.token = null;
   req.user.save();
-
+  // force quit session
   req.logout();
 
   res.json({
@@ -99,7 +100,7 @@ router.post('/register', function(req, res){
 });
 
 /// Request token for password
-router.post('/reset/token', function(req, res) {
+router.post('/reset/password', function(req, res) {
 
   var username = req.body.username;
 
