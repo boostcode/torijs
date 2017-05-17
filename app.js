@@ -188,12 +188,8 @@ app.get('/', function(req, res) {
 //app.all('/role/*', tokenAuth);
 //app.all('/action/*', tokenAuth);
 
-app.post('/api/user/login', passport.authenticate('local'));
-app.get('/api/user/logout', tokenAuth);
-app.get('/api/user/remove', tokenAuth);
-app.get('/api/user/list', tokenAuth);
-app.get('/api/user/profile', tokenAuth);
-app.post('/api/user/update*', tokenAuth);
+
+
 
 /*app.all('/admin/*', function (req, res, next){
   // checks if user is logged
@@ -206,8 +202,19 @@ app.post('/api/user/update*', tokenAuth);
 
 
 /// Setup Routes
+// User
+app.post('/api/user/login', passport.authenticate('local'));
+app.get('/api/user/logout', tokenAuth);
+app.get('/api/user/remove', tokenAuth);
+app.get('/api/user/list', tokenAuth);
+app.get('/api/user/profile', tokenAuth);
+app.post('/api/user/update*', tokenAuth);
 app.use('/api/user', userApi);
+
+// Permission
+app.all('/api/permission', tokenAuth);
 app.use('/api/permission', permissionApi);
+
 app.use('/role', role);
 app.use('/action', action);
 app.use('/collection', collection);

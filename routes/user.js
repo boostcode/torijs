@@ -159,22 +159,6 @@ router.post('/islogged', function(req, res) {
   });
 });
 
-// remove
-router.post('/remove', function(req, res) {
-  account.findByIdAndRemove(req.body.userid, function(err, user) {
-
-    if (err) {
-      res.send(err);
-      return;
-    }
-
-    res.send({
-      confirm: 'ok'
-    });
-
-  });
-});
-
 
 
 // list
@@ -236,41 +220,6 @@ router.post('/list.json', function(req, res) {
       });
 
     });
-  });
-});
-
-// apns token
-router.post('/set/apnstoken', function(req, res) {
-  account.findbyId(req.user.id, function(err, user) {
-    if (err) {
-      res.send(err);
-      return;
-    }
-
-    user.apnstoken = req.body.apnsotoken;
-    user.save();
-
-    res.send({
-      action: 'saved'
-    });
-  });
-});
-
-// gcm token
-router.post('/set/gcmtoken', function(req, res) {
-  account.findById(req.user.id, function(err, user) {
-    if (err) {
-      res.send(err);
-      return;
-    }
-
-    user.gcmtoken = req.body.gcmtoken;
-    user.save();
-
-    res.send({
-      action: 'saved'
-    });
-
   });
 });
 

@@ -5,10 +5,9 @@ var permission = rbac.Permission;
 var _ = require('underscore');
 
 /// List
-router.post('/list', function(req, res) {
-  var query = {};
+router.get('/list', function(req, res) {
 
-  permission.find(query, function(err, perms) {
+  permission.find({}, function(err, perms) {
     if (err) {
       res.json({
         success: false,
@@ -17,8 +16,10 @@ router.post('/list', function(req, res) {
       return;
     }
 
-    // TODO: improve respose
-    res.json(_.groupBy(perms, 'subject'));
+    res.json({
+      success: true,
+      permission: _.groupBy(perms, 'subject')
+    });
 
   });
 });
