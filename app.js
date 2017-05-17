@@ -56,11 +56,11 @@ passport.deserializeUser(account.deserializeUser());
 
 /// token strategy
 function tokenAuth(req, res, next) {
-  // try to get the token
-  var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+  // get the token
+  var token = req.headers['x-access-token'];
 
-  // try to get username
-  var username = req.body.username || req.param('username') || req.headers['x-access-username'];
+  // get username
+  var username = req.headers['x-access-username'];
 
   // if username is missing
   if (!username) {
@@ -80,7 +80,7 @@ function tokenAuth(req, res, next) {
         });
       } else {
         // retrieve current user
-        account.findOne({ username: username, token: token }).lean().exec(function (err, user) { // mongoose.lean() transform the Model to Object
+        account.findOne({ username: username, token: token }).exec(function (err, user) { // mongoose.lean() transform the Model to Object
           if (err) {
             return res.status(401).json({
               success: false,
@@ -177,28 +177,27 @@ app.get('/', function(req, res){
   res.redirect('/authenticate/login');
 });
 
-app.all('/*/import', multipartMiddleware);
-
-app.all('/collection/*', tokenAuth);
-app.all('/user/*', tokenAuth);
-app.all('/role/*', tokenAuth);
-app.all('/action/*', tokenAuth);
+// remove those
+//app.all('/collection/*', tokenAuth);
+//app.all('/user/*', tokenAuth);
+//app.all('/role/*', tokenAuth);
+//app.all('/action/*', tokenAuth);
 
 app.post('/api/user/login', passport.authenticate('local'));
 app.get('/api/user/logout', tokenAuth);
-app.post('/api/user/update', tokenAuth);
 app.get('/api/user/remove', tokenAuth);
 app.get('/api/user/list', tokenAuth);
 app.get('/api/user/profile', tokenAuth);
+app.post('/api/user/update*', tokenAuth);
 
-app.all('/admin/*', function (req, res, next){
+/*app.all('/admin/*', function (req, res, next){
   // checks if user is logged
   if(req.user){
     return next();
   }else{
     res.redirect('/authenticate/login');
   }
-});
+});*/
 
 
 /// Setup Routes

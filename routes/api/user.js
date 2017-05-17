@@ -5,6 +5,7 @@ var tori = require('../../conf/tori.conf.js');
 var jwt = require('jsonwebtoken');
 var randtoken = require('rand-token');
 var _ = require('underscore');
+var mongoose = require('mongoose');
 
 /// JWT Issuer
 function issueJwt(req, res) {
@@ -255,28 +256,61 @@ router.post('/change/password', function(req, res) {
 
 });
 
-/// Update
-router.post('/update', function(req, res) {
-  // TODO: finish handle user update, all keys execpt for admin/dev
-
+/// Update user from data handler
+function updateUser(req, user, data) {
   // omit forbidden fields
-  var sanitizedUser = _.omit(req.body, ['password', 'token', 'resetPassword']);
+  data = _.omit(data, ['username', 'password', 'token', 'resetPassword']);
 
   // only admin or dev user can change other user level
   if (req.user.isAdmin == false || req.user.isDev == false) {
-    sanitizedUser = _.omit(req.body, ['isDev', 'isAdmin']);
+    data = _.omit(data, ['isDev', 'isAdmin']);
   }
 
-  // merge sanitizedUser in user
-  _.extend(req.user, sanitizedUser);
+  // return updated user
+  return _.extend(user, data);
+}
 
-  // save
-  req.user.save();
+/// Update current user
+router.post('/update', function(req, res) {
+
+  // update user passing request, user to update, new fields
+  var user = updateUser(req, req.user, req.body).save();
 
   res.json({
     success: true,
     message: 'User updated.'
   });
+});
+
+/// Update third party user
+router.post('/update/:id', function(req, res) {
+  // only admin or dev can change third party user
+  if (req.user.isAdmin == true || req.user.isDev == true) {
+    // convert id from string to objectId
+    var id = mongoose.Types.ObjectId(req.params.id);
+    // find requested user
+    account.findById(id, function(err, user){
+      if (err){
+        res.json({
+          success: false,
+          message: err.message
+        });
+        return;
+      }
+      // update user and save
+      updateUser(req, user, req.body).save();
+
+      res.json({
+        success: true,
+        message: 'User updated.'
+      });
+    });
+  } else {
+    res.status(403).json({
+      success: false,
+      message: 'User has no permission'
+    });
+  }
 });
 
 /// Remove user
@@ -293,7 +327,7 @@ router.get('/list', function(req, res){
 router.get('/profile', function(req, res){
 
   // omit forbidden fields
-  var sanitizedUser = _.omit(req.user, ['__v','password', 'token', 'resetPassword', 'roles']); // add isDev, isAdmin
+  var sanitizedUser = _.omit(req.user.toObject(), ['__v','password', 'token', 'resetPassword', 'roles', 'isDev', 'isAdmin']);
 
   res.json({
     success: true,
