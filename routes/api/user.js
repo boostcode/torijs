@@ -5,8 +5,9 @@ var tori = require('../../conf/tori.conf.js');
 var jwt = require('jsonwebtoken');
 var randtoken = require('rand-token');
 
-/// Login
-router.post('/login', function(req, res){
+
+/// JWT Issuer
+function issueJwt(req, res) {
   var token = jwt.sign(req.user, tori.core.secret, {
     expiresIn: tori.core.expires // expires in 2 days
   });
@@ -19,11 +20,47 @@ router.post('/login', function(req, res){
     token: token,
     success: true
   });
+}
 
+/// Login
+router.post('/login', function(req, res){
+  // issue jwt
+  issueJwt(req, res);
+});
+
+/// Refresh login token
+router.post('/refresh/token', function(req, res) {
+  // this called is needed when any call return 401, with message: jwt expired
+
+  // try to get the token
+  var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+
+  // try to get username
+  var username = req.body.username || req.param('username') || req.headers['x-access-username'];
+
+  account.findOne({ username: username, token: token }, function (err, user) {
+    if (err) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid username.'
+      });
+    } else {
+      if (user) {
+        req.user = user
+        // issue jwt
+        issueJwt(req, res);
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token.'
+        });
+      }
+    }
+  });
 });
 
 /// Logout
-router.post('/logout', function(req, res){
+router.get('/logout', function(req, res){
 
   // remove token
   req.user.token = null;
@@ -219,12 +256,31 @@ router.post('/change/password', function(req, res) {
 
 /// Update
 router.post('/update', function(req, res) {
-  // TODO: finish
+  // TODO: finish handle user update, all keys execpt for admin/dev
+
+  // only admin user can change user type
+  if (req.user.isAdmin == true) {
+
+  }
+
+  // gcmtoken
+  // apnstoken
+
+  res.json({
+    success: true,
+    message: 'User updated.'
+  });
 });
 
-/// Refresh token
-router.post('/refresh/token', function(req, res) {
-  // TODO: refresh tokens
+/// Remove user
+router.get('/remove', function(req, res){
+
 });
+
+/// List of user
+router.get('/list', function(req, res){
+
+});
+
 
 module.exports = router;

@@ -142,12 +142,12 @@ function tokenAuth(req, res, next) {
       if (err) {
         return res.status(401).json({
           success: false,
-          message: 'Invalid token.'
+          message: err.message
         });
       } else {
         account.findOne({ username: username, token: token }, function (err, user) {
           if (err) {
-            return res.status(403).json({
+            return res.status(401).json({
               success: false,
               message: 'Invalid username.'
             });
@@ -188,8 +188,10 @@ app.all('/role/*', tokenAuth);
 app.all('/action/*', tokenAuth);
 
 app.post('/api/user/login', passport.authenticate('local'));
-app.post('/api/user/logout', tokenAuth);
+app.get('/api/user/logout', tokenAuth);
 app.post('/api/user/update', tokenAuth);
+app.get('/api/user/remove', tokenAuth);
+app.get('/api/user/list', tokenAuth);
 
 app.all('/admin/*', function (req, res, next){
   // checks if user is logged
