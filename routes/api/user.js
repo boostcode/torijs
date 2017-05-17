@@ -4,7 +4,7 @@ var account = require('../../models/account');
 var tori = require('../../conf/tori.conf.js');
 var jwt = require('jsonwebtoken');
 var randtoken = require('rand-token');
-
+var _ = require('underscore');
 
 /// JWT Issuer
 function issueJwt(req, res) {
@@ -259,13 +259,19 @@ router.post('/change/password', function(req, res) {
 router.post('/update', function(req, res) {
   // TODO: finish handle user update, all keys execpt for admin/dev
 
-  // only admin user can change user type
-  if (req.user.isAdmin == true) {
+  // omit forbidden fields
+  var sanitizedUser = _.omit(req.body, ['password', 'token', 'resetPassword']);
 
+  // only admin or dev user can change other user level
+  if (req.user.isAdmin == false || req.user.isDev == false) {
+    sanitizedUser = _.omit(req.body, ['isDev', 'isAdmin']);
   }
 
-  // gcmtoken
-  // apnstoken
+  // merge sanitizedUser in user
+  _.extend(req.user, sanitizedUser);
+
+  // save
+  req.user.save();
 
   res.json({
     success: true,
@@ -281,6 +287,18 @@ router.get('/remove', function(req, res){
 /// List of user
 router.get('/list', function(req, res){
 
+});
+
+/// Profile
+router.get('/profile', function(req, res){
+
+  // omit forbidden fields
+  var sanitizedUser = _.omit(req.user, ['__v','password', 'token', 'resetPassword', 'roles']); // add isDev, isAdmin
+
+  res.json({
+    success: true,
+    user: sanitizedUser
+  });
 });
 
 

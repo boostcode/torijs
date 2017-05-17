@@ -33,4 +33,3 @@ account.plugin(passportLocal);
 account.plugin(rbac.plugin);
 
 module.exports = mongoose.model('account', account);
-
