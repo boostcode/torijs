@@ -79,8 +79,8 @@ router.get('/logout', function(req, res) {
   });
 });
 
-/// Register
-router.post('/register', function(req, res) {
+/// Create
+router.post('/create', function(req, res) {
 
   account.register(new account({
     username: req.body.username
@@ -301,7 +301,7 @@ function updateUser(req, user, data) {
 }
 
 /// Update current user
-router.post('/update', function(req, res) {
+router.put('/update', function(req, res) {
 
   // update user passing request, user to update, new fields
   var user = updateUser(req, req.user, req.body).save();
@@ -313,7 +313,7 @@ router.post('/update', function(req, res) {
 });
 
 /// Update third party user
-router.post('/update/:id', function(req, res) {
+router.put('/update/:id', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
     // convert id from string to objectId
@@ -344,7 +344,7 @@ router.post('/update/:id', function(req, res) {
 });
 
 /// Remove user
-router.get('/remove/:id', function(req, res) {
+router.delete('/delete/:id', function(req, res) {
   // TODO: add remove user
   /*
   account.findByIdAndRemove(req.body.userid, function(err, user) {

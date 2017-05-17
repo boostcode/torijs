@@ -208,7 +208,7 @@ app.get('/api/user/logout', tokenAuth);
 app.get('/api/user/remove', tokenAuth);
 app.get('/api/user/list', tokenAuth);
 app.get('/api/user/profile', tokenAuth);
-app.post('/api/user/update*', tokenAuth);
+app.put('/api/user/update*', tokenAuth);
 app.use('/api/user', userApi);
 
 // Permission
