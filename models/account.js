@@ -4,11 +4,11 @@ var passportLocal = require('passport-local-mongoose');
 var rbac = require('mongoose-rbac');
 
 var account = new schema({
-  name: {
+  firstname: {
     type: String,
     default: ''
   },
-  surname: {
+  lastname: {
     type: String,
     default: ''
   },
