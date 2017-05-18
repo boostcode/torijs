@@ -3,6 +3,7 @@ var router = express.Router();
 var action = require('../../models/action');
 var tori = require('../../conf/tori.conf.js');
 var mongoose = require('mongoose');
+var _ = require('underscore');
 
 /// List
 router.get('/list', function(req, res) {
@@ -33,15 +34,16 @@ router.get('/list', function(req, res) {
 router.post('/create', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
-    if (err) {
+
+    var sanitized = _.pick(req.body, ['name', 'collectionRef', 'field', 'action', 'creatorMail', 'editorMail', 'receiver', 'trigger', 'filter', 'from', 'to', 'message']);
+
+    if (sanitized.name == null || sanitized.collectionRef == null || sanitized.field == null || sanitized.action == null) {
       res.json({
         success: false,
-        message: err.message
+        message: 'One or more of required fields (name, collectionRef, field, action) are missing.'
       });
       return;
     }
-
-    var sanitized = _.pick(req.body, ['name', 'collection', 'field', 'action', 'creatorMail', 'editorMail', 'receiver', 'trigger', 'filter', 'from', 'to', 'message']);
 
     var newAction = new action(sanitized);
 
