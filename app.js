@@ -9,15 +9,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var engine = require('ejs-locals');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart();
 var app = express();
-
-/// Engine setup
-app.engine('ejs', engine);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
