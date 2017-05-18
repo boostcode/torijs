@@ -7,7 +7,7 @@ var _ = require('underscore');
 var error = require('../error');
 
 /// List
-router.get('/list', function(req, res) {
+router.get('/', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
     action.find({}, function(err, actions) {
@@ -25,7 +25,7 @@ router.get('/list', function(req, res) {
 });
 
 /// Create
-router.post('/create', function(req, res) {
+router.post('/', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
 

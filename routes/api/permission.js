@@ -6,7 +6,7 @@ var _ = require('underscore');
 var error = require('../error');
 
 /// List
-router.get('/list', function(req, res) {
+router.get('/', function(req, res) {
   // FIXME: verify if only admin has to see this
   permission.find({}, function(err, perms) {
     if (err) {
