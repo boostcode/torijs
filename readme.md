@@ -1,5 +1,7 @@
 ![torijs Logo](https://raw.githubusercontent.com/boostcode/torijs/feature/refactoring/.github/tori-logo.png)
 
+**A NodeJS Backend as a Service**
+
 [![Issues](https://img.shields.io/github/issues/boostcode/torijs.svg?style=flat)](https://github.com/boostcode/torijs/issues)
 [![codebeat badge](https://codebeat.co/badges/8ddbd93f-ef3a-4ccc-9479-23dfbd3fe233)](https://codebeat.co/projects/github-com-boostcode-torijs)
 
@@ -13,11 +15,13 @@
 
 All the fields are customizable and role defined. Also the system make use of a REST JSON api that allow you to create your favorite client for web, iOS or Android very quickly.
 
-### Requirements
+## Requirements
+
 - NodeJS
 - Mongodb
 
-### Installation
+## Installation
+
 Here the quick steps to start working with **tori.js**:
 
 - git clone
@@ -34,6 +38,10 @@ Here the quick steps to start working with **tori.js**:
 That's all, now you can start using tori.js
 
 
+## Api
 
-### Api
 Here a complete list of all the rest json api that tori.js is able to handle at this very moment
+
+## License
+
+This project is licensed under MIT. Full license text is available in [LICENSE](https://raw.githubusercontent.com/boostcode/torijs/master/LICENSE).
