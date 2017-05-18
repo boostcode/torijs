@@ -4,22 +4,15 @@ var action = require('../../models/action');
 var tori = require('../../conf/tori.conf.js');
 var mongoose = require('mongoose');
 var _ = require('underscore');
-
-/// Error handler
-function error(status, message) {
-  res.status(status).json({
-    success: false,
-    message: message
-  });
-}
+var error = require('../error');
 
 /// List
-router.get('/list', function(req, res) {
+router.get('/', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
     action.find({}, function(err, actions) {
       if (err) {
-        return error(500, err.message);
+        return error(res, 500, err.message);
       }
       res.json({
         success: true,
@@ -27,19 +20,19 @@ router.get('/list', function(req, res) {
       })
     });
   } else {
-    return error(403, 'User has no permission');
+    return error(res, 403, 'User has no permission');
   }
 });
 
 /// Create
-router.post('/create', function(req, res) {
+router.post('/', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
 
     var sanitized = _.pick(req.body, ['name', 'collectionRef', 'field', 'action', 'creatorMail', 'editorMail', 'receiver', 'trigger', 'filter', 'from', 'to', 'message']);
 
     if (sanitized.name == null || sanitized.collectionRef == null || sanitized.field == null || sanitized.action == null) {
-      return error(404, 'One or more of the required fields (name, collectionRef, field, action) are missing.')
+      return error(res, 404, 'One or more of the required fields (name, collectionRef, field, action) are missing.')
     }
 
     var newAction = new action(sanitized);
@@ -54,7 +47,7 @@ router.post('/create', function(req, res) {
       });
     });
   } else {
-    return error(403, 'User has no permission');
+    return error(res, 403, 'User has no permission');
   }
 });
 
@@ -89,7 +82,7 @@ router.put('/:id', function(req, res) {
       });
     });
   } else {
-    return error(403, 'User ha no permission');
+    return error(res, 403, 'User ha no permission');
   }
 });
 
@@ -99,10 +92,10 @@ router.delete('/:id', function(req, res) {
   if (req.user.isAdmin == true) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
-    // find requested user
+    // find requested action
     action.findByIdAndRemove(id, function(err, action) {
       if (err) {
-        return error(500, err.message);
+        return error(res, 500, err.message);
       }
 
       res.json({
@@ -111,7 +104,7 @@ router.delete('/:id', function(req, res) {
       });
     });
   } else {
-    return error(403, 'User ha no permission');
+    return error(res, 403, 'User ha no permission');
   }
 });
 
