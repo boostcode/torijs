@@ -4,11 +4,11 @@ var passportLocal = require('passport-local-mongoose');
 var rbac = require('mongoose-rbac');
 
 var account = new schema({
-  name: {
+  firstname: {
     type: String,
     default: ''
   },
-  surname: {
+  lastname: {
     type: String,
     default: ''
   },
@@ -22,10 +22,6 @@ var account = new schema({
     type: Boolean,
     default: false
   },
-  isDev: {
-    type: Boolean,
-    default: false
-  },
   extraFields: schema.Types.Mixed
 });
 
@@ -33,4 +29,3 @@ account.plugin(passportLocal);
 account.plugin(rbac.plugin);
 
 module.exports = mongoose.model('account', account);
-

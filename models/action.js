@@ -3,7 +3,9 @@ var schema = mongoose.Schema;
 
 var action = new schema({
   name: String,
-  collectionName: String,
+  collectionRef: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
   field: String,
   action: String,
   creatorMail: Boolean,
