@@ -1,14 +1,21 @@
-![tori.js Logo](https://avatars3.githubusercontent.com/u/8542858?v=2&s=200)
-# tori.js
-**Node.js backend as a service**
+![torijs Logo](https://raw.githubusercontent.com/boostcode/torijs/feature/refactoring/.github/tori-logo.png)
 
-tori.js allow you to setup quickly a backend using *node.js* and *mongodb*, with the good looking taste of [AdminLTE](https://github.com/almasaeed2010/AdminLTE).
+[![Issues](https://img.shields.io/github/issues/boostcode/torijs.svg?style=flat)](https://github.com/boostcode/torijs/issues)
+[![codebeat badge](https://codebeat.co/badges/8ddbd93f-ef3a-4ccc-9479-23dfbd3fe233)](https://codebeat.co/projects/github-com-boostcode-torijs)
+
+![Linux](https://img.shields.io/badge/linux-compatible-green.svg?style=flat)
+![macOS](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
+[![Build Status](https://travis-ci.org/boostcode/torijs.svg?branch=develop)](https://travis-ci.org/boostcode/torijs)
+
+## Summary
+
+[torijs](https://github.com/boostcode/torijs) is a *backend as a service* (**BaaS**) written in nodeJS and powered by MongoDB.
 
 All the fields are customizable and role defined. Also the system make use of a REST JSON api that allow you to create your favorite client for web, iOS or Android very quickly.
 
 ### Requirements
-- node.js
-- mongodb
+- NodeJS
+- Mongodb
 
 ### Installation
 Here the quick steps to start working with **tori.js**:
