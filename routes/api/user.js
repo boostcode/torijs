@@ -7,6 +7,14 @@ var randtoken = require('rand-token');
 var _ = require('underscore');
 var mongoose = require('mongoose');
 
+/// Error handler
+function error(status, message) {
+  res.status(status).json({
+    success: false,
+    message: message
+  });
+}
+
 /// JWT Issuer
 function issueJwt(req, res) {
   var token = jwt.sign(req.user, tori.core.secret, {
@@ -45,20 +53,14 @@ router.post('/refresh/token', function(req, res) {
     token: token
   }, function(err, user) {
     if (err) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid username.'
-      });
+      return error(500, err.message);
     } else {
       if (user) {
         req.user = user
         // issue jwt
         issueJwt(req, res);
       } else {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid token.'
-        });
+        return error(401, 'Invalid token.');
       }
     }
   });
@@ -86,11 +88,7 @@ router.post('/create', function(req, res) {
     username: req.body.username
   }), req.body.password, function(err, account) {
     if (err) {
-      res.json({
-        success: false,
-        message: err.message
-      });
-      return;
+      return error(500, err.message);
     }
 
     // TODO: consider add email confirmation
@@ -111,11 +109,7 @@ router.post('/reset/password', function(req, res) {
   var username = req.body.username;
 
   if (!username) {
-    res.json({
-      success: false,
-      message: 'Missing username.'
-    });
-    return
+    return error(404, 'Missing username.');
   }
 
   account.find({
@@ -123,11 +117,7 @@ router.post('/reset/password', function(req, res) {
   }, function(err, users) {
 
     if (err) {
-      res.json({
-        success: false,
-        message: err.message
-      });
-      return;
+      return error(500, err.message);
     }
 
     if (users.length > 0) {
@@ -151,13 +141,7 @@ router.post('/reset/password', function(req, res) {
       req.mail.sendMail(mailOptions, function(err, info) {
 
         if (err) {
-
-          console.log(err);
-          res.json({
-            success: false,
-            message: err.message
-          });
-
+          return error(500, err.message);
         } else {
 
           console.log(info);
@@ -171,12 +155,7 @@ router.post('/reset/password', function(req, res) {
       });
 
     } else {
-
-      res.json({
-        success: false,
-        message: 'User does not exists.'
-      });
-
+      return error(404, 'User does not exists');
     }
 
   });
@@ -191,27 +170,15 @@ router.post('/change/password', function(req, res) {
   var newPassword = req.body.newpassword;
 
   if (!username) {
-    res.json({
-      success: false,
-      message: 'Missing username.'
-    });
-    return;
+    return error(404, 'Missing username.');
   }
 
   if (!resetPassword) {
-    res.json({
-      success: false,
-      message: 'Missing reset password.'
-    });
-    return;
+    return error(404, 'Missing reset password');
   }
 
   if (!newPassword) {
-    res.json({
-      success: false,
-      message: 'Missing new password.'
-    });
-    return;
+    return error(404, 'Missing new password');
   }
 
   account.find({
@@ -220,11 +187,7 @@ router.post('/change/password', function(req, res) {
   }, function(err, users) {
 
     if (err) {
-      res.json({
-        success: false,
-        message: err.message
-      });
-      return;
+      return error(500, err.message);
     }
 
     if (users.length > 0) {
@@ -233,13 +196,7 @@ router.post('/change/password', function(req, res) {
 
       user.setPassword(newPassword, function(err) {
         if (err) {
-          console.log(err);
-
-          res.json({
-            success: false,
-            message: err.message
-          });
-
+          return error(500, err.message);
         } else {
 
           user.resetPassword = undefined
@@ -254,12 +211,7 @@ router.post('/change/password', function(req, res) {
       });
 
     } else {
-
-      res.send({
-        success: false,
-        message: 'User and token supplied are not valid.'
-      });
-
+      return error(403, 'User and token supplied are nto valid');
     }
 
   });
@@ -321,11 +273,7 @@ router.put('/update/:id', function(req, res) {
     // find requested user
     account.findById(id, function(err, user) {
       if (err) {
-        res.json({
-          success: false,
-          message: err.message
-        });
-        return;
+        return error(500, err.message);
       }
       // update user and save
       updateUser(req, user, req.body).save();
@@ -336,10 +284,7 @@ router.put('/update/:id', function(req, res) {
       });
     });
   } else {
-    res.status(403).json({
-      success: false,
-      message: 'User has no permission'
-    });
+    return error(403, 'User has no permission');
   }
 });
 
@@ -366,11 +311,7 @@ router.delete('/delete/:id', function(req, res) {
 router.get('/list', function(req, res) {
   account.find({}).lean().exec(function(err, users) {
     if (err) {
-      res.json({
-        success: false,
-        message: err.message
-      });
-      return;
+      return error(500, err.message);
     }
 
     // if current user is not admin or dev
