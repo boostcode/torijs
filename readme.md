@@ -1,4 +1,4 @@
-![torijs Logo](https://raw.githubusercontent.com/boostcode/torijs/feature/refactoring/.github/tori-logo.png)
+[![torijs Logo](https://raw.githubusercontent.com/boostcode/torijs/feature/refactoring/.github/tori-logo.png)](https://tori.js.org)
 
 **A NodeJS Backend as a Service**
 
@@ -7,40 +7,57 @@
 
 ![Linux](https://img.shields.io/badge/linux-compatible-green.svg?style=flat)
 ![macOS](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
+![Windows](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
+
 [![Build Status](https://travis-ci.org/boostcode/torijs.svg?branch=develop)](https://travis-ci.org/boostcode/torijs)
 
 ## Summary
 
-[torijs](https://github.com/boostcode/torijs) is a *backend as a service* (**BaaS**) written in nodeJS and powered by MongoDB.
+[torijs](https://tori.js.org) is a *backend as a service* (**BaaS**) written in nodeJS and powered by MongoDB.
 
-All the fields are customizable and role defined. Also the system make use of a REST JSON api that allow you to create your favorite client for web, iOS or Android very quickly.
+It has `core` module that provides:
+- basic user management with roles;
+- RESTful api;
+- dedicated backend for admin user;
+- WYSIWYG collection to add new collections with RESTful API automatically;
+- Actions and triggers on events (e.g. on update send a push to...);
 
 ## Requirements
 
 - NodeJS
-- Mongodb
+- MongoDB
+
+We strongly suggest to use a `Docker` in order to speed up setup and management, we both provide single `docker` or `docker-compose`.
+
+- [torijs docker](https://github.com/boostcode/torijs-docker)
+- [torijs docker-compose]()
 
 ## Installation
 
-Here the quick steps to start working with **tori.js**:
+If you want to start using **torijs** you have to:
 
-- git clone
-- `cd tori.js`
-- `npm install && bower install`
-- `node bin/www`
-- Open your browser at http://localhost:8000/ proceed with user registration.
-- CTRL-C to kill tori.js from your terminal
-- edit in scripts adding the email you used to register the user;
-- execute the script ./script/
-- restart tori with the above command
-- visit again the same address but now proceed with login using the credentials you used in registration;
+- Clone torijs repository
+`git clone https://github.com/boostcode/torijs.git`
 
-That's all, now you can start using tori.js
+- Move to `torijs` directory
+`cd torijs`
 
+- Copy `tori.conf.js.example` to `conf` directory renaming it to `tori.conf.js`
+`mv tori.conf.js.example  conf/tori.conf.js`
 
-## Api
+- Edit `conf/tori.conf.js` with **MongoDB** `ip:port`
 
-Here a complete list of all the rest json api that tori.js is able to handle at this very moment
+- Install deps
+`npm install`
+
+- Run torijs
+`node bin/www`
+
+torijs will show you a message similar to:
+
+`⛩  torijs is listening on port: 8000`
+
+Point your browser to `ip:port` you set in config and that's all, torijs is working.
 
 ## License
 
