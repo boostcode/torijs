@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
       })
     });
   } else {
-    return error(403, 'User has no permission');
+    return error(res, 403, 'User has no permission');
   }
 });
 
@@ -92,7 +92,7 @@ router.delete('/:id', function(req, res) {
   if (req.user.isAdmin == true) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
-    // find requested user
+    // find requested action
     action.findByIdAndRemove(id, function(err, action) {
       if (err) {
         return error(res, 500, err.message);
