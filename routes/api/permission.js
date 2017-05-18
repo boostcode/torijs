@@ -4,16 +4,20 @@ var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
 var _ = require('underscore');
 
+/// Error handler
+function error(status, message) {
+  res.status(status).json({
+    success: false,
+    message: message
+  });
+}
+
 /// List
 router.get('/list', function(req, res) {
   // FIXME: verify if only admin has to see this
   permission.find({}, function(err, perms) {
     if (err) {
-      res.json({
-        success: false,
-        message: err.message
-      });
-      return;
+      return error(500, err.message);
     }
 
     res.json({

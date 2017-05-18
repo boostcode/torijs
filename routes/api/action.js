@@ -5,17 +5,21 @@ var tori = require('../../conf/tori.conf.js');
 var mongoose = require('mongoose');
 var _ = require('underscore');
 
+/// Error handler
+function error(status, message) {
+  res.status(status).json({
+    success: false,
+    message: message
+  });
+}
+
 /// List
 router.get('/list', function(req, res) {
   // only admin or dev can change third party user
   if (req.user.isAdmin == true) {
     action.find({}, function(err, actions) {
       if (err) {
-        res.json({
-          success: false,
-          message: err.message
-        });
-        return;
+        return error(500, err.message);
       }
       res.json({
         success: true,
@@ -23,10 +27,7 @@ router.get('/list', function(req, res) {
       })
     });
   } else {
-    res.status(403).json({
-      success: false,
-      message: 'User has no permission'
-    });
+    return error(403, 'User has no permission');
   }
 });
 
@@ -38,22 +39,14 @@ router.post('/create', function(req, res) {
     var sanitized = _.pick(req.body, ['name', 'collectionRef', 'field', 'action', 'creatorMail', 'editorMail', 'receiver', 'trigger', 'filter', 'from', 'to', 'message']);
 
     if (sanitized.name == null || sanitized.collectionRef == null || sanitized.field == null || sanitized.action == null) {
-      res.json({
-        success: false,
-        message: 'One or more of required fields (name, collectionRef, field, action) are missing.'
-      });
-      return;
+      return error(404, 'One or more of the required fields (name, collectionRef, field, action) are missing.')
     }
 
     var newAction = new action(sanitized);
 
     newAction.save(function(err, saved) {
       if (err) {
-        res.json({
-          success: false,
-          message: err.message
-        });
-        return;
+        return error(500, err.message);
       }
       res.json({
         success: true,
@@ -61,10 +54,7 @@ router.post('/create', function(req, res) {
       });
     });
   } else {
-    res.status(403).json({
-      success: false,
-      message: 'User has no permission'
-    });
+    return error(403, 'User has no permission');
   }
 });
 
@@ -99,10 +89,7 @@ router.put('/:id', function(req, res) {
       });
     });
   } else {
-    res.status(403).json({
-      success: false,
-      message: 'User has no permission'
-    });
+    return error(403, 'User ha no permission');
   }
 });
 
@@ -115,11 +102,7 @@ router.delete('/:id', function(req, res) {
     // find requested user
     action.findByIdAndRemove(id, function(err, action) {
       if (err) {
-        res.json({
-          success: false,
-          message: err.message
-        });
-        return;
+        return error(500, err.message);
       }
 
       res.json({
@@ -128,10 +111,7 @@ router.delete('/:id', function(req, res) {
       });
     });
   } else {
-    res.status(403).json({
-      success: false,
-      message: 'User has no permission'
-    });
+    return error(403, 'User ha no permission');
   }
 });
 
