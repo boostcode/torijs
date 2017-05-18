@@ -7,7 +7,7 @@
 
 ![Linux](https://img.shields.io/badge/linux-compatible-green.svg?style=flat)
 ![macOS](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
-![Windows](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
+![Windows](https://img.shields.io/badge/windows-compatible-4BC51D.svg?style=flat)
 
 [![Build Status](https://travis-ci.org/boostcode/torijs.svg?branch=develop)](https://travis-ci.org/boostcode/torijs)
 
