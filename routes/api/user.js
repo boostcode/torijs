@@ -88,7 +88,7 @@ router.post('/create', function(req, res) {
     if (err) {
       res.json({
         success: false,
-        message: err
+        message: err.message
       });
       return;
     }
@@ -125,7 +125,7 @@ router.post('/reset/password', function(req, res) {
     if (err) {
       res.json({
         success: false,
-        message: err
+        message: err.message
       });
       return;
     }
@@ -155,7 +155,7 @@ router.post('/reset/password', function(req, res) {
           console.log(err);
           res.json({
             success: false,
-            message: err
+            message: err.message
           });
 
         } else {
@@ -222,7 +222,7 @@ router.post('/change/password', function(req, res) {
     if (err) {
       res.json({
         success: false,
-        message: err
+        message: err.message
       });
       return;
     }
@@ -237,7 +237,7 @@ router.post('/change/password', function(req, res) {
 
           res.json({
             success: false,
-            message: err
+            message: err.message
           });
 
         } else {
@@ -269,7 +269,7 @@ router.post('/change/password', function(req, res) {
 /// Update user from data handler
 function updateUser(req, user, data) {
   // omit forbidden fields
-  data = _.omit(data, ['username', 'password', 'token', 'resetPassword']);
+  data = _.omit(data, ['_id', '__v', 'id', 'username', 'password', 'token', 'resetPassword']);
 
   // extract roles
   var roles = _.pick(data, 'roles');

@@ -33,16 +33,10 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
-var action = require('./routes/action');
-var admin = require('./routes/admin');
-var collection = require('./routes/collection');
-var role = require('./routes/role');
-var user = require('./routes/user');
-
-// Api
+// Api Routes
 var userApi = require('./routes/api/user');
 var permissionApi = require('./routes/api/permission');
+var actionApi = require('./routes/api/action');
 
 // 🔑  Authentication
 var jwt = require('jsonwebtoken');
@@ -215,11 +209,11 @@ app.use('/api/user', userApi);
 app.all('/api/permission', tokenAuth);
 app.use('/api/permission', permissionApi);
 
-app.use('/role', role);
-app.use('/action', action);
-app.use('/collection', collection);
-app.use('/user', user);
-app.use('/admin', admin);
+// Action
+app.all('/api/action*', tokenAuth);
+app.use('/api/action', actionApi);
+
+
 
 
 /// Error handlers
