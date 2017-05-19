@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var rbac = require('mongoose-rbac');
 var permission = rbac.Permission;
+var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 var _ = require('underscore');
 var error = require('../error');
