@@ -76,9 +76,9 @@ router.delete('/:id', function(req, res) {
 });
 
 /// Functions
-//
-function setPermissions(res, newRole, permissions, message) {
 
+// extract permission from body
+function getPermissions(res, permissions) {
   // check if we have permission
   if (permissions == null) {
     return error(res, 404, 'Missing permissions.');
@@ -89,6 +89,15 @@ function setPermissions(res, newRole, permissions, message) {
   permissions.forEach(function(perm) {
     permList.push(new oID.createFromHexString(perm.pid));
   });
+
+  return permList;
+}
+
+// set permission in data model
+function setPermissions(res, newRole, permissions, message) {
+
+  // retrieve permissions
+  var permList = getPermissions(res, permissions);
 
   // create query to check for permissions
   var query = {
