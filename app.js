@@ -151,14 +151,11 @@ app.use(function(req, res, next) {
     req.mail = mail;
     next();
   } else {
-
     var emailSetup = {};
-
     // check if smtp is supported
     if (tori.mail.smtp.host != null) {
       emailSetup = tori.mail.smtp;
     }
-
     req.mail = mail = nodemailer.createTransport(transport(emailSetup));
     next();
   }
@@ -189,6 +186,16 @@ app.get('/', function(req, res) {
   }
 });*/
 
+function isAdmin(req, res, next) {
+  if (req.user.isAdmin == false) {
+    return res.status().json({
+      success: false,
+      message: 'User has no permission.'
+    });
+  }
+  next();
+}
+
 
 /// Setup Routes
 // User
@@ -205,11 +212,11 @@ app.all('/api/permission', tokenAuth);
 app.use('/api/permission', permissionApi);
 
 // Action
-app.all('/api/action*', tokenAuth);
+app.all('/api/action*', tokenAuth, isAdmin);
 app.use('/api/action', actionApi);
 
 // Role
-app.all('/api/role*', tokenAuth);
+app.all('/api/role*', tokenAuth, isAdmin);
 app.use('/api/role', roleApi);
 
 
