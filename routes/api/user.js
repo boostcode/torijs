@@ -42,10 +42,12 @@ router.post('/refresh/token', function(req, res) {
   var username = req.body.username || req.param('username') || req.headers['x-access-username'];
 
   // check if user and expired token exist
-  account.findOne({
+  account
+    .findOne({
       username: username,
       token: token
-    }).exec()
+    })
+    .exec()
     .then(function(user) {
       // add user to request
       req.user = user
@@ -104,9 +106,11 @@ router.post('/reset/password', function(req, res) {
   }
 
   // find the username provided
-  account.findOne({
+  account
+    .findOne({
       'username': username
-    }).exec()
+    })
+    .exec()
     .then(function(user) {
       // generate a password reset token
       var token = randtoken.generate(16);
@@ -163,10 +167,12 @@ router.post('/change/password', function(req, res) {
     return error(res, 404, 'Missing new password.');
   }
 
-  account.findOne({
+  account
+    .findOne({
       'username': username,
       'resetPassword': resetPassword
-    }).exec()
+    })
+    .exec()
     .then(function(user) {
       user.setPassword(newPassword, function(err) {
         if (err) {
@@ -242,7 +248,9 @@ router.put('/update/:id', function(req, res) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested user
-    account.findById(id).exec()
+    account
+      .findById(id)
+      .exec()
       .then(function(user) {
         // update user and save
         updateUser(req, user, req.body).save();
@@ -281,23 +289,26 @@ router.delete('/delete/:id', function(req, res) {
 
 /// List of user
 router.get('/list', function(req, res) {
-  account.find({}).lean().exec(function(err, users) {
-    if (err) {
-      return error(res, 500, err.message);
-    }
+  account
+    .find({})
+    .lean()
+    .exec()
+    .then(function(users) {
+      // if current user is not admin or dev
+      if (req.user.isAdmin == false) {
+        users = _.map(users, function(user) {
+          return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
+        });
+      }
 
-    // if current user is not admin or dev
-    if (req.user.isAdmin == false) {
-      users = _.map(users, function(user) {
-        return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
+      res.json({
+        success: true,
+        users: users
       });
-    }
-
-    res.json({
-      success: true,
-      users: users
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
     });
-  });
 });
 
 /// Profile
