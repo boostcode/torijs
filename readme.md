@@ -3,7 +3,7 @@
 **A NodeJS Backend as a Service**
 
 [![Issues](https://img.shields.io/github/issues/boostcode/torijs.svg?style=flat)](https://github.com/boostcode/torijs/issues)
-[![codebeat badge](https://codebeat.co/badges/f859e99c-d115-4969-9aea-c2353338464c)](https://codebeat.co/projects/github-com-boostcode-torijs-master)
+[![codebeat badge](https://codebeat.co/badges/3c562328-8613-4ed3-a64f-befe581aab44)](https://codebeat.co/projects/github-com-boostcode-torijs-master)
 
 ![Linux](https://img.shields.io/badge/linux-compatible-green.svg?style=flat)
 ![macOS](https://img.shields.io/badge/macOS-compatible-4BC51D.svg?style=flat)
