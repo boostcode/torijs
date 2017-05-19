@@ -42,22 +42,21 @@ router.post('/refresh/token', function(req, res) {
   var username = req.body.username || req.param('username') || req.headers['x-access-username'];
 
   // check if user and expired token exist
-  account.findOne({
-    username: username,
-    token: token
-  }, function(err, user) {
-    if (err) {
+  account
+    .findOne({
+      username: username,
+      token: token
+    })
+    .exec()
+    .then(function(user) {
+      // add user to request
+      req.user = user
+      // issue jwt
+      issueJwt(req, res);
+    })
+    .catch(function(err) {
       return error(res, 500, err.message);
-    } else {
-      if (user) {
-        req.user = user
-        // issue jwt
-        issueJwt(req, res);
-      } else {
-        return error(res, 401, 'Invalid token.');
-      }
-    }
-  });
+    });
 });
 
 /// Logout
@@ -99,39 +98,35 @@ router.post('/create', function(req, res) {
 
 /// Request token for password
 router.post('/reset/password', function(req, res) {
-
+  // get username
   var username = req.body.username;
-
+  // check if it has been provided
   if (!username) {
     return error(res, 404, 'Missing username.');
   }
 
-  account.find({
-    'username': username
-  }, function(err, users) {
-
-    if (err) {
-      return error(500, err.message);
-    }
-
-    if (users.length > 0) {
-
-      user = users[0];
-
+  // find the username provided
+  account
+    .findOne({
+      'username': username
+    })
+    .exec()
+    .then(function(user) {
+      // generate a password reset token
       var token = randtoken.generate(16);
-
+      // store in the model
       user.resetPassword = token;
-
       // store all changes
-      user.save();
-
+      return user.save();
+    })
+    .then(function(savedUser) {
       var mailOptions = {
         from: tori.mail.from,
         to: user.username,
         subject: tori.core.title + ' | Reset password',
         text: 'Here you reset code: ' + user.resetPassword
       };
-
+      // send a mail with token
       req.mail.sendMail(mailOptions, function(err, info) {
 
         if (err) {
@@ -140,24 +135,22 @@ router.post('/reset/password', function(req, res) {
 
           res.json({
             success: true,
-            msg: 'Mail sent.'
+            msg: 'Reset password sent.'
           });
 
         }
 
       });
 
-    } else {
-      return error(404, 'User does not exists');
-    }
-
-  });
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
+    });
 
 });
 
 /// Change password
 router.post('/change/password', function(req, res) {
-
   var username = req.body.username;
   var resetPassword = req.body.resetpassword;
   var newPassword = req.body.newpassword;
@@ -167,26 +160,20 @@ router.post('/change/password', function(req, res) {
   }
 
   if (!resetPassword) {
-    return error(res, 404, 'Missing reset password');
+    return error(res, 404, 'Missing reset password.');
   }
 
   if (!newPassword) {
-    return error(res, 404, 'Missing new password');
+    return error(res, 404, 'Missing new password.');
   }
 
-  account.find({
-    'username': username,
-    'resetPassword': resetPassword
-  }, function(err, users) {
-
-    if (err) {
-      return error(res, 500, err.message);
-    }
-
-    if (users.length > 0) {
-
-      user = users[0];
-
+  account
+    .findOne({
+      'username': username,
+      'resetPassword': resetPassword
+    })
+    .exec()
+    .then(function(user) {
       user.setPassword(newPassword, function(err) {
         if (err) {
           return error(res, 500, err.message);
@@ -202,13 +189,10 @@ router.post('/change/password', function(req, res) {
 
         }
       });
-
-    } else {
-      return error(res, 403, 'User and token supplied are nto valid');
-    }
-
-  });
-
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
+    });
 });
 
 /// Update user from data handler
@@ -264,18 +248,21 @@ router.put('/update/:id', function(req, res) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested user
-    account.findById(id, function(err, user) {
-      if (err) {
-        return error(res, 500, err.message);
-      }
-      // update user and save
-      updateUser(req, user, req.body).save();
+    account
+      .findById(id)
+      .exec()
+      .then(function(user) {
+        // update user and save
+        updateUser(req, user, req.body).save();
 
-      res.json({
-        success: true,
-        message: 'User updated.'
+        res.json({
+          success: true,
+          message: 'User updated.'
+        });
+      })
+      .catch(function(err) {
+        return error(res, 500, err.message);
       });
-    });
   } else {
     return error(res, 403, 'User has no permission');
   }
@@ -302,23 +289,26 @@ router.delete('/delete/:id', function(req, res) {
 
 /// List of user
 router.get('/list', function(req, res) {
-  account.find({}).lean().exec(function(err, users) {
-    if (err) {
-      return error(res, 500, err.message);
-    }
+  account
+    .find({})
+    .lean()
+    .exec()
+    .then(function(users) {
+      // if current user is not admin or dev
+      if (req.user.isAdmin == false) {
+        users = _.map(users, function(user) {
+          return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
+        });
+      }
 
-    // if current user is not admin or dev
-    if (req.user.isAdmin == false) {
-      users = _.map(users, function(user) {
-        return _.omit(user, ['__v', 'password', 'token', 'resetPassword', 'roles', 'isAdmin']);
+      res.json({
+        success: true,
+        users: users
       });
-    }
-
-    res.json({
-      success: true,
-      users: users
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
     });
-  });
 });
 
 /// Profile

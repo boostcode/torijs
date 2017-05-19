@@ -11,89 +11,68 @@ var error = require('../error');
 
 /// List
 router.get('/', function(req, res) {
-  if (req.user.isAdmin == true) {
-    role.find({}).exec()
-      .then(function(roles) {
-        res.json({
-          success: true,
-          role: roles
-        });
-      })
-      .catch(function(err) {
-        return error(res, 500, res.message);
+  role.find({}).exec()
+    .then(function(roles) {
+      res.json({
+        success: true,
+        role: roles
       });
-
-  } else {
-    return error(res, 403, 'User has no permission');
-  }
+    })
+    .catch(function(err) {
+      return error(res, 500, res.message);
+    });
 });
 
 /// Create
 router.post('/', function(req, res) {
-  if (req.user.isAdmin == true) {
-    // sanitize input
-    var sanitized = _.pick(req.body, ['name', 'permissions']);
+  // sanitize input
+  var sanitized = _.pick(req.body, ['name', 'permissions']);
 
-    // create the new role
-    var newRole = new role({
-      name: sanitized.name
-    });
+  // create the new role
+  var newRole = new role({
+    name: sanitized.name
+  });
 
-    // manage permissions
-    setPermissions(res, newRole, sanitized.permissions, 'Role created.');
+  // manage permissions
+  setPermissions(res, newRole, sanitized.permissions, 'Role created.');
 
-  } else {
-    return error(res, 403, 'User has no permission');
-  }
 });
 
 /// Update
 router.put('/:id', function(req, res) {
-  if (req.user.isAdmin == true) {
-    // convert id from string to objectId
-    var id = mongoose.Types.ObjectId(req.params.id);
-    // sanitize input
-    var sanitized = _.pick(req.body, ['name', 'permissions']);
-    // retrieve the role
-    role.findById(id).exec()
-      .then(function(found) {
-        if (found) {
-          // update name
-          found.name = sanitized.name;
-          // manage permissions
-          setPermissions(res, newRole, sanitized.permissions, 'Role updated.');
-        } else {
-          return error(res, 401, 'Role not found.');
-        }
-      })
-      .catch(function(err) {
-        return error(res, 500, err.message);
-      });
+  // convert id from string to objectId
+  var id = mongoose.Types.ObjectId(req.params.id);
+  // sanitize input
+  var sanitized = _.pick(req.body, ['name', 'permissions']);
+  // retrieve the role
+  role.findById(id).exec()
+    .then(function(found) {
+      // update name
+      found.name = sanitized.name;
+      // manage permissions
+      setPermissions(res, newRole, sanitized.permissions, 'Role updated.');
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
+    });
 
-  } else {
-    return error(res, 403, 'User has no permission');
-  }
 });
 
 /// Remove
 router.delete('/:id', function(req, res) {
-  if (req.user.isAdmin == true) {
-    // convert id from string to objectId
-    var id = mongoose.Types.ObjectId(req.params.id);
-    // find requested action
-    role.findByIdAndRemove(id).exec()
-      .then(function(action) {
-        res.json({
-          success: true,
-          message: 'Role removed.'
-        });
-      })
-      .catch(function(err) {
-        return error(res, 500, err.message);
+  // convert id from string to objectId
+  var id = mongoose.Types.ObjectId(req.params.id);
+  // find requested action
+  role.findByIdAndRemove(id).exec()
+    .then(function(action) {
+      res.json({
+        success: true,
+        message: 'Role removed.'
       });
-  } else {
-    return error(res, 403, 'User has no permission');
-  }
+    })
+    .catch(function(err) {
+      return error(res, 500, err.message);
+    });
 });
 
 /// Functions
@@ -122,18 +101,14 @@ function setPermissions(res, newRole, permissions, message) {
     .then(function(perms) {
       // set permission
       newRole.permissions = perms;
-
       // save the new role
-      newRole.save().exec()
-        .then(function(therole) {
-          res.json({
-            success: true,
-            message: message
-          });
-        })
-        .catch(function(err) {
-          return error(res, 500, err.message);
-        });
+      return newRole.save();
+    })
+    .then(function(role) {
+      res.json({
+        success: true,
+        message: message
+      });
     })
     .catch(function(err) {
       return error(res, 500, err.message);
