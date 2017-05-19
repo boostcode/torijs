@@ -3,6 +3,8 @@ var router = express.Router();
 var rbac = require('mongoose-rbac');
 var role = rbac.Role;
 var permission = rbac.Permission;
+var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 var oID = require('mongodb').ObjectID;
 var _ = require('underscore');
 var error = require('../error');
@@ -10,15 +12,17 @@ var error = require('../error');
 /// List
 router.get('/', function(req, res) {
   if (req.user.isAdmin == true) {
-    role.find({}, function(err, roles) {
-      if (err) {
-        return error(res, 500, err.message);
-      }
-      res.json({
-        success: true,
-        role: roles
+    role.find({}).exec()
+      .then(function(roles) {
+        res.json({
+          success: true,
+          role: roles
+        });
       })
-    });
+      .catch(function(err) {
+        return error(res, 500, res.message);
+      });
+
   } else {
     return error(res, 403, 'User has no permission');
   }
@@ -51,19 +55,21 @@ router.put('/:id', function(req, res) {
     // sanitize input
     var sanitized = _.pick(req.body, ['name', 'permissions']);
     // retrieve the role
-    role.findById(id, function(err, found) {
-      if (err) {
+    role.findById(id).exec()
+      .then(function(found) {
+        if (found) {
+          // update name
+          found.name = sanitized.name;
+          // manage permissions
+          setPermissions(res, newRole, sanitized.permissions, 'Role updated.');
+        } else {
+          return error(res, 401, 'Role not found.');
+        }
+      })
+      .catch(function(err) {
         return error(res, 500, err.message);
-      }
-      if (found) {
-        // update name
-        found.name = sanitized.name;
-        // manage permissions
-        setPermissions(res, newRole, sanitized.permissions, 'Role updated.');
-      } else {
-        return error(res, 401, 'Role not found.');
-      }
-    });
+      });
+
   } else {
     return error(res, 403, 'User has no permission');
   }
@@ -75,16 +81,16 @@ router.delete('/:id', function(req, res) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested action
-    role.findByIdAndRemove(id, function(err, action) {
-      if (err) {
+    role.findByIdAndRemove(id).exec()
+      .then(function(action) {
+        res.json({
+          success: true,
+          message: 'Role removed.'
+        });
+      })
+      .catch(function(err) {
         return error(res, 500, err.message);
-      }
-
-      res.json({
-        success: true,
-        message: 'Role removed.'
       });
-    });
   } else {
     return error(res, 403, 'User has no permission');
   }
@@ -112,27 +118,26 @@ function setPermissions(res, newRole, permissions, message) {
     }
   };
 
-  permission.find(query, function(err, perms) {
-    if (err) {
+  permission.find(query).exec()
+    .then(function(perms) {
+      // set permission
+      newRole.permissions = perms;
+
+      // save the new role
+      newRole.save().exec()
+        .then(function(therole) {
+          res.json({
+            success: true,
+            message: message
+          });
+        })
+        .catch(function(err) {
+          return error(res, 500, err.message);
+        });
+    })
+    .catch(function(err) {
       return error(res, 500, err.message);
-    }
-
-    // set permission
-    newRole.permissions = perms;
-
-    // save the new role
-    newRole.save(function(err, rr) {
-      if (err) {
-        return error(res, 500, err.message);
-      }
-
-      res.json({
-        success: true,
-        message: message
-      });
     });
-
-  });
 }
 
 module.exports = router;

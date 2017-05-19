@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var randtoken = require('rand-token');
 var _ = require('underscore');
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 var error = require('../error');
 
 /// JWT Issuer
