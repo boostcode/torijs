@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
     .then(function(perms) {
       res.json({
         success: true,
-        permission: _.groupBy(perms, 'subject');
+        permission: _.groupBy(perms, 'subject')
       });
     })
     .catch(function(err) {
