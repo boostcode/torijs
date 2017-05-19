@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 var userApi = require('./routes/api/user');
 var permissionApi = require('./routes/api/permission');
 var actionApi = require('./routes/api/action');
+var roleApi = require('./routes/api/role');
 
 // 🔑  Authentication
 var jwt = require('jsonwebtoken');
@@ -207,6 +208,9 @@ app.use('/api/permission', permissionApi);
 app.all('/api/action*', tokenAuth);
 app.use('/api/action', actionApi);
 
+// Role
+app.all('/api/role*', tokenAuth);
+app.use('/api/role', roleApi);
 
 
 

@@ -26,7 +26,19 @@ router.get('/', function(req, res) {
 
 /// Create
 router.post('/', function(req, res) {
-  if (req.user.isAdmin == true) {} else {
+  if (req.user.isAdmin == true) {
+    // sanitize input
+    var sanitized = _.pick(req.body, ['name', 'permissions']);
+
+    // create the new role
+    var newRole = new role({
+      name: sanitized.name
+    });
+
+    // manage permissions
+    setPermissions(res, newRole, sanitized.permissions, 'Role created.');
+
+  } else {
     return error(res, 403, 'User has no permission');
   }
 });
@@ -36,7 +48,22 @@ router.put('/:id', function(req, res) {
   if (req.user.isAdmin == true) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
-
+    // sanitize input
+    var sanitized = _.pick(req.body, ['name', 'permissions']);
+    // retrieve the role
+    role.findById(id, function(err, found) {
+      if (err) {
+        return error(res, 500, err.message);
+      }
+      if (found) {
+        // update name
+        found.name = sanitized.name;
+        // manage permissions
+        setPermissions(res, newRole, sanitized.permissions, 'Role updated.');
+      } else {
+        return error(res, 401, 'Role not found.');
+      }
+    });
   } else {
     return error(res, 403, 'User has no permission');
   }
@@ -62,3 +89,50 @@ router.delete('/:id', function(req, res) {
     return error(res, 403, 'User has no permission');
   }
 });
+
+/// Functions
+//
+function setPermissions(res, newRole, permissions, message) {
+
+  // check if we have permission
+  if (permissions == null) {
+    return error(res, 404, 'Missing permissions.');
+  }
+
+  // get permissions list
+  var permList = Array();
+  permissions.forEach(function(perm) {
+    permList.push(new oID.createFromHexString(perm.pid));
+  });
+
+  // create query to check for permissions
+  var query = {
+    _id: {
+      $in: permList
+    }
+  };
+
+  permission.find(query, function(err, perms) {
+    if (err) {
+      return error(res, 500, err.message);
+    }
+
+    // set permission
+    newRole.permissions = perms;
+
+    // save the new role
+    newRole.save(function(err, rr) {
+      if (err) {
+        return error(res, 500, err.message);
+      }
+
+      res.json({
+        success: true,
+        message: message
+      });
+    });
+
+  });
+}
+
+module.exports = router;
