@@ -62,7 +62,7 @@ router.put('/:id', function(req, res) {
 router.delete('/:id', function(req, res) {
   // convert id from string to objectId
   var id = mongoose.Types.ObjectId(req.params.id);
-  // find requested action
+  // find requested role
   role.findByIdAndRemove(id).exec()
     .then(function(action) {
       res.json({

@@ -12,87 +12,6 @@ var actionFunction = require('../routes/action');
 var template = require('template');
 var S = require('string');
 
-// list
-router.post('/list.json', function(req, res) {
-  var structure = req.db.collection('tori_structure');
-
-  structure.find({}).toArray(function(err, collections) {
-
-    if (err) {
-      res.send(err);
-      return;
-    }
-
-    var colls = [];
-
-    if (collections) {
-
-      collections.forEach(function(col) {
-
-        var colName = col.nome_collezione;
-
-        if ((colName != 'system') && (colName != 'tori_structure') && (colName != 'tori_removed')) {
-
-          colls.push({
-            'name': colName,
-            'import': col.import,
-            'export': col.export
-          });
-        }
-      });
-    }
-
-    var totElems = colls.length;
-
-    if (req.body.iDisplayLength && req.body.iDisplayStart) {
-      if (req.body.iDisplayLength > 0) {
-        colls = colls.splice(req.body.iDisplayStart, req.body.iDisplayLength);
-      }
-    }
-
-    res.send({
-      sEcho: parseInt(req.body.sEcho),
-      iTotalRecords: totElems,
-      iTotalDisplayRecords: colls.length,
-      aaData: colls,
-      serverTime: new Date().getTime()
-    });
-
-  });
-});
-
-// check for updates
-router.post('/:collection_name/hasupdate', function(req, res) {
-
-  req.user.can('api-read', req.params.collection_name, function(err, can) {
-    if (err) {
-      res.send(err);
-      return;
-    }
-
-    if (can || req.user.isDev) {
-      var collection = req.db.collection(req.params.collection_name);
-
-      var data = req.body.last_update;
-
-      var query = {
-        last_update: {
-          "$gt": parseFloat(data)
-        }
-      };
-
-      collection.find(query).toArray(function(err, items) {
-        res.send({
-          status: 'ok',
-          data: items.length
-        });
-      });
-    } else {
-      res.send(401, 'user not allowed');
-    }
-  });
-});
-
 // document list
 router.post('/:collection_name/documents.json', function(req, res) {
 
@@ -507,7 +426,7 @@ router.post('/:collection_name/:document_id', function(req, res) {
 
     if (err) {
       res.send(err);
-      returnl;
+      return;
     }
 
     if (can || req.user.isDev) {

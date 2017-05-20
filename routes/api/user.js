@@ -46,8 +46,7 @@ router.post('/refresh/token', function(req, res) {
     .findOne({
       username: username,
       token: token
-    })
-    .exec()
+    }).exec()
     .then(function(user) {
       // add user to request
       req.user = user
@@ -55,7 +54,7 @@ router.post('/refresh/token', function(req, res) {
       issueJwt(req, res);
     })
     .catch(function(err) {
-      return error(res, 500, err.message);
+      error(res, 500, err.message);
     });
 });
 
@@ -109,8 +108,7 @@ router.post('/reset/password', function(req, res) {
   account
     .findOne({
       'username': username
-    })
-    .exec()
+    }).exec()
     .then(function(user) {
       // generate a password reset token
       var token = randtoken.generate(16);
@@ -144,7 +142,7 @@ router.post('/reset/password', function(req, res) {
 
     })
     .catch(function(err) {
-      return error(res, 500, err.message);
+      error(res, 500, err.message);
     });
 
 });
@@ -171,8 +169,7 @@ router.post('/change/password', function(req, res) {
     .findOne({
       'username': username,
       'resetPassword': resetPassword
-    })
-    .exec()
+    }).exec()
     .then(function(user) {
       user.setPassword(newPassword, function(err) {
         if (err) {
@@ -191,7 +188,7 @@ router.post('/change/password', function(req, res) {
       });
     })
     .catch(function(err) {
-      return error(res, 500, err.message);
+      error(res, 500, err.message);
     });
 });
 
@@ -248,9 +245,7 @@ router.put('/update/:id', function(req, res) {
     // convert id from string to objectId
     var id = mongoose.Types.ObjectId(req.params.id);
     // find requested user
-    account
-      .findById(id)
-      .exec()
+    account.findById(id).exec()
       .then(function(user) {
         // update user and save
         updateUser(req, user, req.body).save();
@@ -264,7 +259,7 @@ router.put('/update/:id', function(req, res) {
         return error(res, 500, err.message);
       });
   } else {
-    return error(res, 403, 'User has no permission');
+    error(res, 403, 'User has no permission');
   }
 });
 
@@ -289,10 +284,7 @@ router.delete('/delete/:id', function(req, res) {
 
 /// List of user
 router.get('/list', function(req, res) {
-  account
-    .find({})
-    .lean()
-    .exec()
+  account.find({}).lean().exec()
     .then(function(users) {
       // if current user is not admin or dev
       if (req.user.isAdmin == false) {
