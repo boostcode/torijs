@@ -33,6 +33,7 @@ var permissionApi = require('./routes/api/permission');
 var actionApi = require('./routes/api/action');
 var roleApi = require('./routes/api/role');
 var collectionApi = require('./routes/api/collection');
+var singleCollectionApi = require('./routes/api/singleCollection');
 
 // 🔑  Authentication
 var jwt = require('jsonwebtoken');
@@ -221,7 +222,9 @@ app.all('/api/role*', tokenAuth, isAdmin);
 app.use('/api/role', roleApi);
 
 // Collection
+app.all('/api/collection*', tokenAuth);
 app.use('/api/collection', collectionApi);
+app.use('/api/collection', singleCollectionApi);
 
 
 
