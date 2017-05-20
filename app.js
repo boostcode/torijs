@@ -109,7 +109,8 @@ app.use(passport.session());
 
 
 /// 🗄 Database setup
-var mongoClient = require('mongodb').MongoClient;
+var Promise = require('bluebird');
+var mongoClient = Promise.promisifyAll(require('mongodb').MongoClient);
 var mongoose = require('mongoose');
 var database = null;
 app.use(function(req, res, next) {
@@ -117,15 +118,15 @@ app.use(function(req, res, next) {
     req.db = database;
     next();
   } else {
-    mongoClient.connect('mongodb://' + tori.database.host + '/' + tori.database.data, function(err, db) {
-      if (db) {
+    mongoClient.connect('mongodb://' + tori.database.host + '/' + tori.database.data)
+      .then(function(db) {
         req.db = database = db;
         next();
-      } else {
+      })
+      .catch(function(err) {
         console.error('❌  🗄  Database connection problem');
         process.exit();
-      }
-    });
+      });
   }
 });
 
@@ -222,6 +223,7 @@ app.all('/api/role*', tokenAuth, isAdmin);
 app.use('/api/role', roleApi);
 
 // Collection
+app.all('/api/collection', isAdmin); // only base route needs to be admin only
 app.all('/api/collection*', tokenAuth);
 app.use('/api/collection', collectionApi);
 app.use('/api/collection', singleCollectionApi);

@@ -44,12 +44,87 @@ router.get('/', function(req, res) {
 
 /// Create a new collection
 router.post('/', function(req, res) {
+  // sanitize input (name, fields)
+  // fields has several items (label, order, type, unique, default, values)
+  // type is different type of field (string, file, etc.)
+  // default is default value (string)
+  // values is supported fixed values user can change within (array)
+  var sanitized = _.pick(req.body, ['name', 'fields']);
 
+  if (sanitized.name == null) {
+    return error(res, 404, 'Missing collection name.');
+  }
+
+  if (sanitized.fields == null) {
+    return error(res, 404, 'Missing collection fields.');
+  }
+
+  // create new collection
+  req.db.createCollection(sanitized.name)
+    .then(function(coll) {
+      var structure = req.db.collection('tori_structure');
+      structure.insert(sanitized)
+        .then(function(done) {
+          createPermission(req, done.id);
+          res.json({
+            success: true,
+            message: 'Collection created.'
+          });
+        })
+        .catch(function(err) {
+          error(res, 500, err.message);
+        });
+    })
+    .catch(function(err) {
+      error(res, 500, err.message);
+    });
 });
 
 /// Delete collection (soft-delete)
 router.delete('/', function(req, res) {
+  var id = req.body.id;
+  if (id == null) {
+    return error(res, 404, 'Missing collection id');
+  }
+  // transform id ot Object
+  id = new oID.createFromHexString(id);
 
+  // drop the collection
+  req.db.dropCollection(id)
+    .then(function(coll) {
+      var structure = req.db.collection('tori_structure');
+      return structure.remove({
+        name: id
+      });
+    })
+    .then(function(removed) {
+      permission.remove({
+        subject: id
+      }, function(err) {
+        error(res, 500, err.message);
+      });
+    })
+    .catch(function(err) {
+      error(res, 500, err.message);
+    });
 });
+
+// Create permission
+function createPermission(req, collection) {
+  permission.create([{
+      subject: collection,
+      action: 'api-read'
+    },
+    {
+      subject: collection,
+      action: 'api-write'
+    }
+  ], function(err) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  });
+}
 
 module.exports = router;

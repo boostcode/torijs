@@ -26,7 +26,7 @@ var error = require('../error');
 router.param('collection', function(req, res, next, id) {
   var structure = req.db.collection('tori_structure');
   id = new oID.createFromHexString(id);
-  structure.findById(id).exec()
+  structure.findById(id)
     .then(function(collection) {
       req.collection = collection
       next();
@@ -57,7 +57,7 @@ router.get('/:collection/has/update', function(req, res) {
       };
 
       // get updated items
-      req.collection.find(query).exec()
+      req.collection.find(query)
         .then(function(items) {
           res.send({
             success: true,
@@ -94,7 +94,7 @@ router.delete('/:collection/all', function(req, res) {
 // Check document passed is valid
 router.param('document', function(req, res, next, id) {
   id = new oID.createFromHexString(id);
-  req.collection.findById(id).exec()
+  req.collection.findById(id)
     .then(function(document) {
       req.document = document;
       next();
