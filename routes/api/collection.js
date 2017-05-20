@@ -110,13 +110,13 @@ router.delete('/', function(req, res) {
 });
 
 // Create permission
-function createPermission(req, collection) {
+function createPermission(req, id) {
   permission.create([{
-      subject: collection,
+      subject: id,
       action: 'api-read'
     },
     {
-      subject: collection,
+      subject: id,
       action: 'api-write'
     }
   ], function(err) {
